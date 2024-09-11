@@ -2,28 +2,63 @@ package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
     override fun runOpMode() {
-        telemetry.status("Initializing")
-
+        telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
+        val lift = Lift(hardwareMap)
 
-        telemetry.status("Initialized")
+        telemetry.status("initialized")
 
         waitForStart()
 
+        runBlocking {
+            val driving = launch {
+                while (isActive) {
+                    yield()
 
-        while (opModeIsActive()) {
-            val xInput = gamepad1.left_stick_x.toDouble()
-            val yInput = -gamepad1.left_stick_y.toDouble()
-            val turnInput = gamepad1.right_stick_x.toDouble()
+                    val xInput = gamepad1.left_stick_x.toDouble()
+                    val yInput = -gamepad1.left_stick_y.toDouble()
+                    val turnInput = gamepad1.right_stick_x.toDouble()
 
-            drivebase.controlMotors(xInput, yInput, turnInput)
+                    drivebase.controlMotors(xInput, yInput, turnInput)
+                }
+            }
 
-            drivebase.addTelemetry(telemetry)
-            telemetry.status("Running")
+            val lifting = launch {
+                while (isActive) {
+                    yield()
+
+                    val liftTarget = when {
+                        gamepad2.a -> 0.0
+                        gamepad2.b -> 10.0
+                        gamepad2.x -> 44.0
+                        else -> continue
+                    }
+
+                    lift.moveLiftTo(liftTarget, 1.0)
+                }
+            }
+
+
+            while (opModeIsActive()) {
+                drivebase.addTelemetry(telemetry)
+                lift.addTelemetry(telemetry)
+                telemetry.status("running")
+
+                yield()
+            }
+
+            driving.cancelAndJoin()
+            lifting.cancelAndJoin()
         }
+
     }
 }

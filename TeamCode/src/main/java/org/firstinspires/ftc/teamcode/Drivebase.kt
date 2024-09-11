@@ -135,9 +135,9 @@ class Drivebase(hardwareMap: HardwareMap) {
      * @param telemetry the telemetry object to add data to
      */
     fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("FLDrive Position", fldrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("FRDrive Position", frdrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("BLDrive Position", bldrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("BRDrive Position", brdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("fldrive pos inch", fldrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("frdrive pos inch", frdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("bldrive pos inch", bldrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("brdrive pos inch", brdrive.currentPosition / ENCODER_PER_INCH)
     }
 }
