@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
@@ -10,12 +11,21 @@ import kotlin.math.roundToInt
 import kotlin.math.withSign
 
 class Drivebase(hardwareMap: HardwareMap) {
-    private val fldrive = hardwareMap.get(DcMotor::class.java, "FLDrive")
-    private val frdrive = hardwareMap.get(DcMotor::class.java, "FRDrive")
-    private val bldrive = hardwareMap.get(DcMotor::class.java, "BLDrive")
-    private val brdrive = hardwareMap.get(DcMotor::class.java, "BRDrive")
+    private val fldrive = hardwareMap.dcMotor.get("FLDrive")
+    private val frdrive = hardwareMap.dcMotor.get("FRDrive")
+    private val bldrive = hardwareMap.dcMotor.get("BLDrive")
+    private val brdrive = hardwareMap.dcMotor.get("BRDrive")
 
     private val motors = listOf(fldrive, frdrive, bldrive, brdrive)
+
+    init {
+        motors.forEach { it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
+
+        fldrive.direction = DcMotorSimple.Direction.FORWARD
+        frdrive.direction = DcMotorSimple.Direction.FORWARD
+        bldrive.direction = DcMotorSimple.Direction.FORWARD
+        brdrive.direction = DcMotorSimple.Direction.FORWARD
+    }
 
     /**
      * function to be used in teleop, controls the motors
