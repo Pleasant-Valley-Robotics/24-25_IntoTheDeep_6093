@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.LiftConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.LiftConstants.MAX_LIFT_HEIGHT_INCH
 import kotlin.math.withSign
@@ -39,4 +40,12 @@ class Lift(hardwareMap: HardwareMap) {
         liftMotor.power = 0.0
     }
 
+    /**
+     * adds all the lift data to telemetry
+     *
+     * @param telemetry the telemetry object to add to
+     */
+    fun addTelemetry(telemetry: Telemetry) {
+        telemetry.addData("lift height inch", liftHeight)
+    }
 }
