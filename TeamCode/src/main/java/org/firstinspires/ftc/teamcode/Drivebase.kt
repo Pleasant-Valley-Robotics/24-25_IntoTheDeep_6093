@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.DriveConstants.ENCODER_PER_INCH
+import org.firstinspires.ftc.teamcode.DriveConstants.STRAFING_CORRECTION
 import kotlin.math.roundToInt
 import kotlin.math.withSign
 
