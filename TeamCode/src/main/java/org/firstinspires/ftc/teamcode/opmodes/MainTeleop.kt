@@ -15,7 +15,7 @@ class MainTeleop : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
-        val lift = Lift(hardwareMap)
+//        val lift = Lift(hardwareMap)
 
         telemetry.status("initialized")
 
@@ -37,22 +37,22 @@ class MainTeleop : LinearOpMode() {
             val lifting = launch {
                 while (isActive) {
                     yield()
-
-                    val liftTarget = when {
-                        gamepad2.a -> 0.0
-                        gamepad2.b -> 10.0
-                        gamepad2.x -> 44.0
-                        else -> continue
-                    }
-
-                    lift.moveLiftTo(liftTarget, 1.0)
+//
+//                    val liftTarget = when {
+//                        gamepad2.a -> 0.0
+//                        gamepad2.b -> 10.0
+//                        gamepad2.x -> 44.0
+//                        else -> continue
+//                    }
+//
+//                    lift.moveLiftTo(liftTarget, 1.0)
                 }
             }
 
 
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
-                lift.addTelemetry(telemetry)
+//                lift.addTelemetry(telemetry)
                 telemetry.status("running")
 
                 yield()
@@ -60,6 +60,8 @@ class MainTeleop : LinearOpMode() {
 
             driving.cancelAndJoin()
             lifting.cancelAndJoin()
+
+            drivebase.controlMotors(0.0, 0.0, 0.0)
         }
 
     }

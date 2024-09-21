@@ -7,6 +7,7 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.DriveConstants.STRAFING_CORRECTION
+import org.firstinspires.ftc.teamcode.maxOf
 import kotlin.math.roundToInt
 import kotlin.math.withSign
 
@@ -20,11 +21,13 @@ class Drivebase(hardwareMap: HardwareMap) {
 
     init {
         motors.forEach { it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
+        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
 
-        fldrive.direction = DcMotorSimple.Direction.FORWARD
+
+        fldrive.direction = DcMotorSimple.Direction.REVERSE
         frdrive.direction = DcMotorSimple.Direction.FORWARD
-        bldrive.direction = DcMotorSimple.Direction.FORWARD
-        brdrive.direction = DcMotorSimple.Direction.FORWARD
+        bldrive.direction = DcMotorSimple.Direction.REVERSE
+        brdrive.direction = DcMotorSimple.Direction.REVERSE
     }
 
     /**
@@ -35,15 +38,14 @@ class Drivebase(hardwareMap: HardwareMap) {
      * @param turnInput the turning input, clockwise is positive. `[-1, 1]`
      */
     fun controlMotors(xInput: Double, yInput: Double, turnInput: Double) {
-        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
 
-        // https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+        // https://gm0.org/en/latest/   docs/software/tutorials/mecanum-drive.html
         val flpower = yInput + xInput + turnInput
-        val frpower = yInput - xInput + turnInput
-        val blpower = yInput - xInput - turnInput
+        val frpower = yInput - xInput - turnInput
+        val blpower = yInput - xInput + turnInput
         val brpower = yInput + xInput - turnInput
 
-        val maxPower = org.firstinspires.ftc.teamcode.maxOf(flpower, frpower, blpower, brpower)
+        val maxPower = maxOf(1.0, flpower, frpower, blpower, brpower)
 
         fldrive.power = flpower / maxPower
         frdrive.power = frpower / maxPower

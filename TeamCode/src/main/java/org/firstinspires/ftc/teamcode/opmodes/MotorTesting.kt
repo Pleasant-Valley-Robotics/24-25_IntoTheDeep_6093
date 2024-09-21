@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 
 @TeleOp(name = "Motor Tests")
 class MotorTesting : LinearOpMode() {
@@ -14,7 +15,11 @@ class MotorTesting : LinearOpMode() {
 
         val motors = motorNames.map(hardwareMap.dcMotor::get)
 
-        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
+        motors.forEach {
+            it.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            it.direction = DcMotorSimple.Direction.FORWARD
+            it.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
 
         val buttons = listOf(
             { gamepad1.triangle },
