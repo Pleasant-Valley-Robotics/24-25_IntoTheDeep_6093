@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
@@ -6,6 +6,8 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.systems.Drivebase
 
 @Autonomous(name = "ExampleAuto")
 class ExampleAuto : LinearOpMode() {
@@ -31,6 +33,8 @@ class ExampleAuto : LinearOpMode() {
             while (opModeIsActive() && auto.isActive) {
                 drivebase.addTelemetry(telemetry)
                 telemetry.status("Running")
+
+                yield()
             }
 
             auto.cancelAndJoin()

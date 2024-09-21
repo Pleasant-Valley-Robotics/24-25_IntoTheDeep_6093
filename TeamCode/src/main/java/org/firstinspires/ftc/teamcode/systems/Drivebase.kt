@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -43,7 +43,7 @@ class Drivebase(hardwareMap: HardwareMap) {
         val blpower = yInput - xInput - turnInput
         val brpower = yInput + xInput - turnInput
 
-        val maxPower = maxOf(flpower, frpower, blpower, brpower)
+        val maxPower = org.firstinspires.ftc.teamcode.maxOf(flpower, frpower, blpower, brpower)
 
         fldrive.power = flpower / maxPower
         frdrive.power = frpower / maxPower
