@@ -27,8 +27,10 @@ class Drivebase(hardwareMap: HardwareMap) {
         fldrive.direction = DcMotorSimple.Direction.REVERSE
         frdrive.direction = DcMotorSimple.Direction.FORWARD
         bldrive.direction = DcMotorSimple.Direction.REVERSE
-        brdrive.direction = DcMotorSimple.Direction.REVERSE
+        brdrive.direction = DcMotorSimple.Direction.FORWARD
     }
+
+
 
     /**
      * function to be used in teleop, controls the motors
@@ -52,6 +54,8 @@ class Drivebase(hardwareMap: HardwareMap) {
         bldrive.power = blpower / maxPower
         brdrive.power = brpower / maxPower
     }
+
+
 
     /**
      * convenience function to work with multiple motors at once
