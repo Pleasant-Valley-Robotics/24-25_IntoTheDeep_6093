@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.prototypes.Spintake
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import org.firstinspires.ftc.teamcode.systems.Lift
 
 @TeleOp(name = "MainTeleop")
 class ProtoTeleop : LinearOpMode() {
@@ -42,9 +41,9 @@ class ProtoTeleop : LinearOpMode() {
 
                     val pos = gamepad2.left_stick_y.toDouble()
                     val insideMyMouth = gamepad2.a
-                    val disgustingSpecimin = gamepad2.b
+                    val disgustingSpecimen = gamepad2.b
 
-                    spintake.theSuckAction(pos, insideMyMouth, disgustingSpecimin)
+                    spintake.theSuckAction(pos, insideMyMouth, disgustingSpecimen)
                 }
             }
 
