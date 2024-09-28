@@ -9,13 +9,15 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.prototypes.Spintake
 import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.prototypes.Pivot
 
-@TeleOp(name = "MainTeleop")
+@TeleOp(name = "ProtoTeleOP")
 class ProtoTeleop : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
 
         telemetry.status("initialized")
         waitForStart()
@@ -39,11 +41,21 @@ class ProtoTeleop : LinearOpMode() {
                     yield()
 
 
-                    val pos = gamepad2.left_stick_y.toDouble()
                     val insideMyMouth = gamepad2.a
                     val disgustingSpecimen = gamepad2.b
 
-                    spintake.theSuckAction(pos, insideMyMouth, disgustingSpecimen)
+                    spintake.theSuckAction(insideMyMouth, disgustingSpecimen)
+                }
+            }
+
+            val pivoting = launch {
+                while(isActive) {
+                    yield()
+
+                    val pivotPos = gamepad2.left_stick_y.toDouble()
+                    telemetry.addData("Pivotttt", pivotPos)
+                    pivot.runToAngle(pivotPos)
+
                 }
             }
 
@@ -51,11 +63,13 @@ class ProtoTeleop : LinearOpMode() {
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
                 spintake.addTelemetry(telemetry)
+                pivot.addTelemetry(telemetry)
                 telemetry.status("running")
 
                 yield()
             }
 
+            pivoting.cancelAndJoin()
             driving.cancelAndJoin()
             intake.cancelAndJoin()
 

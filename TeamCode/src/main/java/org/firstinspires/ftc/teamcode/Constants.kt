@@ -9,3 +9,8 @@ object LiftConstants {
     const val ENCODER_PER_INCH = 0.0
     const val MAX_LIFT_HEIGHT_INCH = 0.0
 }
+
+object PrototypeConstants {
+    const val MAX_LIFT_HEIGHT = 0.3409
+}
+

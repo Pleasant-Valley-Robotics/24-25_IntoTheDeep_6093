@@ -5,14 +5,9 @@ import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class Spintake(hardwareMap: HardwareMap) {
-    private val liftServo = hardwareMap.servo.get("Pivot").apply {
-        this.direction = Servo.Direction.REVERSE
-
-    }
     private val intakeServo = hardwareMap.crservo.get("Intake")
 
-    fun theSuckAction(position: Double, suckIn: Boolean, spitOut: Boolean) {
-        val targetPos = position.coerceIn(0.0, 1.0)
+    fun theSuckAction(suckIn: Boolean, spitOut: Boolean) {
         val targetIntake: Double = when {
             suckIn -> 1.0
             spitOut -> -1.0
@@ -20,14 +15,12 @@ class Spintake(hardwareMap: HardwareMap) {
         }
 
         intakeServo.power = targetIntake
-        liftServo.position = targetPos
-
+        
     }
 
-    private val liftPosition = liftServo.position
-
+    private val intakeDirection = intakeServo.power
     fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("Pivot Position", liftPosition)
+        telemetry.addData("Intake Power", intakeDirection)
 
     }
 }
