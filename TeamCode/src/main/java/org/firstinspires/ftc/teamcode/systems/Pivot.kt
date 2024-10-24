@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.prototypes
+package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.PrototypeConstants
+import org.firstinspires.ftc.teamcode.utility.PrototypeConstants
 
 class Pivot(hardwareMap: HardwareMap) {
 

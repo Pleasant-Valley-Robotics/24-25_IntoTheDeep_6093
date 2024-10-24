@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.IMU
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.teamcode.DriveConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.DriveConstants.STRAFING_CORRECTION
-import org.firstinspires.ftc.teamcode.maxOf
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_CORRECTION
+import org.firstinspires.ftc.teamcode.utility.maxOf
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.withSign

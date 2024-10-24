@@ -7,9 +7,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
-import org.firstinspires.ftc.teamcode.prototypes.Spintake
+import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import org.firstinspires.ftc.teamcode.prototypes.Pivot
+import org.firstinspires.ftc.teamcode.systems.Pivot
 
 @TeleOp(name = "ProtoTeleOP")
 class ProtoTeleop : LinearOpMode() {
