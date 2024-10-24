@@ -118,10 +118,10 @@ class Drivebase(hardwareMap: HardwareMap) {
      * @param power how fast to drive. `(0, 1]`
      */
     suspend fun driveForward(inches: Double, power: Double) {
-        applyMotors(power.withSign(inches), Signs.Normal) {
+        applyMotors(inches, Signs.Normal) {
             this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            this.power = it
-            this.targetPosition = (inches * ENCODER_PER_INCH).roundToInt()
+            this.power = power.withSign(it)
+            this.targetPosition = (it * ENCODER_PER_INCH).roundToInt()
             this.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
@@ -137,10 +137,10 @@ class Drivebase(hardwareMap: HardwareMap) {
      * @param power how fast to strafe. `(0, 1]`
      */
     suspend fun strafeRight(inches: Double, power: Double) {
-        applyMotors(power.withSign(inches), Signs.XSplit) {
+        applyMotors(inches, Signs.XSplit) {
             this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-            this.power = it;
-            this.targetPosition = (inches * ENCODER_PER_INCH * STRAFING_CORRECTION).roundToInt()
+            this.power = power.withSign(it)
+            this.targetPosition = (it * ENCODER_PER_INCH * STRAFING_CORRECTION).roundToInt()
             this.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
