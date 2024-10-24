@@ -1,13 +1,18 @@
 package org.firstinspires.ftc.teamcode.systems
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.*
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.IMU
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.DriveConstants.STRAFING_CORRECTION
 import org.firstinspires.ftc.teamcode.maxOf
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.withSign
 
@@ -17,19 +22,30 @@ class Drivebase(hardwareMap: HardwareMap) {
     private val bldrive = hardwareMap.dcMotor.get("BLDrive")
     private val brdrive = hardwareMap.dcMotor.get("BRDrive")
 
+    private val imu = hardwareMap.get(IMU::class.java, "IMU").apply {
+        this.initialize(
+            IMU.Parameters(
+                RevHubOrientationOnRobot(
+                    LogoFacingDirection.LEFT,
+                    UsbFacingDirection.UP,
+                )
+            )
+        )
+    }
+
     private val motors = listOf(fldrive, frdrive, bldrive, brdrive)
 
     init {
         motors.forEach { it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
         motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
 
-
         fldrive.direction = DcMotorSimple.Direction.REVERSE
         frdrive.direction = DcMotorSimple.Direction.FORWARD
         bldrive.direction = DcMotorSimple.Direction.REVERSE
         brdrive.direction = DcMotorSimple.Direction.FORWARD
-    }
 
+        imu.resetYaw()
+    }
 
 
     /**
@@ -54,8 +70,6 @@ class Drivebase(hardwareMap: HardwareMap) {
         bldrive.power = blpower / maxPower
         brdrive.power = brpower / maxPower
     }
-
-
 
     /**
      * convenience function to work with multiple motors at once
@@ -135,6 +149,31 @@ class Drivebase(hardwareMap: HardwareMap) {
         motors.forEach { it.power = 0.0 }
     }
 
+    private val heading: Double
+        get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+
+    private fun wrapAngle(n: Double) = (n + 540.0).mod(360.0) - 180.0
+
+    /**
+     * Turns to an angle in degrees.
+     * @param degrees Angle to turn in degrees.
+     */
+    suspend fun turnToAngle(degrees: Double, power: Double) {
+        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
+
+        do {
+            val delta = wrapAngle(heading - degrees)
+
+            applyMotors(delta * power * 0.02, Signs.VSplit) {
+                this.power = it
+            }
+
+            yield()
+        } while (delta.absoluteValue > 4)
+
+        motors.forEach { it.power = 0.0 }
+    }
+
     /**
      * adds all this drivebase's data to a telemetry object
      *
@@ -145,5 +184,6 @@ class Drivebase(hardwareMap: HardwareMap) {
         telemetry.addData("frdrive pos inch", frdrive.currentPosition / ENCODER_PER_INCH)
         telemetry.addData("bldrive pos inch", bldrive.currentPosition / ENCODER_PER_INCH)
         telemetry.addData("brdrive pos inch", brdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("heading deg", heading)
     }
 }
