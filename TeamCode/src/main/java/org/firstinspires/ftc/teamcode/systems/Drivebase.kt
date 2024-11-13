@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.*
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -40,9 +41,9 @@ class Drivebase(hardwareMap: HardwareMap) {
         motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
 
         fldrive.direction = DcMotorSimple.Direction.REVERSE
-        frdrive.direction = DcMotorSimple.Direction.FORWARD
+        frdrive.direction = DcMotorSimple.Direction.REVERSE
         bldrive.direction = DcMotorSimple.Direction.REVERSE
-        brdrive.direction = DcMotorSimple.Direction.FORWARD
+        brdrive.direction = DcMotorSimple.Direction.REVERSE
 
         imu.resetYaw()
     }
@@ -109,7 +110,6 @@ class Drivebase(hardwareMap: HardwareMap) {
 
         fun applySigns(value: Double) = this.signs.map { it * value }
     }
-
 
     /**
      * drives the robot forward
