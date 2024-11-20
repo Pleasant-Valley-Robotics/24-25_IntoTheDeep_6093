@@ -17,7 +17,7 @@ class Lift(hardwareMap: HardwareMap) {
 
     val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor").apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        this.direction = DcMotorSimple.Direction.FORWARD
+        this.direction = DcMotorSimple.Direction.REVERSE
     }
 
     /** gets the current left lift height as measured by encoder, in inches */
