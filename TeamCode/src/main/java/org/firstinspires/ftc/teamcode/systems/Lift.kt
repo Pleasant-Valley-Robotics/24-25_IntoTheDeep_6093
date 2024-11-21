@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH
 import kotlin.math.withSign
 
 class Lift(hardwareMap: HardwareMap) {
-    val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor").apply {
+    val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.FORWARD
     }
 
-    val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor").apply {
+    val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
     }

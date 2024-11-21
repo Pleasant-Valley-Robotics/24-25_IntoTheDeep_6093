@@ -18,10 +18,10 @@ import kotlin.math.roundToInt
 import kotlin.math.withSign
 
 class Drivebase(hardwareMap: HardwareMap) {
-    private val fldrive = hardwareMap.dcMotor.get("FLDrive")
-    private val frdrive = hardwareMap.dcMotor.get("FRDrive")
-    private val bldrive = hardwareMap.dcMotor.get("BLDrive")
-    private val brdrive = hardwareMap.dcMotor.get("BRDrive")
+    private val fldrive = hardwareMap.dcMotor.get("FLDrive")!!
+    private val frdrive = hardwareMap.dcMotor.get("FRDrive")!!
+    private val bldrive = hardwareMap.dcMotor.get("BLDrive")!!
+    private val brdrive = hardwareMap.dcMotor.get("BRDrive")!!
 
     private val imu = hardwareMap.get(IMU::class.java, "IMU").apply {
         this.initialize(
