@@ -10,6 +10,7 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @TeleOp(name = "MainTeleop")
@@ -19,6 +20,7 @@ class MainTeleop : LinearOpMode() {
         val drivebase = Drivebase(hardwareMap)
         val lift = Lift(hardwareMap)
         val extender = Extender(hardwareMap)
+        val spintake = Spintake(hardwareMap)
 
         telemetry.status("initialized")
 
@@ -26,6 +28,8 @@ class MainTeleop : LinearOpMode() {
 
         runBlocking {
             val driving = launch {
+                var pivotInputActive = false
+
                 while (isActive) {
                     yield()
 
@@ -39,14 +43,22 @@ class MainTeleop : LinearOpMode() {
                     val extendInput = -gamepad2.left_stick_x.toDouble()
 
                     val inLimitUpper = lift.liftHeight <= LiftConstants.MAX_LIFT_HEIGHT_INCH
-                    // 0.3 because of slight drifts causing error
-                    val inLimitLower = lift.liftHeight >= 0.3
+                    // 0.5 because of slight drifts causing error
+                    val inLimitLower = lift.liftHeight >= 0.5
 
                     lift.liftPower =
                         if (liftInput > 0 && inLimitUpper || liftInput < 0 && inLimitLower) liftInput
                         else 0.0
 
                     extender.extendMotor.power = extendInput
+
+                    val spinOut = gamepad2.right_bumper
+                    val spinIn = gamepad2.right_trigger > 0.5
+
+                    spintake.theSuckAction(spinIn, spinOut)
+
+                    if (gamepad2.a && !pivotInputActive) spintake.switchWrist()
+                    pivotInputActive = gamepad2.a
                 }
             }
 
@@ -55,6 +67,7 @@ class MainTeleop : LinearOpMode() {
                 drivebase.addTelemetry(telemetry)
                 lift.addTelemetry(telemetry)
                 extender.addTelemetry(telemetry)
+                spintake.addTelemetry(telemetry)
 
                 telemetry.status("running")
 
