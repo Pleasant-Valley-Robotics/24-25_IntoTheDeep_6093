@@ -41,9 +41,9 @@ class Drivebase(hardwareMap: HardwareMap) {
         motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
 
         fldrive.direction = DcMotorSimple.Direction.REVERSE
-        frdrive.direction = DcMotorSimple.Direction.REVERSE
+        frdrive.direction = DcMotorSimple.Direction.FORWARD
         bldrive.direction = DcMotorSimple.Direction.REVERSE
-        brdrive.direction = DcMotorSimple.Direction.REVERSE
+        brdrive.direction = DcMotorSimple.Direction.FORWARD
 
         imu.resetYaw()
     }

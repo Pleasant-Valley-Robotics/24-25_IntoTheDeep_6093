@@ -10,14 +10,14 @@ import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH
 import kotlin.math.withSign
 
 class Lift(hardwareMap: HardwareMap) {
-    val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
-        this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        this.direction = DcMotorSimple.Direction.FORWARD
-    }
-
-    val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
+    private val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
+    }
+
+    private val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
+        this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        this.direction = DcMotorSimple.Direction.FORWARD
     }
 
     /** gets the current left lift height as measured by encoder, in inches */
@@ -25,6 +25,16 @@ class Lift(hardwareMap: HardwareMap) {
 
     /** gets the current left lift height as measured by encoder, in inches */
     private val rightLiftHeight get() = rightLiftMotor.currentPosition / ENCODER_PER_INCH
+
+    val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
+
+    var liftPower: Double
+        get() = (leftLiftMotor.power + rightLiftMotor.power) / 2
+        set(value) {
+            leftLiftMotor.power = value
+            rightLiftMotor.power = value
+        }
+
 
     /**
      * tries to set the lift height
@@ -62,5 +72,6 @@ class Lift(hardwareMap: HardwareMap) {
     fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("left lift height inch", leftLiftHeight)
         telemetry.addData("right lift height inch", rightLiftHeight)
+        telemetry.addData("lift height", liftHeight)
     }
 }

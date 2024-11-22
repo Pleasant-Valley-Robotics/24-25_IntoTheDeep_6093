@@ -8,7 +8,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -16,6 +18,7 @@ class MainTeleop : LinearOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
         val lift = Lift(hardwareMap)
+        val extender = Extender(hardwareMap)
 
         telemetry.status("initialized")
 
@@ -31,22 +34,19 @@ class MainTeleop : LinearOpMode() {
                     val turnInput = gamepad1.right_stick_x.toDouble()
 
                     drivebase.controlMotors(xInput, yInput, turnInput)
-                }
-            }
 
-            val lifting = launch {
-                while (isActive) {
-                    lift.leftLiftMotor.power = gamepad2.left_stick_y.toDouble()
-                    lift.rightLiftMotor.power = gamepad2.left_stick_y.toDouble()
-                //
-//                    val liftTarget = when {
-//                        gamepad2.a -> 0.0
-//                        gamepad2.b -> 10.0
-//                        gamepad2.x -> 44.0
-//                        else -> continue
-//                    }
-//
-//                    lift.moveLiftTo(liftTarget, 1.0)
+                    val liftInput = -gamepad2.left_stick_y.toDouble()
+                    val extendInput = -gamepad2.left_stick_x.toDouble()
+
+                    val inLimitUpper = lift.liftHeight <= LiftConstants.MAX_LIFT_HEIGHT_INCH
+                    // 0.3 because of slight drifts causing error
+                    val inLimitLower = lift.liftHeight >= 0.3
+
+                    lift.liftPower =
+                        if (liftInput > 0 && inLimitUpper || liftInput < 0 && inLimitLower) liftInput
+                        else 0.0
+
+                    extender.extendMotor.power = extendInput
                 }
             }
 
@@ -54,17 +54,18 @@ class MainTeleop : LinearOpMode() {
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
                 lift.addTelemetry(telemetry)
+                extender.addTelemetry(telemetry)
+
                 telemetry.status("running")
 
                 yield()
             }
 
             driving.cancelAndJoin()
-            lifting.cancelAndJoin()
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
-            lift.leftLiftMotor.power = 0.0
-            lift.rightLiftMotor.power = 0.0
+            lift.liftPower = 0.0
+            extender.extendMotor.power = 0.0
         }
 
     }
