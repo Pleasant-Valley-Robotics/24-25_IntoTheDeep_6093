@@ -7,17 +7,22 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH
+import kotlin.math.absoluteValue
 import kotlin.math.withSign
 
 class Lift(hardwareMap: HardwareMap) {
     private val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
+        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.FORWARD
+        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     /** gets the current left lift height as measured by encoder, in inches */
@@ -40,28 +45,18 @@ class Lift(hardwareMap: HardwareMap) {
      * tries to set the lift height
      *
      * @param inches the lift's new position, in inches. maximum of [MAX_LIFT_HEIGHT_INCH]
-     * @param power how fast to move the lift. `(0, 1]`
      */
-    suspend fun moveLiftTo(inches: Double, power: Double) {
-        if (leftLiftHeight == inches) return
+    suspend fun moveLiftTo(inches: Double) {
+        val threshold = 0.3
+        val power = 0.8
 
-        leftLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        rightLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        do {
+            val error = inches - liftHeight
+            liftPower = power.withSign(error)
+            yield()
+        } while (error.absoluteValue > threshold)
 
-        val targetLiftHeight = inches.coerceIn(0.0, MAX_LIFT_HEIGHT_INCH)
-        leftLiftMotor.power = power.withSign(targetLiftHeight - leftLiftHeight)
-        rightLiftMotor.power = power.withSign(targetLiftHeight - leftLiftHeight)
-
-        leftLiftMotor.targetPosition = (targetLiftHeight * ENCODER_PER_INCH).toInt()
-        rightLiftMotor.targetPosition = (targetLiftHeight * ENCODER_PER_INCH).toInt()
-
-        leftLiftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-        rightLiftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-        while (leftLiftMotor.isBusy) yield()
-
-        leftLiftMotor.power = 0.0
-        rightLiftMotor.power = 0.0
+        liftPower = 0.0
     }
 
     /**
