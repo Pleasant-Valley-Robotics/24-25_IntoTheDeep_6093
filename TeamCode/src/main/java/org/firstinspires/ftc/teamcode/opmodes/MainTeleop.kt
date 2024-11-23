@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.ExtenderConstants
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @TeleOp(name = "MainTeleop")
@@ -29,6 +30,7 @@ class MainTeleop : LinearOpMode() {
         runBlocking {
             val driving = launch {
                 var pivotInputActive = false
+                var overriding = false
 
                 while (isActive) {
                     yield()
@@ -40,17 +42,33 @@ class MainTeleop : LinearOpMode() {
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
-                    val extendInput = -gamepad2.left_stick_x.toDouble()
+                    val extendInput = -gamepad2.right_stick_y.toDouble()
 
-                    val inLimitUpper = lift.liftHeight <= LiftConstants.MAX_LIFT_HEIGHT_INCH
-                    // 0.5 because of slight drifts causing error
-                    val inLimitLower = lift.liftHeight >= 0.5
+                    val inLiftLimitUpper = lift.liftHeight <= LiftConstants.MAX_LIFT_HEIGHT_INCH
+                    val inLiftLimitLower = lift.liftHeight >= 0.5
+
+                    val inExtLimitUpper =
+                        extender.extendPosition <= ExtenderConstants.MAX_EXTENSION_INCH
+                    val inExtLimitLower = extender.extendPosition >= 0.7
 
                     lift.liftPower =
-                        if (liftInput > 0 && inLimitUpper || liftInput < 0 && inLimitLower) liftInput
+                        if (overriding) liftInput
+                        else if (liftInput > 0 && inLiftLimitUpper || liftInput < 0 && inLiftLimitLower) liftInput
                         else 0.0
 
-                    extender.extendMotor.power = extendInput
+                    extender.extendMotor.power =
+                        if (extendInput > 0 && inExtLimitUpper || extendInput < 0 && inExtLimitLower) extendInput
+                        else 0.0
+
+
+                    if (!gamepad2.b && overriding) {
+                        lift.resetLift()
+                    }
+
+
+                    // b override limits
+                    overriding = gamepad2.b
+
 
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5

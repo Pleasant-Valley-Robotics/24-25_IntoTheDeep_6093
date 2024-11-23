@@ -14,15 +14,11 @@ class Lift(hardwareMap: HardwareMap) {
     private val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
-        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.FORWARD
-        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     /** gets the current left lift height as measured by encoder, in inches */
@@ -40,6 +36,13 @@ class Lift(hardwareMap: HardwareMap) {
             rightLiftMotor.power = value
         }
 
+    fun resetLift() {
+        leftLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        leftLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        rightLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        rightLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+
 
     /**
      * tries to set the lift height
@@ -47,7 +50,7 @@ class Lift(hardwareMap: HardwareMap) {
      * @param inches the lift's new position, in inches. maximum of [MAX_LIFT_HEIGHT_INCH]
      */
     suspend fun moveLiftTo(inches: Double) {
-        val threshold = 0.3
+        val threshold = 1.0
         val power = 0.8
 
         do {
