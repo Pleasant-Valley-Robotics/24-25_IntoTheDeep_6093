@@ -10,12 +10,12 @@ import com.qualcomm.robotcore.hardware.IMU
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_CORRECTION
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.maxOf
 import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
-import kotlin.math.withSign
 
 class Drivebase(hardwareMap: HardwareMap) {
     private val fldrive = hardwareMap.dcMotor.get("FLDrive")!!
@@ -115,17 +115,20 @@ class Drivebase(hardwareMap: HardwareMap) {
      * drives the robot forward
      *
      * @param inches how many inches to drive, negative for backwards
-     * @param power how fast to drive. `(0, 1]`
+     * @param maxPower how fast to drive. `(0, 1]`
      */
-    suspend fun driveForward(inches: Double, power: Double) {
-        applyMotors(inches, Signs.Normal) {
-            this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            this.power = power.withSign(it)
-            this.targetPosition = (it * ENCODER_PER_INCH).roundToInt()
-            this.mode = DcMotor.RunMode.RUN_TO_POSITION
-        }
+    suspend fun driveForward(inches: Double, maxPower: Double) {
+        resetMotorEncoders()
 
-        while (motors.any { it.isBusy }) yield()
+        do {
+            val delta = inches - yDistance
+
+            val drivePower = (delta * DRIVING_P_GAIN).coerceIn(-maxPower, maxPower)
+
+            controlMotors(0.0, drivePower, 0.0)
+
+            yield()
+        } while (delta.absoluteValue > 0.3)
 
         motors.forEach { it.power = 0.0 }
     }
@@ -134,42 +137,65 @@ class Drivebase(hardwareMap: HardwareMap) {
      * strafes (left right movement)
      *
      * @param inches how many inches to strafe, positive is right
-     * @param power how fast to strafe. `(0, 1]`
+     * @param maxPower how fast to strafe. `(0, 1]`
      */
-    suspend fun strafeRight(inches: Double, power: Double) {
-        applyMotors(inches, Signs.XSplit) {
-            this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-            this.power = power.withSign(it)
-            this.targetPosition = (it * ENCODER_PER_INCH * STRAFING_CORRECTION).roundToInt()
-            this.mode = DcMotor.RunMode.RUN_TO_POSITION
-        }
+    suspend fun strafeRight(inches: Double, maxPower: Double) {
+        resetMotorEncoders()
 
-        while (motors.any { it.isBusy }) yield()
+        do {
+            val delta = inches - xDistance
+
+            val drivePower = (delta * STRAFING_P_GAIN).coerceIn(-maxPower, maxPower)
+
+            controlMotors(drivePower, 0.0, 0.0)
+
+            yield()
+        } while (delta.absoluteValue > 0.3)
 
         motors.forEach { it.power = 0.0 }
     }
 
-    private val heading: Double
-        get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+    private fun resetMotorEncoders() {
+        for (motor in motors) with(motor) {
+            mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
+    }
 
-    private fun wrapAngle(n: Double) = (n + 540.0).mod(360.0) - 180.0
+    private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+
+    private val xDistance
+        get() = motors
+            .map { it.currentPosition }
+            .zip(listOf(1, -1, -1, 1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+
+    private val yDistance
+        get() = motors
+            .map { it.currentPosition }
+            .zip(listOf(1, 1, 1, 1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+
+    private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
 
     /**
      * Turns to an angle in degrees.
      * @param degrees Angle to turn in degrees.
      */
-    suspend fun turnToAngle(degrees: Double, power: Double) {
-        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
+    suspend fun turnToAngle(degrees: Double, maxPower: Double) {
+        resetMotorEncoders()
 
         do {
-            val delta = wrapAngle(heading - degrees)
+            val delta = wrapAngle(degrees - heading)
 
-            applyMotors(delta * power * 0.02, Signs.VSplit) {
-                this.power = it
-            }
+            val turnPower = (delta * TURNING_P_GAIN).coerceIn(-maxPower, maxPower)
+
+            // if we need to turn left the error will be positive bc of coordinate system
+            // so invert the turn power
+            controlMotors(0.0, 0.0, -turnPower)
 
             yield()
-        } while (delta.absoluteValue > 4)
+        } while (delta.absoluteValue > 2)
 
         motors.forEach { it.power = 0.0 }
     }
