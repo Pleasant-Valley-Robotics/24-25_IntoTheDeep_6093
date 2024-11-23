@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import org.threeten.bp.Duration
+import org.firstinspires.ftc.teamcode.systems.Lift
 
 @Autonomous(name = "TestAuto")
 class TestAuto : LinearOpMode() {
@@ -16,6 +16,9 @@ class TestAuto : LinearOpMode() {
         telemetry.status("Initializing")
 
         val drivebase = Drivebase(hardwareMap)
+        val lift = Lift(hardwareMap)
+
+        lift.resetLift()
 
         telemetry.status("Initialized")
 
@@ -23,48 +26,50 @@ class TestAuto : LinearOpMode() {
 
         runBlocking {
             val driving = launch {
-                val driveSpeed = 0.8
-                val sideSpeed = 0.8
-                val turnSpeed = 0.8
+                val driveSpeed = 0.3
+                val sideSpeed = 0.3
+                val turnSpeed = 0.5
 
-                with(drivebase) {
-                    strafeRight(4.0, sideSpeed)
-                    turnToAngle(-15.0, turnSpeed)
+                drivebase.strafeRight(3.0, sideSpeed)
+                drivebase.driveForward(24.0, driveSpeed)
+                drivebase.driveForward(-22.0, driveSpeed)
 
-                    driveForward(18.0, driveSpeed)
-                    turnToAngle(45.0, turnSpeed)
-                    driveForward(5.0, driveSpeed)
+                drivebase.turnToAngle(90.0, turnSpeed)
+                drivebase.driveForward(-45.0, driveSpeed)
 
-                    driveForward(-24.0, driveSpeed)
-                    turnToAngle(90.0, turnSpeed)
-                    driveForward(-32.0, driveSpeed)
+                delay(100)
 
-                    delay(100)
+                drivebase.strafeRight(5.0, sideSpeed)
+                drivebase.turnToAngle(75.0, turnSpeed)
+                drivebase.driveForward(46.0, driveSpeed)
 
-                    strafeRight(10.0, sideSpeed)
-                    turnToAngle(75.0, turnSpeed)
-                    driveForward(49.0, driveSpeed)
+                delay(100)
 
-                    delay(100)
+                drivebase.turnToAngle(75.0, turnSpeed)
+                drivebase.driveForward(-43.0, driveSpeed)
 
-                    turnToAngle(75.0, turnSpeed)
-                    driveForward(-46.0, driveSpeed)
+                delay(100)
 
-                    delay(100)
+                drivebase.strafeRight(10.0, sideSpeed)
 
-                    strafeRight(17.0, sideSpeed)
+                drivebase.turnToAngle(90.0, turnSpeed)
+                drivebase.driveForward(40.0, driveSpeed)
 
-                    turnToAngle(90.0, turnSpeed)
-                    driveForward(50.0, driveSpeed)
+                drivebase.turnToAngle(90.0, turnSpeed)
 
-                    turnToAngle(90.0, turnSpeed)
-                    driveForward(-50.0, driveSpeed)
+                // facing towards net zone at wall right now
 
-                    delay(200)
+                drivebase.driveForward(-48.0, driveSpeed)
+                drivebase.turnToAngle(0.0, turnSpeed)
 
-                    // drive until at the wall
-                    driveForward(42.0, driveSpeed)
-                }
+                lift.moveLiftTo(10.0)
+//                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+
+                drivebase.driveForward(-35.0, driveSpeed)
+                drivebase.driveForward(-3.0, 0.1)
+
+//                    lift.moveLiftTo(0.0)
+
             }
 
             while (driving.isActive && opModeIsActive()) {
