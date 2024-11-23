@@ -22,6 +22,12 @@ object DriveConstants {
 
     const val ENCODER_PER_INCH = TICKS_PER_REV / (WHEEL_DIAMETER * PI)
     const val STRAFING_CORRECTION = 1.1
+
+    // 1 inch of error should be 0.2 power
+    const val DRIVING_P_GAIN = 0.2 / 1.0
+    const val STRAFING_P_GAIN = 0.2 / 1.0
+    // 20 degrees of error should be 0.1 power
+    const val TURNING_P_GAIN = 0.1 / 15.0
 }
 
 object LiftConstants {
@@ -35,7 +41,8 @@ object LiftConstants {
     const val MAX_LIFT_HEIGHT_INCH = 15.0
 }
 
-object PrototypeConstants {
-    const val MAX_LIFT_HEIGHT = 0.3409
+object ExtenderConstants {
+    const val ENCODER_PER_INCH = LiftConstants.ENCODER_PER_INCH
+    const val MAX_EXTENSION_INCH = 19.0
 }
 
