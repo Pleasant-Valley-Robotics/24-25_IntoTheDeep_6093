@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.systems.Spintake
 
 @Autonomous(name = "TestAuto")
 class TestAuto : LinearOpMode() {
@@ -17,6 +18,7 @@ class TestAuto : LinearOpMode() {
 
         val drivebase = Drivebase(hardwareMap)
         val lift = Lift(hardwareMap)
+        Spintake(hardwareMap)
 
         lift.resetLift()
 
@@ -59,16 +61,17 @@ class TestAuto : LinearOpMode() {
 
                 // facing towards net zone at wall right now
 
-                drivebase.driveForward(-48.0, driveSpeed)
+                drivebase.driveForward(-40.0, driveSpeed)
                 drivebase.turnToAngle(0.0, turnSpeed)
 
-                lift.moveLiftTo(10.0)
+//                lift.moveLiftTo(10.0)
 //                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
 
-                drivebase.driveForward(-35.0, driveSpeed)
-                drivebase.driveForward(-3.0, 0.1)
+                drivebase.driveForward(-31.0, driveSpeed)
+                delay(100)
+//                drivebase.driveForward(-2.0, 0.1)
 
-//                    lift.moveLiftTo(0.0)
+                lift.moveLiftTo(9.2)
 
             }
 

@@ -51,7 +51,7 @@ class Lift(hardwareMap: HardwareMap) {
      */
     suspend fun moveLiftTo(inches: Double) {
         val threshold = 1.0
-        val power = 0.8
+        val power = 0.5
 
         do {
             val error = inches - liftHeight
