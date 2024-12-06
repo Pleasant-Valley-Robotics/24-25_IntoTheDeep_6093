@@ -44,6 +44,7 @@ object LiftConstants {
 
     const val ENCODER_PER_INCH = TICKS_PER_REV / (PITCH_DIAMETER * PI)
     const val MAX_LIFT_HEIGHT_INCH = 15.0
+    const val MIN_LIFT_HEIGHT_INCH = 0.5
 }
 
 object ExtenderConstants {
