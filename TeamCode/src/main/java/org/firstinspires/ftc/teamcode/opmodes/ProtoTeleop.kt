@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import org.firstinspires.ftc.teamcode.systems.Pivot
 
 @TeleOp(name = "ProtoTeleOP")
 class ProtoTeleop : LinearOpMode() {
@@ -17,7 +16,7 @@ class ProtoTeleop : LinearOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
         val spintake = Spintake(hardwareMap)
-        val pivot = Pivot(hardwareMap)
+//        val pivot = Pivot(hardwareMap)
 
         telemetry.status("initialized")
         waitForStart()
@@ -54,7 +53,7 @@ class ProtoTeleop : LinearOpMode() {
 
                     val pivotPos = gamepad2.left_stick_y.toDouble()
                     telemetry.addData("Pivotttt", pivotPos)
-                    pivot.runToAngle(pivotPos)
+//                    pivot.runToAngle(pivotPos)
 
                 }
             }
@@ -62,7 +61,7 @@ class ProtoTeleop : LinearOpMode() {
 
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
-                pivot.addTelemetry(telemetry)
+//                pivot.addTelemetry(telemetry)
                 telemetry.status("running")
 
                 yield()
