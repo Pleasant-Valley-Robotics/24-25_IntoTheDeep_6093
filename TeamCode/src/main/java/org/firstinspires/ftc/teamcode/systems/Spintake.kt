@@ -7,26 +7,27 @@ import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 
 class Spintake(hardwareMap: HardwareMap) {
-    private val intakeServo = hardwareMap.crservo.get("Intake")
-    private val pivotServo = hardwareMap.servo.get("Pivot").apply {
-        this.position = 0.0
+    private val clawLeft = hardwareMap.crservo.get("ClawLeft")
+    private val clawRight = hardwareMap.crservo.get("ClawRight")
+    private val pivotServo = hardwareMap.servo.get("ClawPivot").apply {
+        this.position = PIVOT_UP_POS
     }
 
     fun pivotTo(down: Boolean) {
         pivotServo.position = if (down) PIVOT_DOWN_POS else PIVOT_UP_POS
     }
 
-    fun theSuckAction(suckIn: Boolean, spitOut: Boolean) {
-        intakeServo.power = when {
-            suckIn -> 1.0
-            spitOut -> -1.0
+    fun controlIntake(suckIn: Boolean, spitOut: Boolean) {
+        val power = when {
+            suckIn && spitOut -> 0.0
+            suckIn -> -1.0
+            spitOut -> 1.0
             else -> 0.0
         }
-    }
 
-    private val intakeDirection = intakeServo.power
-
-    fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("Intake Power", intakeDirection)
+        // positive clawLeft out
+        // negative clawRight out
+        clawLeft.power = power
+        clawRight.power = -power
     }
 }

@@ -38,20 +38,27 @@ class MainTeleop : LinearOpMode() {
                     val xInput = gamepad1.left_stick_x.toDouble()
                     val yInput = -gamepad1.left_stick_y.toDouble()
                     val turnInput = gamepad1.right_stick_x.toDouble()
-                    drivebase.controlMotors(xInput, yInput, turnInput)
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
-                    lift.setLiftPowerSafe(liftInput, gamepad2.b)
-
+                    val liftOverride = gamepad2.square
                     val extendInput = -gamepad2.right_stick_y.toDouble()
-                    extender.extendSafe(extendInput)
 
-                    spintake.pivotTo(gamepad2.cross)
+                    val spintakeDown = gamepad2.cross
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
-                    spintake.theSuckAction(spinIn, spinOut)
 
-                    flipper.pivotTo(gamepad2.circle)
+                    val flipperOut = gamepad2.circle
+
+                    drivebase.controlMotors(xInput, yInput, turnInput)
+
+                    lift.setLiftPowerSafe(liftInput, liftOverride)
+
+                    extender.extendSafe(extendInput)
+
+                    spintake.pivotTo(spintakeDown)
+                    spintake.controlIntake(spinIn, spinOut)
+
+                    flipper.pivotTo(flipperOut)
                 }
             }
 
@@ -60,7 +67,6 @@ class MainTeleop : LinearOpMode() {
                 drivebase.addTelemetry(telemetry)
                 lift.addTelemetry(telemetry)
                 extender.addTelemetry(telemetry)
-                spintake.addTelemetry(telemetry)
 
                 telemetry.status("running")
 

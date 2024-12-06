@@ -44,7 +44,7 @@ class ProtoTeleop : LinearOpMode() {
                     val insideMyMouth = gamepad2.a
                     val disgustingSpecimen = gamepad2.b
 
-                    spintake.theSuckAction(insideMyMouth, disgustingSpecimen)
+                    spintake.controlIntake(insideMyMouth, disgustingSpecimen)
                 }
             }
 
@@ -62,7 +62,6 @@ class ProtoTeleop : LinearOpMode() {
 
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
-                spintake.addTelemetry(telemetry)
                 pivot.addTelemetry(telemetry)
                 telemetry.status("running")
 

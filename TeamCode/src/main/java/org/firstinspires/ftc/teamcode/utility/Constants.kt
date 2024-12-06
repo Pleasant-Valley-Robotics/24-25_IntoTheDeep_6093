@@ -48,8 +48,8 @@ object ExtenderConstants {
 
 object SpintakeConstants {
     // positive is down
-    const val PIVOT_DOWN_POS = 0.0
-    const val PIVOT_UP_POS = 1.0
+    const val PIVOT_UP_POS = 0.0
+    const val PIVOT_DOWN_POS = 1.0
 }
 
 object FlipperConstants {

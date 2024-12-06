@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.utility.FlipperConstants.FLIPPER_OUT_POS
 
 class Flipper(hardwareMap: HardwareMap) {
     private val flipperServo = hardwareMap.servo.get("BucketPivot").apply {
-        position = 1.0
+        position = FLIPPER_IN_POS
     }
 
     fun pivotTo(out: Boolean) {
