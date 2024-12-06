@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION_INCH
 
 class Extender(hardwareMap: HardwareMap) {
-    val extendMotor = hardwareMap.dcMotor.get("ExtendMotor")!!.apply {
+    private val extendMotor = hardwareMap.dcMotor.get("ExtendMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
         this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER

@@ -12,10 +12,8 @@ class Spintake(hardwareMap: HardwareMap) {
         this.position = 0.0
     }
 
-    private var pivotDown = false
-
     fun pivotTo(down: Boolean) {
-        pivotServo.position = if (pivotDown) PIVOT_DOWN_POS else PIVOT_UP_POS
+        pivotServo.position = if (down) PIVOT_DOWN_POS else PIVOT_UP_POS
     }
 
     fun theSuckAction(suckIn: Boolean, spitOut: Boolean) {

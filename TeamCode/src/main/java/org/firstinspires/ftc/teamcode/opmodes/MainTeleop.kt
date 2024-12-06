@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
+import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants
@@ -23,6 +24,7 @@ class MainTeleop : LinearOpMode() {
         val lift = Lift(hardwareMap)
         val extender = Extender(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val flipper = Flipper(hardwareMap)
 
         telemetry.status("initialized")
 
@@ -30,8 +32,6 @@ class MainTeleop : LinearOpMode() {
 
         runBlocking {
             val driving = launch {
-                var pivotInputActive = false
-
                 while (isActive) {
                     yield()
 
@@ -50,6 +50,8 @@ class MainTeleop : LinearOpMode() {
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
                     spintake.theSuckAction(spinIn, spinOut)
+
+                    flipper.pivotTo(gamepad2.circle)
                 }
             }
 
@@ -69,7 +71,7 @@ class MainTeleop : LinearOpMode() {
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
             lift.setLiftPowerSafe(0.0, true)
-            extender.extendMotor.power = 0.0
+            extender.extendSafe(0.0)
         }
 
     }
