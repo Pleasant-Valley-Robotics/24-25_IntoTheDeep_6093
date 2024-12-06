@@ -42,33 +42,18 @@ class MainTeleop : LinearOpMode() {
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
-                    val extendInput = -gamepad2.right_stick_y.toDouble()
+                    lift.setLiftPowerSafe(liftInput, gamepad2.b)
 
-                    val inLiftLimitUpper = lift.liftHeight <= LiftConstants.MAX_LIFT_HEIGHT_INCH
-                    val inLiftLimitLower = lift.liftHeight >= 0.5
+                    val extendInput = -gamepad2.right_stick_y.toDouble()
 
                     val inExtLimitUpper =
                         extender.extendPosition <= ExtenderConstants.MAX_EXTENSION_INCH
                     val inExtLimitLower = extender.extendPosition >= 0.7
 
-                    lift.liftPower =
-                        if (overriding) liftInput
-                        else if (liftInput > 0 && inLiftLimitUpper || liftInput < 0 && inLiftLimitLower) liftInput
-                        else 0.0
 
                     extender.extendMotor.power =
                         if (extendInput > 0 && inExtLimitUpper || extendInput < 0 && inExtLimitLower) extendInput
                         else 0.0
-
-
-                    if (!gamepad2.b && overriding) {
-                        lift.resetLift()
-                    }
-
-
-                    // b override limits
-                    overriding = gamepad2.b
-
 
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
@@ -95,7 +80,7 @@ class MainTeleop : LinearOpMode() {
             driving.cancelAndJoin()
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
-            lift.liftPower = 0.0
+            lift.setLiftPowerSafe(0.0, true)
             extender.extendMotor.power = 0.0
         }
 

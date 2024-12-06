@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH
@@ -29,7 +30,7 @@ class Lift(hardwareMap: HardwareMap) {
 
     val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
 
-    var liftPower: Double
+    private var liftPower: Double
         get() = (leftLiftMotor.power + rightLiftMotor.power) / 2
         set(value) {
             leftLiftMotor.power = value
@@ -41,6 +42,24 @@ class Lift(hardwareMap: HardwareMap) {
         leftLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         rightLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         rightLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+    }
+
+    private var overriding = false
+
+    fun setLiftPowerSafe(power: Double, override: Boolean) {
+        val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_INCH
+        val inLiftLimitLower = liftHeight >= 0.5
+
+        liftPower =
+            if (override) power
+            else if (power > 0 && inLiftLimitUpper || power < 0 && inLiftLimitLower) power
+            else 0.0
+
+        if (overriding && !override) {
+            resetLift()
+        }
+
+        overriding = override
     }
 
 
