@@ -46,3 +46,13 @@ object ExtenderConstants {
     const val MAX_EXTENSION_INCH = 19.0
 }
 
+object SpintakeConstants {
+    // positive is down
+    const val PIVOT_DOWN_POS = 0.0
+    const val PIVOT_UP_POS = 1.0
+}
+
+object FlipperConstants {
+    const val FLIPPER_DOWN_POS = 1.0
+    const val FLIPPER_OUT_POS = 0.4
+}

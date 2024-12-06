@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -30,7 +31,6 @@ class MainTeleop : LinearOpMode() {
         runBlocking {
             val driving = launch {
                 var pivotInputActive = false
-                var overriding = false
 
                 while (isActive) {
                     yield()
@@ -38,30 +38,18 @@ class MainTeleop : LinearOpMode() {
                     val xInput = gamepad1.left_stick_x.toDouble()
                     val yInput = -gamepad1.left_stick_y.toDouble()
                     val turnInput = gamepad1.right_stick_x.toDouble()
-
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
                     lift.setLiftPowerSafe(liftInput, gamepad2.b)
 
                     val extendInput = -gamepad2.right_stick_y.toDouble()
+                    extender.extendSafe(extendInput)
 
-                    val inExtLimitUpper =
-                        extender.extendPosition <= ExtenderConstants.MAX_EXTENSION_INCH
-                    val inExtLimitLower = extender.extendPosition >= 0.7
-
-
-                    extender.extendMotor.power =
-                        if (extendInput > 0 && inExtLimitUpper || extendInput < 0 && inExtLimitLower) extendInput
-                        else 0.0
-
+                    spintake.pivotTo(gamepad2.cross)
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
-
                     spintake.theSuckAction(spinIn, spinOut)
-
-                    if (gamepad2.a && !pivotInputActive) spintake.switchWrist()
-                    pivotInputActive = gamepad2.a
                 }
             }
 

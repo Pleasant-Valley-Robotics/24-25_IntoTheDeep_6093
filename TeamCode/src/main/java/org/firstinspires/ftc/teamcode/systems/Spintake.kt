@@ -2,19 +2,20 @@ package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 
 class Spintake(hardwareMap: HardwareMap) {
     private val intakeServo = hardwareMap.crservo.get("Intake")
     private val pivotServo = hardwareMap.servo.get("Pivot").apply {
-        this.position = -1.0
+        this.position = 0.0
     }
 
     private var pivotDown = false
 
-    fun switchWrist() {
-        pivotDown = !pivotDown
-        // positive is down
-        pivotServo.position = if (pivotDown) 1.0 else -1.0
+    fun pivotTo(down: Boolean) {
+        pivotServo.position = if (pivotDown) PIVOT_DOWN_POS else PIVOT_UP_POS
     }
 
     fun theSuckAction(suckIn: Boolean, spitOut: Boolean) {
