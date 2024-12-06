@@ -32,7 +32,7 @@ class ProtoTeleop : LinearOpMode() {
                     val yInput = -gamepad1.left_stick_y.toDouble()
                     val turnInput = gamepad1.right_stick_x.toDouble()
 
-                    drivebase.controlMotors(xInput, yInput, turnInput)
+                    drivebase.controlMotors(yInput, xInput, turnInput)
                 }
             }
 

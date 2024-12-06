@@ -12,9 +12,6 @@ import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
-import org.firstinspires.ftc.teamcode.utility.ExtenderConstants
-import org.firstinspires.ftc.teamcode.utility.LiftConstants
-import org.firstinspires.ftc.teamcode.utility.SpintakeConstants
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -35,9 +32,10 @@ class MainTeleop : LinearOpMode() {
                 while (isActive) {
                     yield()
 
-                    val xInput = gamepad1.left_stick_x.toDouble()
-                    val yInput = -gamepad1.left_stick_y.toDouble()
-                    val turnInput = gamepad1.right_stick_x.toDouble()
+                    // the negations are because the robot uses a different coordinate system.
+                    val xInput = -gamepad1.left_stick_y.toDouble()
+                    val yInput = -gamepad1.left_stick_x.toDouble()
+                    val turnInput = -gamepad1.right_stick_x.toDouble()
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
                     val liftOverride = gamepad2.square

@@ -32,7 +32,7 @@ class TestAuto : LinearOpMode() {
                 val sideSpeed = 0.3
                 val turnSpeed = 0.5
 
-                drivebase.strafeRight(3.0, sideSpeed)
+                drivebase.strafeLeft(-3.0, sideSpeed)
                 drivebase.driveForward(24.0, driveSpeed)
                 drivebase.driveForward(-22.0, driveSpeed)
 
@@ -41,7 +41,7 @@ class TestAuto : LinearOpMode() {
 
                 delay(100)
 
-                drivebase.strafeRight(5.0, sideSpeed)
+                drivebase.strafeLeft(-5.0, sideSpeed)
                 drivebase.turnToAngle(75.0, turnSpeed)
                 drivebase.driveForward(46.0, driveSpeed)
 
@@ -52,7 +52,7 @@ class TestAuto : LinearOpMode() {
 
                 delay(100)
 
-                drivebase.strafeRight(10.0, sideSpeed)
+                drivebase.strafeLeft(-10.0, sideSpeed)
 
                 drivebase.turnToAngle(90.0, turnSpeed)
                 drivebase.driveForward(40.0, driveSpeed)

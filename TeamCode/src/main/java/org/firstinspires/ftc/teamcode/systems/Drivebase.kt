@@ -12,11 +12,19 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG
 import org.firstinspires.ftc.teamcode.utility.maxOf
 import kotlin.math.absoluteValue
 
+/**
+ * drivebase that contains all the code to drive our robot around.
+ *
+ * [uses standard coordinate frame](https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html)
+ * which means positive x is forward, positive y is left, and positive yaw is left.
+ */
 class Drivebase(hardwareMap: HardwareMap) {
     private val fldrive = hardwareMap.dcMotor.get("FLDrive")!!
     private val frdrive = hardwareMap.dcMotor.get("FRDrive")!!
@@ -27,8 +35,8 @@ class Drivebase(hardwareMap: HardwareMap) {
         this.initialize(
             IMU.Parameters(
                 RevHubOrientationOnRobot(
-                    LogoFacingDirection.LEFT,
-                    UsbFacingDirection.UP,
+                    LogoFacingDirection.UP,
+                    UsbFacingDirection.LEFT,
                 )
             )
         )
@@ -38,7 +46,7 @@ class Drivebase(hardwareMap: HardwareMap) {
 
     init {
         motors.forEach { it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
-        motors.forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
+        resetMotorEncoders()
 
         fldrive.direction = DcMotorSimple.Direction.REVERSE
         frdrive.direction = DcMotorSimple.Direction.FORWARD
@@ -48,21 +56,21 @@ class Drivebase(hardwareMap: HardwareMap) {
         imu.resetYaw()
     }
 
-
     /**
      * function to be used in teleop, controls the motors
      *
-     * @param xInput the x (strafe) input, left is negative. `[-1, 1]`
-     * @param yInput the y (drive) input, forward is positive. `[-1, 1]`
-     * @param turnInput the turning input, clockwise is positive. `[-1, 1]`
+     * [this link](https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html)
+     * is probably useful if you don't know whats going on here.
+     *
+     * @param xInput the x (drive) input, forward is positive. `[-1, 1]`
+     * @param yInput the y (strafe) input, left is positive. `[-1, 1]`
+     * @param turnInput the turning input, ccw is positive. `[-1, 1]`
      */
     fun controlMotors(xInput: Double, yInput: Double, turnInput: Double) {
-
-        // https://gm0.org/en/latest/   docs/software/tutorials/mecanum-drive.html
-        val flpower = yInput + xInput + turnInput
-        val frpower = yInput - xInput - turnInput
-        val blpower = yInput - xInput + turnInput
-        val brpower = yInput + xInput - turnInput
+        val flpower = xInput - yInput - turnInput
+        val frpower = xInput + yInput + turnInput
+        val blpower = xInput + yInput - turnInput
+        val brpower = xInput - yInput + turnInput
 
         val maxPower = maxOf(1.0, flpower, frpower, blpower, brpower)
 
@@ -72,44 +80,41 @@ class Drivebase(hardwareMap: HardwareMap) {
         brdrive.power = brpower / maxPower
     }
 
-    /**
-     * convenience function to work with multiple motors at once
-     *
-     * @param value the value to apply to the motors
-     * @param signs the sign pattern to use
-     * @see Signs
-     */
-    private inline fun <T> applyMotors(
-        value: Double,
-        signs: Signs,
-        callback: DcMotor.(Double) -> T
-    ): List<T> = signs.applySigns(value)
-        .zip(motors)
-        .map { callback(it.second, it.first) }
 
     /**
-     * a sign pattern is when you address different wheels with different signs
-     * on a value, such as wanting the front motors to be positive and the back
-     * motors to be negative.
-     *
-     * these are the different sign patterns that you can address motors with.
-     * note that in each of them, the front left motor will be kept the same.
+     * resets motor encoders. note that this also sets power to zero and
+     * freezes the motors for a split second
      */
-    enum class Signs(private val signs: List<Byte>) {
-        /** normal motor pattern, keeps all signs the same */
-        Normal(listOf(1, 1, 1, 1)),
-
-        /** left side positive, right side negative */
-        VSplit(listOf(1, -1, 1, -1)),
-
-        /** front side positive, back side negative */
-        HSplit(listOf(1, 1, -1, -1)),
-
-        /** front left and back right positive, others negative */
-        XSplit(listOf(1, -1, -1, 1));
-
-        fun applySigns(value: Double) = this.signs.map { it * value }
+    private fun resetMotorEncoders() {
+        for (motor in motors) with(motor) {
+            mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
     }
+
+    /** heading in degrees */
+    private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+
+    /** distance sideways in inches read from wheel encoders */
+    private val yDistance
+        get() = motors
+            .map { it.currentPosition }
+            // notice how it is the same as the yInput row in mecanum drive
+            .zip(listOf(-1, 1, 1, -1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+
+    /** distance forwards in inches read from wheel encoders */
+    private val xDistance
+        get() = motors
+            .map { it.currentPosition }
+            .zip(listOf(1, 1, 1, 1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+
+    /**
+     * wraps an angle in degrees to the range `[-180, 180]`
+     * @param n angle to wrap
+     */
+    private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
 
     /**
      * drives the robot forward
@@ -121,14 +126,14 @@ class Drivebase(hardwareMap: HardwareMap) {
         resetMotorEncoders()
 
         do {
-            val delta = inches - yDistance
+            val delta = inches - xDistance
 
             val drivePower = (delta * DRIVING_P_GAIN).coerceIn(-maxPower, maxPower)
 
-            controlMotors(0.0, drivePower, 0.0)
+            controlMotors(drivePower, 0.0, 0.0)
 
             yield()
-        } while (delta.absoluteValue > 0.3)
+        } while (delta.absoluteValue > MOVEMENT_TOL_INCH)
 
         motors.forEach { it.power = 0.0 }
     }
@@ -136,51 +141,31 @@ class Drivebase(hardwareMap: HardwareMap) {
     /**
      * strafes (left right movement)
      *
-     * @param inches how many inches to strafe, positive is right
+     * @param inches how many inches to strafe, positive is left
      * @param maxPower how fast to strafe. `(0, 1]`
      */
-    suspend fun strafeRight(inches: Double, maxPower: Double) {
+    suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
         do {
-            val delta = inches - xDistance
+            val delta = inches - yDistance
 
             val drivePower = (delta * STRAFING_P_GAIN).coerceIn(-maxPower, maxPower)
 
-            controlMotors(drivePower, 0.0, 0.0)
+            controlMotors(0.0, drivePower, 0.0)
 
             yield()
-        } while (delta.absoluteValue > 0.3)
+        } while (delta.absoluteValue > MOVEMENT_TOL_INCH)
 
         motors.forEach { it.power = 0.0 }
     }
 
-    private fun resetMotorEncoders() {
-        for (motor in motors) with(motor) {
-            mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            mode = DcMotor.RunMode.RUN_USING_ENCODER
-        }
-    }
-
-    private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
-
-    private val xDistance
-        get() = motors
-            .map { it.currentPosition }
-            .zip(listOf(1, -1, -1, 1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
-
-    private val yDistance
-        get() = motors
-            .map { it.currentPosition }
-            .zip(listOf(1, 1, 1, 1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
-
-    private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
-
     /**
-     * Turns to an angle in degrees.
-     * @param degrees Angle to turn in degrees.
+     * turns to an angle in degrees. note that zero degrees is the front of our robot,
+     * and turning left is positive from there.
+     *
+     * @param degrees angle to turn in degrees.
+     * @param maxPower maximum power to turn with. `(0, 1]`
      */
     suspend fun turnToAngle(degrees: Double, maxPower: Double) {
         resetMotorEncoders()
@@ -190,26 +175,25 @@ class Drivebase(hardwareMap: HardwareMap) {
 
             val turnPower = (delta * TURNING_P_GAIN).coerceIn(-maxPower, maxPower)
 
-            // if we need to turn left the error will be positive bc of coordinate system
-            // so invert the turn power
-            controlMotors(0.0, 0.0, -turnPower)
+            controlMotors(0.0, 0.0, turnPower)
 
             yield()
-        } while (delta.absoluteValue > 2)
+        } while (delta.absoluteValue > TURNING_TOL_DEG)
 
         motors.forEach { it.power = 0.0 }
     }
 
     /**
-     * adds all this drivebase's data to a telemetry object
+     * adds wheel positions and heading to telemetry
      *
      * @param telemetry the telemetry object to add data to
      */
     fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("fldrive pos inch", fldrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("frdrive pos inch", frdrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("bldrive pos inch", bldrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("brdrive pos inch", brdrive.currentPosition / ENCODER_PER_INCH)
-        telemetry.addData("heading deg", heading)
+        val format = "%8.2f"
+        telemetry.addData("fldrive pos inch", format, fldrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("frdrive pos inch", format, frdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("bldrive pos inch", format, bldrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("brdrive pos inch", format, brdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("heading deg", format, heading)
     }
 }

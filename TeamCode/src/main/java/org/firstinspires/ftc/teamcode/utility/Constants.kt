@@ -26,6 +26,11 @@ object DriveConstants {
     // 1 inch of error should be 0.2 power
     const val DRIVING_P_GAIN = 0.2 / 1.0
     const val STRAFING_P_GAIN = 0.2 / 1.0
+
+    const val MOVEMENT_TOL_INCH = 0.3
+
+    const val TURNING_TOL_DEG = 2.0
+
     // 20 degrees of error should be 0.1 power
     const val TURNING_P_GAIN = 0.1 / 15.0
 }

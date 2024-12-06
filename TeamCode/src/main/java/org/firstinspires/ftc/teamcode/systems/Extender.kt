@@ -7,12 +7,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION_INCH
 
+/** that thing the spintake is mounted to so we can reach into submersible */
 class Extender(hardwareMap: HardwareMap) {
     private val extendMotor = hardwareMap.dcMotor.get("ExtendMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
-        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        resetEncoder()
+    }
+
+    private fun resetEncoder() {
+        extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private val extendPosition get() = extendMotor.currentPosition / ENCODER_PER_INCH
