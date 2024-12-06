@@ -49,6 +49,7 @@ object LiftConstants {
 object ExtenderConstants {
     const val ENCODER_PER_INCH = LiftConstants.ENCODER_PER_INCH
     const val MAX_EXTENSION_INCH = 19.0
+    const val MIN_EXTENSION_INCH = 0.7
 }
 
 object SpintakeConstants {
