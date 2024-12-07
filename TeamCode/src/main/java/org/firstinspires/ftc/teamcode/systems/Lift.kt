@@ -24,11 +24,12 @@ class Lift(hardwareMap: HardwareMap) {
     }
 
     private val leftLiftHeight get() = leftLiftMotor.currentPosition / ENCODER_PER_INCH
-
     private val rightLiftHeight get() = rightLiftMotor.currentPosition / ENCODER_PER_INCH
 
     /** gets the average lift height in inches */
     private val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
+
+    val liftDown get() = liftHeight <= MIN_LIFT_HEIGHT_INCH
 
     /** the power of both motors controlled and read at the same time */
     private var liftPower: Double

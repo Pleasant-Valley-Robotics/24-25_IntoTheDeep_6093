@@ -13,15 +13,11 @@ class Extender(hardwareMap: HardwareMap) {
     private val extendMotor = hardwareMap.dcMotor.get("ExtendMotor")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
-        resetEncoder()
+        this.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
-    private fun resetEncoder() {
-        extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-    }
-
-    private val extendPosition get() = extendMotor.currentPosition / ENCODER_PER_INCH
+    val extendPosition get() = extendMotor.currentPosition / ENCODER_PER_INCH
 
     /**
      * allows extension within the limits defined in the code.

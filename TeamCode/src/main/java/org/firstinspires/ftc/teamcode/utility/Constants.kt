@@ -57,9 +57,11 @@ object SpintakeConstants {
     // positive is down
     const val PIVOT_UP_POS = 0.0
     const val PIVOT_DOWN_POS = 1.0
+    const val SERVO_VEL_ENC_S = (PIVOT_DOWN_POS - PIVOT_UP_POS) / 1.25
 }
 
 object FlipperConstants {
     const val FLIPPER_IN_POS = 1.0
     const val FLIPPER_OUT_POS = 0.4
+    const val SERVO_VEL_ENC_S = (FLIPPER_IN_POS - FLIPPER_OUT_POS) / 0.8
 }

@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.utility.SpintakeConstants
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.SERVO_VEL_ENC_S
 
 /** thing with 2 grippy wheels that hand off to the flipper */
 class Spintake(hardwareMap: HardwareMap) {
@@ -14,13 +13,20 @@ class Spintake(hardwareMap: HardwareMap) {
         this.position = PIVOT_UP_POS
     }
 
+    private var pivotPos = PIVOT_UP_POS
+
+    val pivotDown get() = pivotPos >= PIVOT_DOWN_POS
+
     /**
      * moves the spintake down and up
      *
      * @param down if `true` then the pivot goes down. otherwise it goes up
+     * @param dt time in seconds since last call
      */
-    fun pivotTo(down: Boolean) {
+    fun pivotTo(down: Boolean, dt: Double) {
         pivotServo.position = if (down) PIVOT_DOWN_POS else PIVOT_UP_POS
+        pivotPos += SERVO_VEL_ENC_S * dt * if (down) 1 else -1
+        pivotPos = pivotPos.coerceIn(PIVOT_UP_POS, PIVOT_DOWN_POS)
     }
 
     /**
