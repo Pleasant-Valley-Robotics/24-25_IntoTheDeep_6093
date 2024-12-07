@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DODGE_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.SERVO_VEL_ENC_S
@@ -17,15 +18,26 @@ class Spintake(hardwareMap: HardwareMap) {
 
     val pivotDown get() = pivotPos >= PIVOT_DOWN_POS
 
+    enum class PivotState {
+        Up,
+        Down,
+        Dodge,
+    }
+
     /**
-     * moves the spintake down and up
+     * moves the spintake around
      *
-     * @param down if `true` then the pivot goes down. otherwise it goes up
+     * @param state what pivot should do
      * @param dt time in seconds since last call
      */
-    fun pivotTo(down: Boolean, dt: Double) {
-        pivotServo.position = if (down) PIVOT_DOWN_POS else PIVOT_UP_POS
-        pivotPos += SERVO_VEL_ENC_S * dt * if (down) 1 else -1
+    fun pivotTo(state: PivotState, dt: Double) {
+        pivotServo.position = when (state) {
+            PivotState.Up -> PIVOT_UP_POS
+            PivotState.Down -> PIVOT_DOWN_POS
+            PivotState.Dodge -> PIVOT_DODGE_POS
+        }
+
+        pivotPos += SERVO_VEL_ENC_S * dt * if (state == PivotState.Down) 1 else -1
         pivotPos = pivotPos.coerceIn(PIVOT_UP_POS, PIVOT_DOWN_POS)
     }
 

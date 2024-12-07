@@ -27,9 +27,8 @@ class Lift(hardwareMap: HardwareMap) {
     private val rightLiftHeight get() = rightLiftMotor.currentPosition / ENCODER_PER_INCH
 
     /** gets the average lift height in inches */
-    private val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
+    val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
 
-    val liftDown get() = liftHeight <= MIN_LIFT_HEIGHT_INCH
 
     /** the power of both motors controlled and read at the same time */
     private var liftPower: Double
@@ -65,10 +64,12 @@ class Lift(hardwareMap: HardwareMap) {
         val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_INCH
         val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT_INCH
 
-        liftPower =
-            if (override) power
-            else if (power > 0 && inLiftLimitUpper || power < 0 && inLiftLimitLower) power
-            else 0.0
+        liftPower = when {
+            override -> power
+            power > 0 && inLiftLimitUpper -> power
+            power < 0 && inLiftLimitLower -> power
+            else -> 0.0
+        }
 
         if (overriding && !override) {
             resetLift()

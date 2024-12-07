@@ -15,15 +15,23 @@ class Flipper(hardwareMap: HardwareMap) {
 
     val flipperIn get() = flipperPos >= FLIPPER_IN_POS
 
+    enum class FlipperState {
+        In,
+        Out
+    }
+
     /**
      * moves the flipper out or in
      *
-     * @param out if `true`, moves flipper out. otherwise, moves flipper in.
+     * @param state what to do with the flipper
      * @param dt time since last call, used for position integration
      */
-    fun pivotTo(out: Boolean, dt: Double) {
-        flipperServo.position = if (out) FLIPPER_OUT_POS else FLIPPER_IN_POS
-        flipperPos += SERVO_VEL_ENC_S * dt * if (out) -1 else 1
+    fun pivotTo(state: FlipperState, dt: Double) {
+        flipperServo.position = when (state) {
+            FlipperState.In -> FLIPPER_OUT_POS
+            FlipperState.Out -> FLIPPER_IN_POS
+        }
+        flipperPos += SERVO_VEL_ENC_S * dt * if (state == FlipperState.Out) -1 else 1
         flipperPos = flipperPos.coerceIn(FLIPPER_OUT_POS, FLIPPER_IN_POS)
     }
 }

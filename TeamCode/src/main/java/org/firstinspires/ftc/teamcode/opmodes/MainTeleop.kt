@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import kotlin.math.absoluteValue
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -43,16 +44,15 @@ class MainTeleop : LinearOpMode() {
                     val turnInput = -gamepad1.right_stick_x.toDouble()
 
                     val liftInput = -gamepad2.left_stick_y.toDouble()
-                    val liftOverride = gamepad2.square
                     val extendInput = -gamepad2.right_stick_y.toDouble()
 
                     val spintakeMoveDown = gamepad2.cross
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
-
                     val flipperMoveOut = gamepad2.circle
 
-                    val pivotOverride = gamepad2.triangle
+                    val slideOverride = gamepad2.left_bumper
+                    val pivotOverride = gamepad2.dpad_left
 
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
@@ -63,30 +63,40 @@ class MainTeleop : LinearOpMode() {
 
                         val extenderOut = extender.extendPosition > 2.0
 
-                        // "going" is false if we're already there
-                        val liftMoveDown = liftInput < 0.0
-                        val liftMoveUp = liftInput > 0.0
-                        val liftGoingDown = !lift.liftDown and liftMoveDown
+                        val liftMoving = liftInput.absoluteValue < 0.05
+                        val liftInRange = lift.liftHeight < 3.0
 
                         val flipperMoveIn = !flipperMoveOut
                         val flipperGoingIn = !flipper.flipperIn and flipperMoveIn
 
-                        val disableFlipper = lift.liftDown and flipper.flipperIn
+                        val disableFlipper = liftInRange and flipper.flipperIn
                         if (extenderOut or spintake.pivotDown) return@run false to disableFlipper
 
-                        val dodgeLiftDown = liftGoingDown and (flipperMoveIn or flipper.flipperIn)
-                        val dodgeLiftUp = liftMoveUp and flipper.flipperIn
-                        val dodgeFlipper = lift.liftDown and flipperGoingIn
+                        val dodgeLift = liftMoving and (flipperMoveIn or flipper.flipperIn)
+                        val dodgeFlipper = liftInRange and flipperGoingIn
 
-                        (dodgeLiftDown or dodgeLiftUp or dodgeFlipper) to disableFlipper
+                        (dodgeLift or dodgeFlipper) to disableFlipper
                     }
 
-                    spintake.pivotTo(down = if (dodgeSpintake) true else spintakeMoveDown, dt)
-                    flipper.pivotTo(out = if (disableFlipper) false else flipperMoveOut, dt)
+                    spintake.pivotTo(
+                        state = when {
+                            dodgeSpintake -> Spintake.PivotState.Dodge
+                            spintakeMoveDown -> Spintake.PivotState.Down
+                            else -> Spintake.PivotState.Up
+                        }, dt
+                    )
 
-                    lift.setLiftPowerSafe(liftInput, liftOverride)
+                    flipper.pivotTo(
+                        state = when {
+                            disableFlipper -> Flipper.FlipperState.In
+                            flipperMoveOut -> Flipper.FlipperState.Out
+                            else -> Flipper.FlipperState.In
+                        }, dt
+                    )
 
-                    extender.extendSafe(extendInput)
+                    lift.setLiftPowerSafe(liftInput, slideOverride)
+
+                    extender.extendSafe(extendInput, slideOverride)
 
                     spintake.controlIntake(spinIn, spinOut)
 
@@ -108,7 +118,7 @@ class MainTeleop : LinearOpMode() {
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
             lift.setLiftPowerSafe(0.0, true)
-            extender.extendSafe(0.0)
+            extender.extendSafe(0.0, true)
         }
 
     }
