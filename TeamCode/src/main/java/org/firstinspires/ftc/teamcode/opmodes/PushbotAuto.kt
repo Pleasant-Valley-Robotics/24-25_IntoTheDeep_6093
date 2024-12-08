@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Lift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
-@Autonomous(name = "TestAuto")
-class TestAuto : LinearOpMode() {
+@Autonomous(name = "PushbotAuto")
+class PushbotAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing")
 

@@ -1,0 +1,70 @@
+package org.firstinspires.ftc.teamcode.opmodes
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.systems.Flipper
+import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.LiftConstants
+
+@Autonomous(name = "LowBasketAuto")
+class LowBasketAuto : LinearOpMode() {
+    override fun runOpMode() {
+        telemetry.status("Initializing")
+
+        val drivebase = Drivebase(hardwareMap)
+        val lift = Lift(hardwareMap)
+        val flipper = Flipper(hardwareMap)
+        val spintake = Spintake(hardwareMap)
+
+        telemetry.status("Initialized")
+
+        waitForStart()
+
+        runBlocking {
+            val auto = launch {
+                val driveSpeed = 0.3
+                val sideSpeed = 0.3
+                val turnSpeed = 0.3
+
+                spintake.pivotTo(Spintake.PivotState.Dodge)
+
+                drivebase.strafeLeft(-1.0, sideSpeed)
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                drivebase.driveForward(24.0, driveSpeed)
+
+                flipper.pivotTo(Flipper.FlipperState.Out)
+                delay(1000) // give flipper time to extend
+                flipper.pivotTo(Flipper.FlipperState.In)
+                lift.moveLiftTo(8.0)
+
+                drivebase.strafeLeft(-31.0, sideSpeed)
+                drivebase.turnToAngle(0.0, turnSpeed)
+                drivebase.driveForward(-31.0, driveSpeed)
+
+                lift.moveLiftTo(9.2)
+            }
+
+            while (opModeIsActive() && auto.isActive) {
+                drivebase.addTelemetry(telemetry)
+                lift.addTelemetry(telemetry)
+
+                telemetry.status("Running")
+
+                yield()
+            }
+
+            auto.cancelAndJoin()
+
+            drivebase.controlMotors(0.0, 0.0, 0.0)
+            lift.setLiftPowerSafe(0.0, true)
+        }
+    }
+}

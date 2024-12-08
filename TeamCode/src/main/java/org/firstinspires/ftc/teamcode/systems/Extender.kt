@@ -15,7 +15,7 @@ class Extender(hardwareMap: HardwareMap) {
         this.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    fun resetExtender() {
+    private fun resetExtender() {
         extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
