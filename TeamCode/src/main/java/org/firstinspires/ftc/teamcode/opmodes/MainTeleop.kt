@@ -63,7 +63,7 @@ class MainTeleop : LinearOpMode() {
 
                         val extenderOut = extender.extendPosition > 2.0
 
-                        val liftMoving = liftInput.absoluteValue < 0.05
+                        val liftMoving = liftInput.absoluteValue > 0.05
                         val liftInRange = lift.liftHeight < 3.0
 
                         val flipperMoveIn = !flipperMoveOut
@@ -72,7 +72,7 @@ class MainTeleop : LinearOpMode() {
                         val disableFlipper = liftInRange and flipper.flipperIn
                         if (extenderOut or spintake.pivotDown) return@run false to disableFlipper
 
-                        val dodgeLift = liftMoving and (flipperMoveIn or flipper.flipperIn)
+                        val dodgeLift = liftInRange and liftMoving and (flipperMoveIn or flipper.flipperIn)
                         val dodgeFlipper = liftInRange and flipperGoingIn
 
                         (dodgeLift or dodgeFlipper) to disableFlipper

@@ -26,10 +26,10 @@ class Flipper(hardwareMap: HardwareMap) {
      * @param state what to do with the flipper
      * @param dt time since last call, used for position integration
      */
-    fun pivotTo(state: FlipperState, dt: Double) {
+    fun pivotTo(state: FlipperState, dt: Double = 0.0) {
         flipperServo.position = when (state) {
-            FlipperState.In -> FLIPPER_OUT_POS
-            FlipperState.Out -> FLIPPER_IN_POS
+            FlipperState.In -> FLIPPER_IN_POS
+            FlipperState.Out -> FLIPPER_OUT_POS
         }
         flipperPos += SERVO_VEL_ENC_S * dt * if (state == FlipperState.Out) -1 else 1
         flipperPos = flipperPos.coerceIn(FLIPPER_OUT_POS, FLIPPER_IN_POS)

@@ -30,7 +30,7 @@ class Spintake(hardwareMap: HardwareMap) {
      * @param state what pivot should do
      * @param dt time in seconds since last call
      */
-    fun pivotTo(state: PivotState, dt: Double) {
+    fun pivotTo(state: PivotState, dt: Double = 0.0) {
         pivotServo.position = when (state) {
             PivotState.Up -> PIVOT_UP_POS
             PivotState.Down -> PIVOT_DOWN_POS
