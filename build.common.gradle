@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion 34
 
     signingConfigs {
         release {
@@ -58,7 +58,9 @@ android {
          * We keep the versionCode and versionName of robot controller applications in sync with
          * the master information published in the AndroidManifest.xml file of the FtcRobotController
          * module. This helps avoid confusion that might arise from having multiple versions of
-         * a robot controller app simultaneously installed on a robot controller device.
+         * a robot controller app sampleAuto: LinearOpMode() {
+    override fun runOpMode() {
+        TODO("Not yet implemented")imultaneously installed on a robot controller device.
          *
          * We accomplish this with the help of a funky little Groovy script that maintains that
          * correspondence automatically.
