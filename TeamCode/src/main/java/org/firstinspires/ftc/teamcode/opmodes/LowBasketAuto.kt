@@ -37,6 +37,8 @@ class LowBasketAuto : LinearOpMode() {
                 spintake.pivotTo(Spintake.PivotState.Dodge)
 
                 drivebase.strafeLeft(-1.0, sideSpeed)
+                drivebase.turnToAngle(180.0, turnSpeed)
+
                 lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 drivebase.driveForward(24.0, driveSpeed)
 

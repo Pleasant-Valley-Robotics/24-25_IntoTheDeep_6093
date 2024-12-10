@@ -22,12 +22,17 @@ class MainTeleop : LinearOpMode() {
         val drivebase = Drivebase(hardwareMap)
         val lift = Lift(hardwareMap)
         val extender = Extender(hardwareMap)
+
+        telemetry.status("initialized motors")
+
+        waitForStart()
+
+        telemetry.status("initializing servos")
+        // initialize spintake after starting to comply with ftc rules about moving before match
         val spintake = Spintake(hardwareMap)
         val flipper = Flipper(hardwareMap)
 
-        telemetry.status("initialized")
-
-        waitForStart()
+        telemetry.status("initialized servos")
 
         runBlocking {
             val driving = launch {
@@ -72,7 +77,8 @@ class MainTeleop : LinearOpMode() {
                         val disableFlipper = liftInRange and flipper.flipperIn
                         if (extenderOut or spintake.pivotDown) return@run false to disableFlipper
 
-                        val dodgeLift = liftInRange and liftMoving and (flipperMoveIn or flipper.flipperIn)
+                        val dodgeLift =
+                            liftInRange and liftMoving and (flipperMoveIn or flipper.flipperIn)
                         val dodgeFlipper = liftInRange and flipperGoingIn
 
                         (dodgeLift or dodgeFlipper) to disableFlipper

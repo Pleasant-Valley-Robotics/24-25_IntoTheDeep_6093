@@ -18,13 +18,14 @@ class PushbotAuto : LinearOpMode() {
 
         val drivebase = Drivebase(hardwareMap)
         val lift = Lift(hardwareMap)
-        Spintake(hardwareMap)
-
-        lift.resetLift()
 
         telemetry.status("Initialized")
 
         waitForStart()
+
+        // initialize spintake after starting to comply with ftc rules about moving before init
+        Spintake(hardwareMap)
+        lift.resetLift()
 
         runBlocking {
             val driving = launch {
@@ -72,7 +73,6 @@ class PushbotAuto : LinearOpMode() {
 //                drivebase.driveForward(-2.0, 0.1)
 
                 lift.moveLiftTo(9.2)
-
             }
 
             while (driving.isActive && opModeIsActive()) {
