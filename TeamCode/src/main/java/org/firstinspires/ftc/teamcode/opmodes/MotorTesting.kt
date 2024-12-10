@@ -10,8 +10,24 @@ class MotorTesting : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing")
 
-        val motorNames = listOf("FLDrive", "FRDrive", "BLDrive", "BRDrive")
-        val encoderNames = listOf("FLEncoder", "FREncoder", "BLEncoder", "BREncoder")
+        val motorNames =
+            listOf(
+                "FLDrive",
+                "FRDrive",
+                "BLDrive",
+                "BRDrive",
+                "LeftLiftMotor",
+                "RightLiftMotor",
+            )
+
+        val encoderNames = listOf(
+            "FLEncoder",
+            "FREncoder",
+            "BLEncoder",
+            "BREncoder",
+            "LeftLiftEncoder",
+            "RightLiftEncoder",
+        )
 
         val motors = motorNames.map(hardwareMap.dcMotor::get)
 
@@ -26,6 +42,8 @@ class MotorTesting : LinearOpMode() {
             { gamepad1.circle },
             { gamepad1.square },
             { gamepad1.cross },
+            { gamepad1.left_bumper },
+            { gamepad1.right_bumper },
         )
 
         telemetry.status("Initialized")
@@ -33,8 +51,9 @@ class MotorTesting : LinearOpMode() {
         waitForStart()
 
         while (opModeIsActive()) {
+            val strength = gamepad1.right_trigger - 0.5
             for (i in motors.indices) {
-                motors[i].power = if (buttons[i]()) 1.0 else 0.0
+                motors[i].power = if (buttons[i]()) strength else 0.0
 
                 telemetry.addData(motorNames[i], motors[i].power)
                 telemetry.addData(encoderNames[i], motors[i].currentPosition)
