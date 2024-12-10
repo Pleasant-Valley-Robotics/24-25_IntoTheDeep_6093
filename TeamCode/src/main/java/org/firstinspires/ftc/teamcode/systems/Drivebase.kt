@@ -7,17 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.IMU
-import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.utility.ClampController
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG
 import org.firstinspires.ftc.teamcode.utility.maxOf
-import kotlin.math.absoluteValue
 
 /**
  * drivebase that contains all the code to drive our robot around.
@@ -125,15 +123,13 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun driveForward(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        do {
-            val delta = inches - xDistance
+        val controller = ClampController(DRIVING_P_GAIN, maxPower)
 
-            val drivePower = (delta * DRIVING_P_GAIN).coerceIn(-maxPower, maxPower)
-
-            controlMotors(drivePower, 0.0, 0.0)
-
-            yield()
-        } while (delta.absoluteValue > MOVEMENT_TOL_INCH)
+        controller.controlThing(
+            tolerance = MOVEMENT_TOL_INCH,
+            error = { inches - xDistance },
+            output = { controlMotors(it, 0.0, 0.0) }
+        )
 
         motors.forEach { it.power = 0.0 }
     }
@@ -147,15 +143,13 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        do {
-            val delta = inches - yDistance
+        val controller = ClampController(STRAFING_P_GAIN, maxPower)
 
-            val drivePower = (delta * STRAFING_P_GAIN).coerceIn(-maxPower, maxPower)
-
-            controlMotors(0.0, drivePower, 0.0)
-
-            yield()
-        } while (delta.absoluteValue > MOVEMENT_TOL_INCH)
+        controller.controlThing(
+            tolerance = MOVEMENT_TOL_INCH,
+            error = { inches - yDistance },
+            output = { controlMotors(0.0, it, 0.0) }
+        )
 
         motors.forEach { it.power = 0.0 }
     }
@@ -170,15 +164,13 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun turnToAngle(degrees: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        do {
-            val delta = wrapAngle(degrees - heading)
+        val controller = ClampController(TURNING_P_GAIN, maxPower)
 
-            val turnPower = (delta * TURNING_P_GAIN).coerceIn(-maxPower, maxPower)
-
-            controlMotors(0.0, 0.0, turnPower)
-
-            yield()
-        } while (delta.absoluteValue > TURNING_TOL_DEG)
+        controller.controlThing(
+            tolerance = MOVEMENT_TOL_INCH,
+            error = { wrapAngle(degrees - heading) },
+            output = { controlMotors(0.0, 0.0, it) }
+        )
 
         motors.forEach { it.power = 0.0 }
     }
@@ -194,6 +186,8 @@ class Drivebase(hardwareMap: HardwareMap) {
         telemetry.addData("frdrive pos inch", format, frdrive.currentPosition / ENCODER_PER_INCH)
         telemetry.addData("bldrive pos inch", format, bldrive.currentPosition / ENCODER_PER_INCH)
         telemetry.addData("brdrive pos inch", format, brdrive.currentPosition / ENCODER_PER_INCH)
+        telemetry.addData("encoder predicted x", format, xDistance)
+        telemetry.addData("encoder predicted y", format, yDistance)
         telemetry.addData("heading deg", format, heading)
     }
 }
