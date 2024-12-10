@@ -32,10 +32,10 @@ class Lift(hardwareMap: HardwareMap) {
 
     /** the power of both motors controlled and read at the same time */
     private var liftPower: Double
-        get() = (leftLiftMotor.power + rightLiftMotor.power) / 2
+        get() = (leftLiftMotor.power + leftLiftMotor.power) / 2
         set(value) {
             leftLiftMotor.power = value
-            rightLiftMotor.power = value
+//            rightLiftMotor.power = value
         }
 
     fun resetLift() {
