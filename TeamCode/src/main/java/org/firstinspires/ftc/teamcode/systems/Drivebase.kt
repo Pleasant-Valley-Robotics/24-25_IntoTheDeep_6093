@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.SqrtController
 import org.firstinspires.ftc.teamcode.utility.maxOf
 
 /**
@@ -123,7 +124,7 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun driveForward(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = ClampController(DRIVING_P_GAIN, maxPower)
+        val controller = SqrtController(DRIVING_P_GAIN, maxPower)
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
@@ -143,7 +144,7 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = ClampController(STRAFING_P_GAIN, maxPower)
+        val controller = SqrtController(STRAFING_P_GAIN, maxPower)
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
@@ -164,7 +165,7 @@ class Drivebase(hardwareMap: HardwareMap) {
     suspend fun turnToAngle(degrees: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = ClampController(TURNING_P_GAIN, maxPower)
+        val controller = SqrtController(TURNING_P_GAIN, maxPower)
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
