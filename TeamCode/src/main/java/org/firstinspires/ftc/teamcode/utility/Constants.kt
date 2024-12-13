@@ -23,16 +23,16 @@ object DriveConstants {
     const val ENCODER_PER_INCH = TICKS_PER_REV / (WHEEL_DIAMETER * PI)
     const val STRAFING_CORRECTION = 1.1
 
-    // 1 inch of error should be 0.2 power
-    const val DRIVING_P_GAIN = 0.2 / 1.0
-    const val STRAFING_P_GAIN = 0.2 / 1.0
+    // 1 inch of error should be 0.1 power
+    const val DRIVING_P_GAIN = 0.125 / 1.0
+    const val STRAFING_P_GAIN = 0.125 / 1.0
 
     const val MOVEMENT_TOL_INCH = 0.3
 
     const val TURNING_TOL_DEG = 2.0
 
     // 20 degrees of error should be 0.1 power
-    const val TURNING_P_GAIN = 0.1 / 15.0
+    const val TURNING_P_GAIN = 0.2 / 15.0
 }
 
 object LiftConstants {
