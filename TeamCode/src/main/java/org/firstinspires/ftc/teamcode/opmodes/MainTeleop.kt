@@ -37,10 +37,26 @@ class MainTeleop : LinearOpMode() {
         telemetry.status("initialized servos")
 
         runBlocking {
+            var bothLifts = false
+            var slideOverride = false
+            var intakeOverride = false
+            var spintakeDown = false
+            var flipperOut = false
+
+            val detectors = listOf(
+                onRisingEdge({ gamepad2.cross }) { spintakeDown = it },
+                onRisingEdge({ gamepad2.circle }) { flipperOut = it },
+                onRisingEdge({ gamepad2.left_stick_button }) { bothLifts = it },
+                onRisingEdge({ gamepad2.dpad_up }) { slideOverride = it },
+                onRisingEdge({ gamepad2.dpad_down }) { intakeOverride = it },
+            )
+
             val driving = launch {
                 val time = ElapsedTime()
                 while (isActive) {
                     yield()
+
+                    for (update in detectors) update()
 
                     val dt = time.seconds()
                     time.reset()
@@ -53,27 +69,22 @@ class MainTeleop : LinearOpMode() {
                     val liftInput = -gamepad2.left_stick_y.toDouble()
                     val extendInput = -gamepad2.right_stick_y.toDouble()
 
-                    val spintakeMoveDown = gamepad2.cross
                     val spinOut = gamepad2.right_bumper
                     val spinIn = gamepad2.right_trigger > 0.5
-                    val flipperMoveOut = gamepad2.circle
-
-                    val slideOverride = gamepad2.left_bumper
-                    val pivotOverride = gamepad2.dpad_left
 
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
                     // checks a lot of cases to check whether the current requested movements
                     // will cause the spintake and flipper to collide.
                     val (dodgeSpintake, disableFlipper) = run {
-                        if (pivotOverride) return@run false to false
+                        if (intakeOverride) return@run false to false
 
                         val extenderOut = extender.extendPosition > 2.0
 
                         val liftMoving = liftInput.absoluteValue > 0.05
-                        val liftInRange = lift.liftHeight < 3.0
+                        val liftInRange = leftLift.liftHeight < 3.0
 
-                        val flipperMoveIn = !flipperMoveOut
+                        val flipperMoveIn = !flipperOut
                         val flipperGoingIn = !flipper.flipperIn and flipperMoveIn
 
                         val disableFlipper = liftInRange and flipper.flipperIn
@@ -89,7 +100,7 @@ class MainTeleop : LinearOpMode() {
                     spintake.pivotTo(
                         state = when {
                             dodgeSpintake -> Spintake.PivotState.Dodge
-                            spintakeMoveDown -> Spintake.PivotState.Down
+                            spintakeDown -> Spintake.PivotState.Down
                             else -> Spintake.PivotState.Up
                         }, dt
                     )
@@ -97,24 +108,25 @@ class MainTeleop : LinearOpMode() {
                     flipper.pivotTo(
                         state = when {
                             disableFlipper -> Flipper.FlipperState.In
-                            flipperMoveOut -> Flipper.FlipperState.Out
+                            flipperOut -> Flipper.FlipperState.Out
                             else -> Flipper.FlipperState.In
                         }, dt
                     )
 
-                    lift.setLiftPowerSafe(liftInput, slideOverride)
+                    leftLift.setLiftPowerSafe(liftInput, slideOverride)
+
+                    rightLift.setLiftPowerSafe(if (bothLifts) liftInput else 0.0, slideOverride)
 
                     extender.extendSafe(extendInput, slideOverride)
 
                     spintake.controlIntake(spinIn, spinOut)
-
                 }
             }
 
 
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
-                lift.addTelemetry(telemetry)
+                leftLift.addTelemetry(telemetry)
                 extender.addTelemetry(telemetry)
 
                 telemetry.status("running")
@@ -125,7 +137,7 @@ class MainTeleop : LinearOpMode() {
             driving.cancelAndJoin()
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
-            lift.setLiftPowerSafe(0.0, true)
+            leftLift.setLiftPowerSafe(0.0, true)
             extender.extendSafe(0.0, true)
         }
 
