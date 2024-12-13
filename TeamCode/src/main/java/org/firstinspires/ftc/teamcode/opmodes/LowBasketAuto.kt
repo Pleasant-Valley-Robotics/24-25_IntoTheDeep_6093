@@ -9,23 +9,30 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Flipper
-import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @Autonomous(name = "LowBasketAuto")
 class LowBasketAuto : LinearOpMode() {
     override fun runOpMode() {
-        telemetry.status("Initializing")
+        telemetry.status("initializing motors")
 
         val drivebase = Drivebase(hardwareMap)
-        val lift = Lift(hardwareMap)
+        val lift = LeftLift(hardwareMap)
+
+        lift.resetLift()
+
+        telemetry.status("initialized motors")
+
+        waitForStart()
+
         val flipper = Flipper(hardwareMap)
         val spintake = Spintake(hardwareMap)
 
-        telemetry.status("Initialized")
 
-        waitForStart()
+        telemetry.status("initialized servos")
+
 
         runBlocking {
             val auto = launch {

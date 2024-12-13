@@ -11,7 +11,8 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Flipper
-import org.firstinspires.ftc.teamcode.systems.Lift
+import org.firstinspires.ftc.teamcode.systems.LeftLift
+import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import kotlin.math.absoluteValue
 
@@ -20,7 +21,8 @@ class MainTeleop : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
-        val lift = Lift(hardwareMap)
+        val leftLift = LeftLift(hardwareMap)
+        val rightLift = RightLift(hardwareMap)
         val extender = Extender(hardwareMap)
 
         telemetry.status("initialized motors")

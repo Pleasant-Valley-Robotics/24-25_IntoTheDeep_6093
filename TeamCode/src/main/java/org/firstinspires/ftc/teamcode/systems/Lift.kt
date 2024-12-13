@@ -12,37 +12,12 @@ import org.firstinspires.ftc.teamcode.utility.LiftConstants.MIN_LIFT_HEIGHT_INCH
 import kotlin.math.absoluteValue
 import kotlin.math.withSign
 
-class Lift(hardwareMap: HardwareMap) {
-    private val leftLiftMotor = hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
-        this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        this.direction = DcMotorSimple.Direction.REVERSE
-    }
-
-    private val rightLiftMotor = hardwareMap.dcMotor.get("RightLiftMotor")!!.apply {
-        this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        this.direction = DcMotorSimple.Direction.FORWARD
-    }
-
-    private val leftLiftHeight get() = leftLiftMotor.currentPosition / ENCODER_PER_INCH
-    private val rightLiftHeight get() = rightLiftMotor.currentPosition / ENCODER_PER_INCH
-
-    /** gets the average lift height in inches */
-    val liftHeight get() = (leftLiftHeight + rightLiftHeight) / 2
-
-
-    /** the power of both motors controlled and read at the same time */
-    private var liftPower: Double
-        get() = (leftLiftMotor.power + leftLiftMotor.power) / 2
-        set(value) {
-            leftLiftMotor.power = value
-//            rightLiftMotor.power = value
-        }
+abstract class Lift(private val liftMotor: DcMotor) {
+    val liftHeight get() = liftMotor.currentPosition / ENCODER_PER_INCH
 
     fun resetLift() {
-        leftLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        leftLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        rightLiftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        rightLiftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        liftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     private var overriding = false
@@ -64,7 +39,7 @@ class Lift(hardwareMap: HardwareMap) {
         val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_INCH
         val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT_INCH
 
-        liftPower = when {
+        liftMotor.power = when {
             override -> power
             power > 0 && inLiftLimitUpper -> power
             power < 0 && inLiftLimitLower -> power
@@ -90,21 +65,12 @@ class Lift(hardwareMap: HardwareMap) {
 
         do {
             val error = inches - liftHeight
-            liftPower = power.withSign(error)
+            liftMotor.power = power.withSign(error)
             yield()
         } while (error.absoluteValue > threshold)
 
-        liftPower = 0.0
+        liftMotor.power = 0.0
     }
 
-    /**
-     * adds all the lift data to telemetry
-     *
-     * @param telemetry the telemetry object to add to
-     */
-    fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("left lift height inch", leftLiftHeight)
-        telemetry.addData("right lift height inch", rightLiftHeight)
-        telemetry.addData("lift height", liftHeight)
-    }
+    abstract fun addTelemetry(telemetry: Telemetry)
 }
