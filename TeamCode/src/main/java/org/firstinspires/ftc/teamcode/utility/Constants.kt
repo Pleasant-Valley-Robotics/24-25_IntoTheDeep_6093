@@ -24,8 +24,8 @@ object DriveConstants {
     const val STRAFING_CORRECTION = 1.1
 
     // 1 inch of error should be 0.1 power
-    const val DRIVING_P_GAIN = 0.125 / 1.0
-    const val STRAFING_P_GAIN = 0.125 / 1.0
+    const val DRIVING_P_GAIN = 0.1 / 1.0
+    const val STRAFING_P_GAIN = 0.1 / 1.0
 
     const val MOVEMENT_TOL_INCH = 0.3
 
