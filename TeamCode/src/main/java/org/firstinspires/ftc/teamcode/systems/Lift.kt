@@ -35,7 +35,7 @@ abstract class Lift(private val liftMotor: DcMotor) {
      * @see MAX_LIFT_HEIGHT_INCH
      * @see MIN_LIFT_HEIGHT_INCH
      */
-    fun setLiftPowerSafe(power: Double, override: Boolean) {
+    fun setLiftPowerSafe(power: Double, override: Boolean = false) {
         val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_INCH
         val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT_INCH
 

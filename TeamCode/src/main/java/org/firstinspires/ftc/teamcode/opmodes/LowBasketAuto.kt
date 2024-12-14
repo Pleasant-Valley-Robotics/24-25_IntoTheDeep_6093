@@ -64,16 +64,16 @@ class LowBasketAuto : LinearOpMode() {
                 drivebase.driveForward(8.0, driveSpeed)
 
                 spintake.pivotTo(Spintake.PivotState.Down)
-                spintake.controlIntake(suckIn = true, spitOut = false)
+                spintake.controlIntakeBool(suckIn = true, spitOut = false)
                 delay(2000)
 
                 parallelWait({
                     spintake.pivotTo(Spintake.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntake(suckIn = false, spitOut = true)
+                    spintake.controlIntakeBool(suckIn = false, spitOut = true)
                     delay(3000)
                     spintake.pivotTo(Spintake.PivotState.Dodge)
-                    spintake.controlIntake(suckIn = false, spitOut = false)
+                    spintake.controlIntakeBool(suckIn = false, spitOut = false)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH + 1)
                 }, {
                     drivebase.driveForward(-10.0, driveSpeed)

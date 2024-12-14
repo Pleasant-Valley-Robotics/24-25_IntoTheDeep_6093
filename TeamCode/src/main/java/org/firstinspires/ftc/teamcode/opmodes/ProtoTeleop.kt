@@ -43,7 +43,7 @@ class ProtoTeleop : LinearOpMode() {
                     val insideMyMouth = gamepad2.a
                     val disgustingSpecimen = gamepad2.b
 
-                    spintake.controlIntake(insideMyMouth, disgustingSpecimen)
+                    spintake.controlIntakeBool(insideMyMouth, disgustingSpecimen)
                 }
             }
 

@@ -15,7 +15,7 @@ class Extender(hardwareMap: HardwareMap) {
         this.direction = DcMotorSimple.Direction.REVERSE
     }
 
-    private fun resetExtender() {
+    fun resetExtender() {
         extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
@@ -35,7 +35,7 @@ class Extender(hardwareMap: HardwareMap) {
      * @see MAX_EXTENSION_INCH
      * @see MIN_EXTENSION_INCH
      */
-    fun extendSafe(power: Double, override: Boolean) {
+    fun extendSafe(power: Double, override: Boolean = false) {
         val inExtLimitUpper = extendPosition <= MAX_EXTENSION_INCH
         val inExtLimitLower = extendPosition >= MIN_EXTENSION_INCH
 

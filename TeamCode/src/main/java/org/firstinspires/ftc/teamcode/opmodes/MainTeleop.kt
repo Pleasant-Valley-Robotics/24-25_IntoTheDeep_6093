@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -14,10 +14,15 @@ import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
-import kotlin.math.absoluteValue
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
+    enum class EndEffectorState {
+        Intake,
+        Outtake,
+        Override,
+    }
+
     override fun runOpMode() {
         telemetry.status("initializing motors")
         val drivebase = Drivebase(hardwareMap)
@@ -37,92 +42,110 @@ class MainTeleop : LinearOpMode() {
         telemetry.status("initialized servos")
 
         runBlocking {
-            var bothLifts = false
-            var slideOverride = false
-            var intakeOverride = false
-            var spintakeDown = false
-            var flipperOut = false
+            val endEffector = launch {
+                var state = EndEffectorState.Intake
+                while (isActive) {
+                    state = when {
+                        gamepad2.dpad_left -> EndEffectorState.Intake
+                        gamepad2.dpad_up -> EndEffectorState.Outtake
+                        gamepad2.dpad_right -> EndEffectorState.Override
+                        else -> state
+                    }
 
-            val detectors = listOf(
-                onRisingEdge({ gamepad2.cross }) { spintakeDown = it },
-                onRisingEdge({ gamepad2.circle }) { flipperOut = it },
-                onRisingEdge({ gamepad2.left_stick_button }) { bothLifts = it },
-                onRisingEdge({ gamepad2.dpad_up }) { slideOverride = it },
-                onRisingEdge({ gamepad2.dpad_down }) { intakeOverride = it },
-            )
+                    val (r, g, b) = when (state) {
+                        EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0)
+                        EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0)
+                        EndEffectorState.Override -> Triple(245.0, 39.0, 64.0)
+                    }
+
+                    gamepad2.setLedColor(r, g, b, LED_DURATION_CONTINUOUS)
+
+                    if (gamepad2.dpad_down) {
+                        leftLift.resetLift()
+                        rightLift.resetLift()
+                        extender.resetExtender()
+                    }
+
+                    when (state) {
+                        EndEffectorState.Intake -> {
+                            val bucketInput = gamepad2.left_trigger.toDouble()
+                            val clawInput = gamepad2.right_trigger.toDouble()
+                            val extendInput = -gamepad2.left_stick_y.toDouble()
+
+                            val clawSlide = gamepad2.right_stick_x.toDouble()
+                            val clawPull = -gamepad2.right_stick_y.toDouble()
+
+                            val clawLeft = (clawSlide - clawPull).coerceIn(-1.0..1.0)
+                            val clawRight = (clawSlide + clawPull).coerceIn(-1.0..1.0)
+
+                            // collision conditions
+                            val extendedOut = extender.extendPosition > 2.0
+                            val liftDown = leftLift.liftHeight < 3.0
+                            val liftFullyDown = leftLift.liftHeight < 0.4
+                            val cancelBucket = liftDown && !extendedOut
+
+                            // slightly nudge left lift because of bucket collisions when retracting
+                            leftLift.setLiftPowerSafe(if (liftFullyDown) 0.1 else 0.0)
+                            rightLift.setLiftPowerSafe(0.0)
+                            extender.extendSafe(extendInput)
+
+                            spintake.pivotParam(clawInput)
+                            spintake.controlIntakeDirect(clawLeft, clawRight)
+                            flipper.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                        }
+
+                        EndEffectorState.Outtake -> {
+                            val bucketInput = gamepad2.left_trigger.toDouble()
+                            val leftSlideInput = -gamepad2.left_stick_y.toDouble()
+                            val rightSlideInput = -gamepad2.right_stick_y.toDouble()
+
+                            // collision condition
+                            val extendedOut = extender.extendPosition > 2.0
+                            val liftDown = leftLift.liftHeight < 3.0
+                            val cancelBucket = liftDown && !extendedOut
+
+                            leftLift.setLiftPowerSafe(leftSlideInput)
+                            rightLift.setLiftPowerSafe(rightSlideInput)
+                            extender.extendSafe(0.0)
+
+                            spintake.pivotTo(Spintake.PivotState.Dodge)
+                            spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
+                            flipper.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                        }
+
+                        EndEffectorState.Override -> {
+                            val bucketInput = gamepad2.left_trigger.toDouble()
+                            val clawInput = gamepad2.right_trigger.toDouble()
+                            val leftSlideInput = -gamepad2.left_stick_y.toDouble()
+                            val rightSlideInput = -gamepad2.right_stick_y.toDouble()
+                            val extendInput = gamepad2.right_stick_x.toDouble()
+
+                            leftLift.setLiftPowerSafe(leftSlideInput, true)
+                            rightLift.setLiftPowerSafe(rightSlideInput, true)
+                            extender.extendSafe(extendInput, true)
+
+                            spintake.pivotParam(clawInput)
+                            spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
+                            flipper.pivotParam(bucketInput)
+                        }
+                    }
+
+                    yield()
+                }
+            }
 
             val driving = launch {
-                val time = ElapsedTime()
                 while (isActive) {
-                    yield()
-
-                    for (update in detectors) update()
-
-                    val dt = time.seconds()
-                    time.reset()
-
                     // the negations are because the robot uses a different coordinate system.
                     val xInput = -gamepad1.left_stick_y.toDouble()
                     val yInput = -gamepad1.left_stick_x.toDouble()
                     val turnInput = -gamepad1.right_stick_x.toDouble()
 
-                    val liftInput = -gamepad2.left_stick_y.toDouble()
-                    val extendInput = -gamepad2.right_stick_y.toDouble()
-
-                    val spinOut = gamepad2.right_bumper
-                    val spinIn = gamepad2.right_trigger > 0.5
-
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
-                    // checks a lot of cases to check whether the current requested movements
-                    // will cause the spintake and flipper to collide.
-                    val (dodgeSpintake, disableFlipper) = run {
-                        if (intakeOverride) return@run false to false
-
-                        val extenderOut = extender.extendPosition > 2.0
-
-                        val liftMoving = liftInput.absoluteValue > 0.05
-                        val liftInRange = leftLift.liftHeight < 3.0
-
-                        val flipperMoveIn = !flipperOut
-                        val flipperGoingIn = !flipper.flipperIn and flipperMoveIn
-
-                        val disableFlipper = liftInRange and flipper.flipperIn
-                        if (extenderOut or spintake.pivotDown) return@run false to disableFlipper
-
-                        val dodgeLift =
-                            liftInRange and liftMoving and (flipperMoveIn or flipper.flipperIn)
-                        val dodgeFlipper = liftInRange and flipperGoingIn
-
-                        (dodgeLift or dodgeFlipper) to disableFlipper
-                    }
-
-                    spintake.pivotTo(
-                        state = when {
-                            dodgeSpintake -> Spintake.PivotState.Dodge
-                            spintakeDown -> Spintake.PivotState.Down
-                            else -> Spintake.PivotState.Up
-                        }, dt
-                    )
-
-                    flipper.pivotTo(
-                        state = when {
-                            disableFlipper -> Flipper.FlipperState.In
-                            flipperOut -> Flipper.FlipperState.Out
-                            else -> Flipper.FlipperState.In
-                        }, dt
-                    )
-
-                    leftLift.setLiftPowerSafe(liftInput, slideOverride)
-
-                    rightLift.setLiftPowerSafe(if (bothLifts) liftInput else 0.0, slideOverride)
-
-                    extender.extendSafe(extendInput, slideOverride)
-
-                    spintake.controlIntake(spinIn, spinOut)
+                    yield()
                 }
             }
-
 
             while (opModeIsActive()) {
                 drivebase.addTelemetry(telemetry)
@@ -135,11 +158,12 @@ class MainTeleop : LinearOpMode() {
             }
 
             driving.cancelAndJoin()
+            endEffector.cancelAndJoin()
 
             drivebase.controlMotors(0.0, 0.0, 0.0)
             leftLift.setLiftPowerSafe(0.0, true)
+            rightLift.setLiftPowerSafe(0.0, true)
             extender.extendSafe(0.0, true)
         }
-
     }
 }

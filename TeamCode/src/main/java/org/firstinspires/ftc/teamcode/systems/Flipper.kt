@@ -21,6 +21,18 @@ class Flipper(hardwareMap: HardwareMap) {
     }
 
     /**
+     * moves the flipper according to `param`. maps 0 to
+     * `FLIPPER_IN_POS` and 1 to `FLIPPER_OUT_POS`.
+     *
+     * @param param input to scale. `[0, 1]`
+     * @see FLIPPER_IN_POS
+     * @see FLIPPER_OUT_POS
+     */
+    fun pivotParam(param: Double) {
+        flipperServo.position = FLIPPER_IN_POS * (1 - param) + FLIPPER_OUT_POS * param
+    }
+
+    /**
      * moves the flipper out or in
      *
      * @param state what to do with the flipper
