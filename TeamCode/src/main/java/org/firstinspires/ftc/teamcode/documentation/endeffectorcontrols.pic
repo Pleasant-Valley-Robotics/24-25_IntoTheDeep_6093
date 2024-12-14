@@ -1,0 +1,115 @@
+DR: [
+linewid = linewid * 0.6
+lineht = lineht * 0.6
+fill = white
+
+DPAD: [
+buttwid = 0.4cm; buttht = 2 * buttwid; buttrd = buttwid * 0.3;
+B1: box width buttwid height buttht rad buttrd
+B2: box with nw at B1.se width buttht height buttwid rad buttrd
+B3: box with ne at B2.sw width buttwid height buttht rad buttrd
+B4: box with se at B3.nw width buttht height buttwid rad buttrd
+
+line thin color gray from B1.w left
+T1: text "outtake mode"
+
+line thin color gray from B4.w left
+text "intake mode"
+
+line thin color gray\
+  from B2.e\
+  right 0.2cm\
+  then up until even with T1.s\
+  right 0.3cm
+up
+text "override mode"
+
+line thin color gray from B3.w left
+text "reset limits"
+]
+
+move to (1, -0.5)
+
+JL: circle
+line dashed <-> from JL.w to JL.e
+line <-> from JL.n to JL.s
+
+line thin color grey\
+  from 0.3<JL.n, JL.s>\
+  left 0.8cm\
+  then down 0.5cm\
+  left 0.5cm
+
+box invis with e at last line.end\
+  "outtake mode: move left slide within limits" rjust\
+  "override mode: force move left slide" rjust\
+  "intake mode: move extension slide" rjust fit width 90%
+
+move to JL
+move right
+
+JR: circle
+line <-> from JR.w to JR.e
+line <-> from JR.n to JR.s
+
+line thin color gray\
+  from 0.6<JR.w, JR.e>\
+  down 0.5cm\
+  right 0.5cm\
+  then right 0.8cm
+
+box invis with w at last line.end\
+  "override mode: force move extension slide" ljust\
+  "intake mode (up, down): slide block (left, right)" ljust fit width 90%
+
+line thin color gray\
+  from 0.7<JR.n, JR.s>\
+  down 0.5cm\
+  right 0.5cm\
+  then down 0.8cm
+
+box invis with n at last line.end\
+  "outtake mode: move right slide within limits" ljust\
+  "override mode: force move right slide" ljust\
+  "intake mode (up, down): pull block (in, out)" ljust fit
+
+move to JR.ne
+move right 0.9cm
+move up until even with DPAD
+move right 0
+
+BO: circle rad 0.3cm
+BX: circle rad 0.3cm with ne at BO.sw
+BT: circle rad 0.3cm with se at BO.nw
+BS: circle rad 0.3cm with ne at BT.sw
+
+line from BX.ne to BX.sw
+line from BX.nw to BX.se
+
+circle at BO rad 0.2cm
+
+box at BS wid 0.3cm ht 0.3cm
+
+line from BT.n to 1.225 * 0.4cm heading 150 from BT.n
+line from last line.end to 1.225 * 0.4cm heading -90 from last line.end
+line from last line.end to 1.225 * 0.4cm heading 30 from last line.end
+
+LT: box at 2cm above 1cm right of DPAD width 0.5cm height 0.8cm rad 0.2cm "LT" bold
+RT: box at 3.2cm right of LT width 0.5cm height 0.8cm rad 0.2cm "RT" bold
+
+line thin color gray from LT.n up
+box invis with s at last line.end\
+  "outtake / intake mode: move bucket (out, in) safely" ljust\
+  "override mode (released, depressed): force move bucket (out, in)" ljust fit
+
+line thin color gray\
+  from RT.e\
+  right 0.4cm\
+  up 0.4cm\
+  then up up up 0.1cm
+box invis with s at last line.end\
+  "outtake / intake mode: move claw (up, down) safely" ljust\
+  "override mode (released, depressed): force move claw (up, down)" ljust fit
+]
+
+box at DR wid DR.wid ht DR.ht behind DR color white
