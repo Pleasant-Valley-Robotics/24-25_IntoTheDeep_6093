@@ -108,7 +108,7 @@ class MainTeleop : LinearOpMode() {
                             rightLift.setLiftPowerSafe(rightSlideInput)
                             extender.extendSafe(0.0)
 
-                            spintake.pivotTo(Spintake.PivotState.Dodge)
+                            spintake.pivotState(Spintake.PivotState.Dodge)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
                             flipper.pivotParam(if (cancelBucket) 0.0 else bucketInput)
                         }

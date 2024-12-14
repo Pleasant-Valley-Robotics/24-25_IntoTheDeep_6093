@@ -22,8 +22,6 @@ class Extender(hardwareMap: HardwareMap) {
 
     val extendPosition get() = extendMotor.currentPosition / ENCODER_PER_INCH
 
-    private var overriding = false
-
     /**
      * allows extension within the limits defined in the code.
      * if under or over the limit, will only allow movement that restores the robot
@@ -45,12 +43,6 @@ class Extender(hardwareMap: HardwareMap) {
             power < 0 && inExtLimitLower -> power
             else -> 0.0
         }
-
-        if (overriding && !override) {
-            resetExtender()
-        }
-
-        overriding = override
     }
 
     fun addTelemetry(telemetry: Telemetry) {

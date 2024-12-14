@@ -20,8 +20,6 @@ abstract class Lift(private val liftMotor: DcMotor) {
         liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
-    private var overriding = false
-
     /**
      * sets the lift power while respecting limits. if under or over the specified limits,
      * only movement that restores the specified bounds is allowed.
@@ -45,12 +43,6 @@ abstract class Lift(private val liftMotor: DcMotor) {
             power < 0 && inLiftLimitLower -> power
             else -> 0.0
         }
-
-        if (overriding && !override) {
-            resetLift()
-        }
-
-        overriding = override
     }
 
 

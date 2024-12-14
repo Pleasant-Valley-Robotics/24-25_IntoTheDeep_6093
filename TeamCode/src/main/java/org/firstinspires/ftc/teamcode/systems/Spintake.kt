@@ -5,26 +5,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DODGE_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
-import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.SERVO_VEL_ENC_S
 
 /** thing with 2 grippy wheels that hand off to the flipper */
 class Spintake(hardwareMap: HardwareMap) {
-    private val clawLeft = hardwareMap.crservo.get("ClawLeft").apply {
-        this.direction = DcMotorSimple.Direction.REVERSE
-    }
+    private val clawLeft = hardwareMap.crservo.get("ClawLeft")
     private val clawRight = hardwareMap.crservo.get("ClawRight")
     private val pivotServo = hardwareMap.servo.get("ClawPivot").apply {
         this.position = PIVOT_UP_POS
     }
 
-    private var pivotPos = PIVOT_UP_POS
-
-    val pivotDown get() = pivotPos >= PIVOT_DOWN_POS
-
     enum class PivotState {
         Up,
         Down,
         Dodge,
+    }
+
+    enum class IntakeState {
+        Suck,
+        Spit,
+        Off,
     }
 
     /**
@@ -40,39 +39,36 @@ class Spintake(hardwareMap: HardwareMap) {
     }
 
     /**
-     * moves the spintake around
+     * moves the pivot to a specified state
      *
-     * @param state what pivot should do
-     * @param dt time in seconds since last call
+     * @param pivotState state to move the pivot to
+     * @see PIVOT_UP_POS
+     * @see PIVOT_DOWN_POS
+     * @see PIVOT_DODGE_POS
      */
-    fun pivotTo(state: PivotState, dt: Double = 0.0) {
-        pivotServo.position = when (state) {
+    fun pivotState(pivotState: PivotState) {
+        pivotServo.position = when (pivotState) {
             PivotState.Up -> PIVOT_UP_POS
             PivotState.Down -> PIVOT_DOWN_POS
             PivotState.Dodge -> PIVOT_DODGE_POS
         }
-
-        pivotPos += SERVO_VEL_ENC_S * dt * if (state == PivotState.Down) 1 else -1
-        pivotPos = pivotPos.coerceIn(PIVOT_UP_POS, PIVOT_DOWN_POS)
     }
 
     /**
-     * controls how the intake wheels spin. if both parameters are true nothing happens
+     * sets the wheel intake state
      *
-     * @param suckIn whether the wheels should spin inwards
-     * @param spitOut whether the wheels should spin outwards
+     * @param intakeState what state the wheels should be in.
      */
-    fun controlIntakeBool(suckIn: Boolean, spitOut: Boolean) {
-        val power = when {
-            suckIn && spitOut -> 0.0
-            suckIn -> -1.0
-            spitOut -> 1.0
-            else -> 0.0
+    fun controlIntakeState(intakeState: IntakeState) {
+        val power = when (intakeState) {
+            IntakeState.Suck -> -1.0
+            IntakeState.Spit -> 1.0
+            IntakeState.Off -> 0.0
         }
 
         // negative clawLeft out
         // positive clawRight out
-        clawLeft.power = power
+        clawLeft.power = -power
         clawRight.power = power
     }
 

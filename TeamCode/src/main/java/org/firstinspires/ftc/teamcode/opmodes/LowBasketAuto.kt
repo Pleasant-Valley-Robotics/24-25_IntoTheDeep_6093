@@ -50,9 +50,9 @@ class LowBasketAuto : LinearOpMode() {
                 drivebase.turnToAngle(45.0, turnSpeed)
                 drivebase.driveForward(-10.0, 0.2)
 
-                flipper.pivotTo(Flipper.FlipperState.Out)
+                flipper.pivotState(Flipper.FlipperState.Out)
                 delay(1000) // give flipper time to extend
-                flipper.pivotTo(Flipper.FlipperState.In)
+                flipper.pivotState(Flipper.FlipperState.In)
 
                 parallelWait({
                     drivebase.driveForward(14.0, driveSpeed)
@@ -63,17 +63,17 @@ class LowBasketAuto : LinearOpMode() {
 
                 drivebase.driveForward(8.0, driveSpeed)
 
-                spintake.pivotTo(Spintake.PivotState.Down)
-                spintake.controlIntakeBool(suckIn = true, spitOut = false)
+                spintake.pivotState(Spintake.PivotState.Down)
+                spintake.controlIntakeState(Spintake.IntakeState.Suck)
                 delay(2000)
 
                 parallelWait({
-                    spintake.pivotTo(Spintake.PivotState.Up)
+                    spintake.pivotState(Spintake.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeBool(suckIn = false, spitOut = true)
+                    spintake.controlIntakeState(Spintake.IntakeState.Spit)
                     delay(3000)
-                    spintake.pivotTo(Spintake.PivotState.Dodge)
-                    spintake.controlIntakeBool(suckIn = false, spitOut = false)
+                    spintake.pivotState(Spintake.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.IntakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH + 1)
                 }, {
                     drivebase.driveForward(-10.0, driveSpeed)
@@ -82,9 +82,9 @@ class LowBasketAuto : LinearOpMode() {
 
                 drivebase.driveForward(-16.0, 0.2)
 
-                flipper.pivotTo(Flipper.FlipperState.Out)
+                flipper.pivotState(Flipper.FlipperState.Out)
                 delay(1000) // give flipper time to extend
-                flipper.pivotTo(Flipper.FlipperState.In)
+                flipper.pivotState(Flipper.FlipperState.In)
 
                 drivebase.driveForward(4.0, driveSpeed)
                 lift.moveLiftTo(9.2)
