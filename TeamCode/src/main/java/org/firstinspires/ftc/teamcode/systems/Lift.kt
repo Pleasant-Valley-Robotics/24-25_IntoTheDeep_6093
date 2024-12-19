@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.HardwareMap
 import kotlinx.coroutines.yield
-import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Linear
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH

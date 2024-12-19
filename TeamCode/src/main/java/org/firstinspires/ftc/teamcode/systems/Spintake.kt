@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.systems
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DODGE_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
