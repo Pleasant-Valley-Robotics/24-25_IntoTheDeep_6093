@@ -53,6 +53,71 @@ class ColorFilterPipeline : VisionProcessor {
         bigMask = Mat.zeros(height, width, CvType.CV_8UC1)
     }
 
+    fun inversePerspective(u: Double, v: Double, params: WorldParams): Pair<Double, Double> {
+        val f = params.focalLength * params.imWidth / params.sensorWidth
+
+        val ix = params.imWidth / 2
+        val iy = params.imHeight / 2
+
+        val rx = -params.cameraXRot / 180.0 * Math.PI
+        val ry = -params.cameraYRot / 180.0 * Math.PI
+        val rz = -params.cameraZRot / 180.0 * Math.PI
+
+        val sx = sin(rx)
+        val sy = sin(ry)
+        val sz = sin(rz)
+        val cx = cos(rx)
+        val cy = cos(ry)
+        val cz = cos(rz)
+
+        val zd = params.detectedZ
+
+        val px = params.cameraX
+        val py = params.cameraY
+        val pz = params.cameraZ
+
+        val rot = listOf(
+            cy * cz, -sz * cy, sy,
+            sx * sy * cz + sz * cx, -sx * sy * sz + cx * cz, -sx * cy,
+            sx * sz - sy * cx * cz, sx * cz + sy * sz * cx, cx * cy,
+        )
+
+        val trans = listOf(
+            -(rot[0] * px + rot[1] * py + rot[2] * pz),
+            -(rot[3] * px + rot[4] * py + rot[5] * pz),
+            -(rot[6] * px + rot[7] * py + rot[8] * pz),
+        )
+
+        val fullMatrix = Mat(3, 3, CvType.CV_64F)
+        fullMatrix.put(
+            0, 0,
+            rot[0] * f + rot[6] * ix,
+            rot[1] * f + rot[7] * ix,
+            trans[2] * ix + trans[0] * f + zd * (rot[2] * f + rot[8] * ix),
+            rot[6] * iy + rot[3] * f,
+            rot[7] * iy + rot[4] * f,
+            trans[2] * iy + trans[1] * f + zd * (rot[8] * iy + rot[5] * f),
+            rot[6], rot[7], rot[8] * zd + trans[2],
+        )
+        val fullMatrixInverse = fullMatrix.inv()
+        val pixelCoords = Mat(3, 1, CvType.CV_64F)
+        pixelCoords.put(
+            3, 0,
+            u, v, 1.0
+        )
+
+        val worldCoords = fullMatrixInverse.matMul(pixelCoords)
+
+        val wx = worldCoords[0, 0][0]
+        val wy = worldCoords[0, 1][0]
+        val w = worldCoords[0, 2][0]
+
+        val worldX = wx / w
+        val worldY = wy / w
+
+        return worldX to worldY
+    }
+
     override fun processFrame(frame: Mat, processMs: Long): Pair<List<Point>?, Point?> {
         // not even gonna try to explain this, check the python code
         val minA = params.aMin.roundToInt()
@@ -62,6 +127,23 @@ class ColorFilterPipeline : VisionProcessor {
         val aPerB = params.aPerB.toFloat()
         val bPerA = params.bPerA.toFloat()
 
+        val (_, _) = inversePerspective(
+            1.0, 1.0, WorldParams(
+                targetX = 0.0,
+                targetY = 0.0,
+                cameraX = 0.0,
+                cameraY = 0.0,
+                cameraZ = 0.0,
+                cameraXRot = 0.0,
+                cameraYRot = 0.0,
+                cameraZRot = 0.0,
+                imWidth = 0.0,
+                imHeight = 0.0,
+                sensorWidth = 0.0,
+                focalLength = 0.0,
+                detectedZ = 0.0,
+            )
+        )
 
         val shiftA = (minA + maxA) / -2
         val shiftB = (minB + maxB) / -2
