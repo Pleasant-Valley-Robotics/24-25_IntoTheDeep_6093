@@ -16,8 +16,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class ColorFilterPipeline : VisionProcessor {
-
-    val params = FilterParams(
+    var filterParams = FilterParams(
         aMin = 0.0,
         aMax = 255.0,
         bMin = 0.0,
@@ -26,11 +25,21 @@ class ColorFilterPipeline : VisionProcessor {
         bPerA = 0.0,
     )
 
-//    val min = Scalar(0.0, 0.0, 0.0)
-//    val max = Scalar(255.0, 255.0, 255.0)
-//
-//    val aPerB = 0f
-//    val bPerA = 0f
+    var worldParams = WorldParams(
+        targetX = 0.0,
+        targetY = 0.0,
+        cameraX = 0.0,
+        cameraY = 0.0,
+        cameraZ = 0.0,
+        cameraXRot = 0.0,
+        cameraYRot = 0.0,
+        cameraZRot = 0.0,
+        imWidth = 0.0,
+        imHeight = 0.0,
+        sensorWidth = 0.0,
+        focalLength = 0.0,
+        detectedZ = 0.0,
+    )
 
     val decimationFactor = 16
 
@@ -120,30 +129,14 @@ class ColorFilterPipeline : VisionProcessor {
 
     override fun processFrame(frame: Mat, processMs: Long): Pair<List<Point>?, Point?> {
         // not even gonna try to explain this, check the python code
-        val minA = params.aMin.roundToInt()
-        val minB = params.bMin.roundToInt()
-        val maxA = params.aMax.roundToInt()
-        val maxB = params.bMax.roundToInt()
-        val aPerB = params.aPerB.toFloat()
-        val bPerA = params.bPerA.toFloat()
+        val minA = filterParams.aMin.roundToInt()
+        val minB = filterParams.bMin.roundToInt()
+        val maxA = filterParams.aMax.roundToInt()
+        val maxB = filterParams.bMax.roundToInt()
+        val aPerB = filterParams.aPerB.toFloat()
+        val bPerA = filterParams.bPerA.toFloat()
 
-        val (_, _) = inversePerspective(
-            1.0, 1.0, WorldParams(
-                targetX = 0.0,
-                targetY = 0.0,
-                cameraX = 0.0,
-                cameraY = 0.0,
-                cameraZ = 0.0,
-                cameraXRot = 0.0,
-                cameraYRot = 0.0,
-                cameraZRot = 0.0,
-                imWidth = 0.0,
-                imHeight = 0.0,
-                sensorWidth = 0.0,
-                focalLength = 0.0,
-                detectedZ = 0.0,
-            )
-        )
+        val (_, _) = inversePerspective(1.0, 1.0, worldParams)
 
         val shiftA = (minA + maxA) / -2
         val shiftB = (minB + maxB) / -2
