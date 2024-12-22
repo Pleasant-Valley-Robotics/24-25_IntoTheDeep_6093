@@ -42,6 +42,10 @@ class MainTeleop : LinearOpMode() {
         telemetry.status("initialized servos")
 
         runBlocking {
+            /**
+            * implements the controls from
+             * [this diagram](https://github.com/Pleasant-Valley-Robotics/24-25_IntoTheDeep_6093/blob/c044f6bc06b16190bddb8a6cdaa9e33c1754b1b0/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/documentation/svgviewer-png-output(1).png?raw=true)
+             */
             val endEffector = launch {
                 var state = EndEffectorState.Intake
                 while (isActive) {

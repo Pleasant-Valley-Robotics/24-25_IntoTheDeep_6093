@@ -30,3 +30,15 @@ data class WorldParams(
     val focalLength: Double,
     val detectedZ: Double,
 )
+
+/**
+ * check out
+ * [this picture]()
+ * for the deets
+ */
+fun paramsFromComponents(
+): WorldParams {
+    val flipperRotationDegrees = TODO()
+
+    return flipperRotationDegrees
+}
