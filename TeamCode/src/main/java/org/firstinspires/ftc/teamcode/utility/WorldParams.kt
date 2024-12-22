@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.utility
 
+import kotlin.math.cos
+import kotlin.math.sin
+
 /**
  * @param targetX units in cm
  * @param targetY units in cm
@@ -33,12 +36,47 @@ data class WorldParams(
 
 /**
  * check out
- * [this picture]()
+ * [this picture](https://github.com/Pleasant-Valley-Robotics/24-25_IntoTheDeep_6093/blob/207c26a0de0c07db1fce17a89ff0c34c374af4c8/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/documentation/camera_setup.png)
  * for the deets
+ *
+ * all length units in inches, all angle units in degrees
+ *
+ * @param cameraRadius inches
+ * @param cameraOffset inches
+ * @param extensionDistance inches
+ * @param pivotAngle degrees
+ *
+ * @return pose for the camera
  */
 fun paramsFromComponents(
+    cameraRadius: Double,
+    cameraOffset: Double,
+    extensionDistance: Double,
+    pivotAngle: Double,
 ): WorldParams {
-    val flipperRotationDegrees = TODO()
+    val s = sin(Math.toRadians(pivotAngle))
+    val c = cos(Math.toRadians(pivotAngle))
 
-    return flipperRotationDegrees
+    val lx = -cameraRadius * c - cameraOffset * s
+    val ly = cameraRadius * s + cameraOffset * c
+
+    val cx = lx + extensionDistance
+    val cy = ly
+
+    val params = WorldParams(
+        targetX = TODO(),
+        targetY = TODO(),
+        cameraX = TODO(),
+        cameraY = TODO(),
+        cameraZ = TODO(),
+        cameraXRot = TODO(),
+        cameraYRot = TODO(),
+        cameraZRot = TODO(),
+        imWidth = TODO(),
+        imHeight = TODO(),
+        sensorWidth = TODO(),
+        focalLength = TODO(),
+        detectedZ = TODO()
+    )
+    return TODO()
 }
