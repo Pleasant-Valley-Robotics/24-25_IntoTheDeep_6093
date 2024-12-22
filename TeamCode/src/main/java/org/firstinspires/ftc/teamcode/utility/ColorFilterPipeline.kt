@@ -11,13 +11,26 @@ import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 class ColorFilterPipeline : VisionProcessor {
-    val min = Scalar(0.0, 0.0, 0.0)
-    val max = Scalar(255.0, 255.0, 255.0)
 
-    val aPerB = 0f
-    val bPerA = 0f
+    val params = FilterParams(
+        aMin = 0.0,
+        aMax = 255.0,
+        bMin = 0.0,
+        bMax = 255.0,
+        aPerB = 0.0,
+        bPerA = 0.0,
+    )
+
+//    val min = Scalar(0.0, 0.0, 0.0)
+//    val max = Scalar(255.0, 255.0, 255.0)
+//
+//    val aPerB = 0f
+//    val bPerA = 0f
 
     val decimationFactor = 16
 
@@ -42,10 +55,13 @@ class ColorFilterPipeline : VisionProcessor {
 
     override fun processFrame(frame: Mat, processMs: Long): Pair<List<Point>?, Point?> {
         // not even gonna try to explain this, check the python code
-        val minA = min.`val`[1].toInt()
-        val minB = min.`val`[2].toInt()
-        val maxA = max.`val`[1].toInt()
-        val maxB = max.`val`[2].toInt()
+        val minA = params.aMin.roundToInt()
+        val minB = params.bMin.roundToInt()
+        val maxA = params.aMax.roundToInt()
+        val maxB = params.bMax.roundToInt()
+        val aPerB = params.aPerB.toFloat()
+        val bPerA = params.bPerA.toFloat()
+
 
         val shiftA = (minA + maxA) / -2
         val shiftB = (minB + maxB) / -2
