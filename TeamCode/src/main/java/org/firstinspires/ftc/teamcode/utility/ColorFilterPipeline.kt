@@ -12,10 +12,17 @@ import org.opencv.core.Point
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+/**
+ * the general strategy for I/O on these pipelines is to have mutable public parameters,
+ * and public value getters. these pipelines run on a separate thread, hopefully kotlin
+ * respects the volatile field correctly.
+ */
 class ColorFilterPipeline : VisionProcessor {
+    @Volatile
     var filterParams = FilterParams(
         aMin = 0.0,
         aMax = 255.0,
@@ -25,6 +32,14 @@ class ColorFilterPipeline : VisionProcessor {
         bPerA = 0.0,
     )
 
+    /**
+     * the name *world*Params is a bit of a misnomer. the pipeline can indeed handle global
+     * coordinates, but it is likely more useful to use a pivot-local coordinate system,
+     * with the camera a fixed distance from (x=0, y=0, z) and with rotation
+     * (yaw=ZRot=0, roll=XRot=0). that way, proportional correction commands can be issued
+     * directly using the calculated offsets from the target point.
+     */
+    @Volatile
     var worldParams = WorldParams(
         targetX = 0.0,
         targetY = 0.0,
@@ -41,7 +56,12 @@ class ColorFilterPipeline : VisionProcessor {
         detectedZ = 0.0,
     )
 
-    val decimationFactor = 16
+    val targetPointOffset: Pair<Double, Double>?
+        get() = closestPoint?.let { (x, y) -> x - worldParams.targetX to y - worldParams.targetY }
+
+    private var closestPoint: Pair<Double, Double>? = null
+
+    private val decimationFactor = 16
 
     private lateinit var bufA: Mat
     private lateinit var bufB: Mat
@@ -50,11 +70,6 @@ class ColorFilterPipeline : VisionProcessor {
     private val hierarchy = Mat()
     private val contours: MutableList<MatOfPoint> = mutableListOf()
 
-    val maxContourPoints: List<Pair<Double, Double>>
-        get() = maxContour.toList().map { it.x to it.y }
-
-    private var maxContour = MatOfPoint()
-
     override fun init(width: Int, height: Int, calibration: CameraCalibration) {
         bufA = Mat.zeros(height / decimationFactor, width / decimationFactor, CvType.CV_8UC3)
         bufB = Mat.zeros(height / decimationFactor, width / decimationFactor, CvType.CV_8UC3)
@@ -62,6 +77,14 @@ class ColorFilterPipeline : VisionProcessor {
         bigMask = Mat.zeros(height, width, CvType.CV_8UC1)
     }
 
+    /**
+     * goes from screen space coordinates (u, v) to global coordinates (x, y)
+     *
+     * @param u image x coordinate
+     * @param v image y coordinate
+     * @param params parameters to use for transformation
+     * @return a pair (x, y) in global coordinates
+     */
     fun inversePerspective(u: Double, v: Double, params: WorldParams): Pair<Double, Double> {
         val f = params.focalLength * params.imWidth / params.sensorWidth
 
@@ -112,7 +135,7 @@ class ColorFilterPipeline : VisionProcessor {
         val pixelCoords = Mat(3, 1, CvType.CV_64F)
         pixelCoords.put(
             3, 0,
-            u, v, 1.0
+            params.imWidth - u, v, 1.0
         )
 
         val worldCoords = fullMatrixInverse.matMul(pixelCoords)
@@ -127,16 +150,21 @@ class ColorFilterPipeline : VisionProcessor {
         return worldX to worldY
     }
 
-    override fun processFrame(frame: Mat, processMs: Long): Pair<List<Point>?, Point?> {
+    /**
+     * filters an image based on some params.
+     * modifies [image], [bufA], and [mask].
+     * only filters the last 2 channels of [image].
+     *
+     * @param image the image to filter, must be 8 bit 3 channel color.
+     */
+    fun colorFilter(image: Mat, params: FilterParams) {
         // not even gonna try to explain this, check the python code
-        val minA = filterParams.aMin.roundToInt()
-        val minB = filterParams.bMin.roundToInt()
-        val maxA = filterParams.aMax.roundToInt()
-        val maxB = filterParams.bMax.roundToInt()
-        val aPerB = filterParams.aPerB.toFloat()
-        val bPerA = filterParams.bPerA.toFloat()
-
-        val (_, _) = inversePerspective(1.0, 1.0, worldParams)
+        val minA = params.aMin.roundToInt()
+        val minB = params.bMin.roundToInt()
+        val maxA = params.aMax.roundToInt()
+        val maxB = params.bMax.roundToInt()
+        val aPerB = params.aPerB.toFloat()
+        val bPerA = params.bPerA.toFloat()
 
         val shiftA = (minA + maxA) / -2
         val shiftB = (minB + maxB) / -2
@@ -164,36 +192,73 @@ class ColorFilterPipeline : VisionProcessor {
         val trans3dInv = Mat(3, 3, CvType.CV_32F)
         trans3dInv.put(0, 0, data)
 
-        Imgproc.resize(frame, bufA, bufA.size(), Imgproc.INTER_NEAREST.toDouble())
+        Core.transform(image, bufA, trans3dInv)
+        Core.inRange(
+            /* src = */ bufA,
+            /* lowerb = */ Scalar(0.0, minShiftA.toDouble(), minShiftB.toDouble()),
+            /* upperb = */ Scalar(255.0, maxShiftA.toDouble(), maxShiftB.toDouble()),
+            /* dst = */ mask
+        )
+        Core.bitwise_and(bufA, bufA, image, mask)
+    }
+
+    override fun processFrame(frame: Mat, processMs: Long): Pair<List<Point>?, Point?> {
+        val (_, _) = inversePerspective(1.0, 1.0, worldParams)
+
+        Imgproc.resize(
+            /* src = */ frame,
+            /* dst = */ bufA,
+            /* dsize = */ bufA.size(),
+            /* fx = */ 0.0,
+            /* fy = */ 0.0,
+            /* interpolation = */ Imgproc.INTER_NEAREST,
+        )
 
         Imgproc.cvtColor(bufA, bufB, Imgproc.COLOR_RGB2Lab)
-        Core.transform(bufB, bufA, trans3dInv)
-        Core.inRange(
-            bufA,
-            Scalar(0.0, minShiftA.toDouble(), minShiftB.toDouble()),
-            Scalar(255.0, maxShiftA.toDouble(), maxShiftB.toDouble()),
-            mask
+
+        // modifies mask, bufB now has filtered image in it
+        colorFilter(bufB, filterParams)
+
+        Imgproc.Canny(
+            /* image = */ bufB,
+            /* edges = */ bufA,
+            /* threshold1 = */ 100.0,
+            /* threshold2 = */ 200.0,
+            /* apertureSize = */ 3,
         )
 
         Imgproc.findContours(
-            mask,
-            contours,
-            hierarchy,
-            Imgproc.RETR_TREE,
-            Imgproc.CHAIN_APPROX_SIMPLE
+            /* image = */ bufA,
+            /* contours = */ contours,
+            /* hierarchy = */ hierarchy,
+            /* mode = */ Imgproc.RETR_TREE,
+            /* method = */ Imgproc.CHAIN_APPROX_SIMPLE,
         )
 
-        val maxContourOrNull = contours.maxByOrNull { Imgproc.contourArea(it) }
-        val avgPoint = maxContourOrNull?.let { contour ->
-            maxContour = contour
-            contour.toList()
-                .reduce { a, b -> Point(a.x + b.x, a.y + b.y) }
-                .let { Point(it.x / contour.size(0), it.y / contour.size(0)) }
+        contours.removeAll { Imgproc.contourArea(it) < 20 }
+
+        val centers = contours
+            .map { Imgproc.moments(it) }
+            .map { Pair(it.m10 / it.m00, it.m01 / it.m00) }
+
+        val worldCenters = centers.map {
+            inversePerspective(
+                u = it.first,
+                v = it.second,
+                params = worldParams,
+            )
         }
 
-        contours.clear()
+        val closestPointIndex = worldCenters.withIndex().minByOrNull { (_, p) ->
+            (worldParams.targetX - p.first).pow(2) + (worldParams.targetY - p.second).pow(2)
+        }
 
-        return Pair(maxContourOrNull?.toList(), avgPoint)
+        if (closestPointIndex == null) return Pair(null, null)
+
+        val (index, point) = closestPointIndex
+        closestPoint = point
+
+        return Pair(contours[index].toList(), Point(point.first, point.second))
     }
 
     override fun onDrawFrame(
