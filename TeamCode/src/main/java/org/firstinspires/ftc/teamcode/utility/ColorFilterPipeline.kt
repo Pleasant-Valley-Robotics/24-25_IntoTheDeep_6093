@@ -13,7 +13,6 @@ import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
 import kotlin.math.cos
 import kotlin.math.pow
-import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /**
@@ -21,7 +20,7 @@ import kotlin.math.sin
  * and public value getters. these pipelines run on a separate thread, hopefully kotlin
  * respects the volatile field correctly.
  */
-class ColorFilterPipeline : VisionProcessor {
+object ColorFilterPipeline : VisionProcessor {
     @Volatile
     var filterParams = FilterParams(
         aMin = 0,
@@ -85,6 +84,7 @@ class ColorFilterPipeline : VisionProcessor {
      * @param params parameters to use for transformation
      * @return a pair (x, y) in global coordinates
      */
+
     fun inversePerspective(u: Double, v: Double, params: WorldParams): Pair<Double, Double> {
         val f = params.focalLength * params.imWidth / params.sensorWidth
 
@@ -108,6 +108,9 @@ class ColorFilterPipeline : VisionProcessor {
         val py = params.pose.cameraY
         val pz = params.pose.cameraZ
 
+        // all of this is just matrix multiplications expanded manually for efficiency and
+        // because i hate working with the opencv matrix library.
+
         val rot = listOf(
             cy * cz, -sz * cy, sy,
             sx * sy * cz + sz * cx, -sx * sy * sz + cx * cz, -sx * cy,
@@ -120,9 +123,7 @@ class ColorFilterPipeline : VisionProcessor {
             -(rot[6] * px + rot[7] * py + rot[8] * pz),
         )
 
-        val fullMatrix = Mat(3, 3, CvType.CV_64F)
-        fullMatrix.put(
-            0, 0,
+        val fm = listOf(
             rot[0] * f + rot[6] * ix,
             rot[1] * f + rot[7] * ix,
             trans[2] * ix + trans[0] * f + zd * (rot[2] * f + rot[8] * ix),
@@ -131,23 +132,39 @@ class ColorFilterPipeline : VisionProcessor {
             trans[2] * iy + trans[1] * f + zd * (rot[8] * iy + rot[5] * f),
             rot[6], rot[7], rot[8] * zd + trans[2],
         )
-        val fullMatrixInverse = fullMatrix.inv()
-        val pixelCoords = Mat(3, 1, CvType.CV_64F)
-        pixelCoords.put(
-            3, 0,
-            params.imWidth - u, v, 1.0
+
+        // we do not actually need the inverse of the matrix, just the adjugate.
+        // this is because the factor of 1/det gets cancelled by the conversion
+        // from homogenous coordinates.
+        val fa = listOf(
+            fm[4] * fm[8] - fm[5] * fm[7],
+            fm[2] * fm[7] - fm[1] * fm[8],
+            fm[1] * fm[5] - fm[2] * fm[4],
+            fm[5] * fm[6] - fm[3] * fm[8],
+            fm[0] * fm[8] - fm[2] * fm[6],
+            fm[2] * fm[3] - fm[0] * fm[5],
+            fm[3] * fm[7] - fm[4] * fm[6],
+            fm[1] * fm[6] - fm[0] * fm[7],
+            fm[0] * fm[4] - fm[1] * fm[3],
         )
 
-        val worldCoords = fullMatrixInverse.matMul(pixelCoords)
+        // in the image 0, 0 is the top left. in the transform 0, 0 is the top right.
+        // correct for flipped coordinates
+        val lu = params.imWidth - u
+        val worldCoords = listOf(
+            lu * fa[0] + v * fa[1] + fa[2],
+            lu * fa[3] + v * fa[4] + fa[5],
+            lu * fa[6] + v * fa[7] + fa[8],
+        )
 
-        val wx = worldCoords[0, 0][0]
-        val wy = worldCoords[0, 1][0]
-        val w = worldCoords[0, 2][0]
+        val wx = worldCoords[0]
+        val wy = worldCoords[1]
+        val w = worldCoords[2]
 
         val worldX = wx / w
         val worldY = wy / w
 
-        return worldX to worldY
+        return Pair(worldX, worldY)
     }
 
     /**
