@@ -60,7 +60,7 @@ object ColorFilterPipeline : VisionProcessor {
 
     private var closestPoint: Pair<Double, Double>? = null
 
-    private val decimationFactor = 16
+    private const val DECIMATION_FACTOR = 16
 
     private lateinit var bufA: Mat
     private lateinit var bufB: Mat
@@ -70,9 +70,9 @@ object ColorFilterPipeline : VisionProcessor {
     private val contours: MutableList<MatOfPoint> = mutableListOf()
 
     override fun init(width: Int, height: Int, calibration: CameraCalibration) {
-        bufA = Mat.zeros(height / decimationFactor, width / decimationFactor, CvType.CV_8UC3)
-        bufB = Mat.zeros(height / decimationFactor, width / decimationFactor, CvType.CV_8UC3)
-        mask = Mat.zeros(height / decimationFactor, width / decimationFactor, CvType.CV_8UC1)
+        bufA = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
+        bufB = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
+        mask = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC1)
         bigMask = Mat.zeros(height, width, CvType.CV_8UC1)
     }
 
@@ -299,8 +299,8 @@ object ColorFilterPipeline : VisionProcessor {
 
 
         canvas.drawCircle(
-            point.x.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
-            point.y.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
+            point.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+            point.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
             20f, pointPaint
         )
 
@@ -314,10 +314,10 @@ object ColorFilterPipeline : VisionProcessor {
             val startPoint = points[i]
             val endPoint = points[(i + 1) % points.size]
             canvas.drawLine(
-                startPoint.x.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
-                startPoint.y.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
-                endPoint.x.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
-                endPoint.y.toFloat() * scaleBmpPxToCanvasPx * decimationFactor,
+                startPoint.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                startPoint.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                endPoint.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                endPoint.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
                 linePaint
             )
         }
