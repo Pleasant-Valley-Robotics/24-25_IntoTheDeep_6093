@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.utility
 
 data class FilterParams(
-    val aMin: Double,
-    val aMax: Double,
-    val bMin: Double,
-    val bMax: Double,
+    val aMin: Int,
+    val aMax: Int,
+    val bMin: Int,
+    val bMax: Int,
     val aPerB: Double,
     val bPerA: Double,
 )

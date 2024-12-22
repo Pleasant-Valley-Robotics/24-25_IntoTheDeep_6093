@@ -24,10 +24,10 @@ import kotlin.math.sin
 class ColorFilterPipeline : VisionProcessor {
     @Volatile
     var filterParams = FilterParams(
-        aMin = 0.0,
-        aMax = 255.0,
-        bMin = 0.0,
-        bMax = 255.0,
+        aMin = 0,
+        aMax = 255,
+        bMin = 0,
+        bMax = 255,
         aPerB = 0.0,
         bPerA = 0.0,
     )
@@ -49,8 +49,8 @@ class ColorFilterPipeline : VisionProcessor {
             extensionDistance = 0.0,
             pivotAngle = 0.0
         ),
-        imWidth = 0.0,
-        imHeight = 0.0,
+        imWidth = 0,
+        imHeight = 0,
         sensorWidth = 0.0,
         focalLength = 0.0,
         detectedZ = 0.0,
@@ -159,10 +159,10 @@ class ColorFilterPipeline : VisionProcessor {
      */
     fun colorFilter(image: Mat, params: FilterParams) {
         // not even gonna try to explain this, check the python code
-        val minA = params.aMin.roundToInt()
-        val minB = params.bMin.roundToInt()
-        val maxA = params.aMax.roundToInt()
-        val maxB = params.bMax.roundToInt()
+        val minA = params.aMin
+        val minB = params.bMin
+        val maxA = params.aMax
+        val maxB = params.bMax
         val aPerB = params.aPerB.toFloat()
         val bPerA = params.bPerA.toFloat()
 
