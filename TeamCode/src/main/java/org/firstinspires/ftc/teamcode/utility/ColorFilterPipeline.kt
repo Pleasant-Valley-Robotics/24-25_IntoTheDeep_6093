@@ -43,12 +43,12 @@ class ColorFilterPipeline : VisionProcessor {
     var worldParams = WorldParams(
         targetX = 0.0,
         targetY = 0.0,
-        cameraX = 0.0,
-        cameraY = 0.0,
-        cameraZ = 0.0,
-        cameraXRot = 0.0,
-        cameraYRot = 0.0,
-        cameraZRot = 0.0,
+        pose = poseFromComponents(
+            cameraRadius = 0.0,
+            cameraOffset = 0.0,
+            extensionDistance = 0.0,
+            pivotAngle = 0.0
+        ),
         imWidth = 0.0,
         imHeight = 0.0,
         sensorWidth = 0.0,
@@ -91,9 +91,9 @@ class ColorFilterPipeline : VisionProcessor {
         val ix = params.imWidth / 2
         val iy = params.imHeight / 2
 
-        val rx = -params.cameraXRot / 180.0 * Math.PI
-        val ry = -params.cameraYRot / 180.0 * Math.PI
-        val rz = -params.cameraZRot / 180.0 * Math.PI
+        val rx = -Math.toRadians(params.pose.cameraXRot)
+        val ry = -Math.toRadians(params.pose.cameraYRot)
+        val rz = -Math.toRadians(params.pose.cameraZRot)
 
         val sx = sin(rx)
         val sy = sin(ry)
@@ -104,9 +104,9 @@ class ColorFilterPipeline : VisionProcessor {
 
         val zd = params.detectedZ
 
-        val px = params.cameraX
-        val py = params.cameraY
-        val pz = params.cameraZ
+        val px = params.pose.cameraX
+        val py = params.pose.cameraY
+        val pz = params.pose.cameraZ
 
         val rot = listOf(
             cy * cz, -sz * cy, sy,
