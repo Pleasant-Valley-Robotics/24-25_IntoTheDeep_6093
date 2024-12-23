@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utility
+package org.firstinspires.ftc.teamcode.utility.vision
 
 import kotlin.math.cos
 import kotlin.math.sin
