@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utility
+package org.firstinspires.ftc.teamcode.utility.control
 
 import kotlinx.coroutines.yield
 import kotlin.math.absoluteValue

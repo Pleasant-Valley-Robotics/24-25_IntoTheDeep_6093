@@ -9,13 +9,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.IMU
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.teamcode.utility.ClampController
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.SqrtController
+import org.firstinspires.ftc.teamcode.utility.control.SqrtController
 import org.firstinspires.ftc.teamcode.utility.maxOf
 
 /**

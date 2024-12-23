@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utility
+package org.firstinspires.ftc.teamcode.utility.control
 
 import kotlin.math.absoluteValue
 import kotlin.math.sign

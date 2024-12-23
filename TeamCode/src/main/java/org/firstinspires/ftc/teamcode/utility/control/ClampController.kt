@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.utility
+package org.firstinspires.ftc.teamcode.utility.control
 
 class ClampController(
     private val pGain: Double,
