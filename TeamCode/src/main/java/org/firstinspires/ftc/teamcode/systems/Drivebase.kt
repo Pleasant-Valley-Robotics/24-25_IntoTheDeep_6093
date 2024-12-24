@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.IMU
+import kotlinx.coroutines.delay
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.utility.CameraConstants
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
@@ -16,6 +18,9 @@ import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
 import org.firstinspires.ftc.teamcode.utility.maxOf
+import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
+import org.firstinspires.ftc.teamcode.utility.vision.WorldParams
+import org.firstinspires.ftc.teamcode.utility.vision.poseFromComponents
 
 /**
  * drivebase that contains all the code to drive our robot around.
@@ -173,6 +178,29 @@ class Drivebase(hardwareMap: HardwareMap) {
         )
 
         motors.forEach { it.power = 0.0 }
+    }
+
+    suspend fun centerBlock(color: BlockColor, extender: Extender, spintake: Spintake) {
+        spintake.pivotState(Spintake.PivotState.Up)
+        delay(1000)
+
+        val spintakeAngle = 30.0
+        val cameraPose = poseFromComponents(
+            cameraRadius = CameraConstants.CAMERA_RADIUS_IN,
+            cameraOffset = CameraConstants.CAMERA_OFFSET_IN,
+            extensionDistance = extender.extendPosition,
+            pivotAngle = spintakeAngle,
+        )
+        val worldParams = WorldParams(
+            pose = cameraPose,
+            targetX = CameraConstants.TARGET_BLOCK_OFFSET_IN,
+            targetY = 0.0,
+            imWidth = 1280,
+            imHeight = 960,
+            sensorWidth = CameraConstants.SENSOR_WIDTH_MM,
+            focalLength = CameraConstants.FOCAL_LENGTH_MM,
+            detectedZ = CameraConstants.BLOCK_HEIGHT_IN
+        )
     }
 
     /**
