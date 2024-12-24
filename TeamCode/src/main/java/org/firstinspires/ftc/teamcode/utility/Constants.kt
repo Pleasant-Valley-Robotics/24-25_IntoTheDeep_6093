@@ -66,3 +66,13 @@ object FlipperConstants {
     const val FLIPPER_OUT_POS = 0.4
     const val SERVO_VEL_ENC_S = (FLIPPER_IN_POS - FLIPPER_OUT_POS) / 0.8
 }
+
+object CameraConstants {
+    const val SENSOR_WIDTH_MM = 36.0
+    const val FOCAL_LENGTH_MM = 4.0
+
+    const val TARGET_BLOCK_OFFSET_IN = 1.0
+    const val CAMERA_OFFSET_IN = 0.0
+    const val CAMERA_RADIUS_IN = 0.0
+    const val BLOCK_HEIGHT_IN = 0.0
+}
