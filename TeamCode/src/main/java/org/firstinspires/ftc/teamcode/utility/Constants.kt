@@ -68,9 +68,6 @@ object FlipperConstants {
 }
 
 object CameraConstants {
-    const val SENSOR_WIDTH_MM = 36.0
-    const val FOCAL_LENGTH_MM = 4.0
-
     const val TARGET_BLOCK_OFFSET_IN = 1.0
     const val CAMERA_OFFSET_IN = 0.0
     const val CAMERA_RADIUS_IN = 0.0

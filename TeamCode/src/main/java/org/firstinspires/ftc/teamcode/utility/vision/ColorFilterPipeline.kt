@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.utility.vision
 import android.graphics.Canvas
 import android.graphics.Paint
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.BLOCK_HEIGHT_IN
 import org.firstinspires.ftc.vision.VisionProcessor
 import org.opencv.core.Core
 import org.opencv.core.CvType
@@ -22,7 +23,7 @@ import kotlin.math.sin
  */
 object ColorFilterPipeline : VisionProcessor {
     @Volatile
-    var filterParams: ColorFilter.FilterParams? = null
+    lateinit var filterParams: ColorFilter.FilterParams
 
     /**
      * it is recommended to use a pivot-local coordinate system,
@@ -31,18 +32,24 @@ object ColorFilterPipeline : VisionProcessor {
      * directly using the calculated offsets from the target point.
      */
     @Volatile
-    var cameraPose: PerspectiveTransform.CameraPose? = null
+    lateinit var cameraPose: PerspectiveTransform.CameraPose
 
-    @Volatile
-    var cameraParams: PerspectiveTransform.CameraParams? = null
+    lateinit var cameraParams: PerspectiveTransform.CameraParams
+        private set
+
+    private val allInitialized
+        get() = ::filterParams.isInitialized
+                && ::cameraPose.isInitialized
+                && ::cameraParams.isInitialized
 
     val contourCenters: List<Pair<Double, Double>>
         get() {
-            val cameraPose = cameraPose ?: return emptyList()
-            val cameraParams = cameraParams ?: return emptyList()
+            if (!allInitialized) return emptyList()
 
             return contours
-                .map { Imgproc.moments(it).run { Pair(cameraParams.imWidth - m10 / m00, m01 / m00) } }
+                .map {
+                    Imgproc.moments(it).run { Pair(cameraParams.imWidth - m10 / m00, m01 / m00) }
+                }
                 .map {
                     PerspectiveTransform.inversePerspective(
                         u = it.first,
@@ -63,7 +70,19 @@ object ColorFilterPipeline : VisionProcessor {
     private val contours: MutableList<MatOfPoint> = mutableListOf()
 
     override fun init(width: Int, height: Int, calibration: CameraCalibration) {
-        calibration.principalPointX
+        cameraParams = calibration.run {
+            PerspectiveTransform.CameraParams(
+                imWidth = width / DECIMATION_FACTOR,
+                imHeight = height / DECIMATION_FACTOR,
+                focalLengthX = focalLengthX.toDouble(),
+                focalLengthY = focalLengthY.toDouble(),
+                principalX = principalPointX.toDouble(),
+                principalY = principalPointY.toDouble(),
+                detectedZ = BLOCK_HEIGHT_IN,
+            )
+        }
+
+
         bufA = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
         bufB = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
         mask = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC1)
@@ -71,7 +90,7 @@ object ColorFilterPipeline : VisionProcessor {
     }
 
     override fun processFrame(frame: Mat, processMs: Long): Any? {
-        val filterParams = filterParams ?: return null
+        if (!allInitialized) return null
 
         Imgproc.resize(
             /* src = */ frame,
