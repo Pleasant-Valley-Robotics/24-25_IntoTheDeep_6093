@@ -12,4 +12,6 @@ class Camera(hardwareMap: HardwareMap) {
         // ...processors =
         ColorFilterPipeline,
     )
+
+    val nearestCenter get() = ColorFilterPipeline.contourCenters
 }
