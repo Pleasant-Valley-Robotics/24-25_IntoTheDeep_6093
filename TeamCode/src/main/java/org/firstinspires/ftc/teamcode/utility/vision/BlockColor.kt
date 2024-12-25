@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utility.vision
 
+import org.firstinspires.ftc.teamcode.utility.vision.ColorFilter.FilterParams
+
 enum class BlockColor {
     Red,
     Yellow,
@@ -7,28 +9,30 @@ enum class BlockColor {
 
     fun getFilterParams(): FilterParams = when (this) {
         Red -> FilterParams(
-            aMin = 148,
-            aMax = 196,
-            bMin = 138,
-            bMax = 179,
-            aPerB = 0.0016666666666667052,
-            bPerA = 0.6566666666666667
+            minA = 148,
+            maxA = 196,
+            minB = 138,
+            maxB = 179,
+            aPerB = 0.0016666667f,
+            bPerA = 0.6566667f,
         )
+
         Yellow -> FilterParams(
-            aMin = 113,
-            aMax = 147,
-            bMin = 149,
-            bMax = 196,
-            aPerB = 0.04833333333333334,
-            bPerA = 0.44666666666666677
+            minA = 113,
+            maxA = 147,
+            minB = 149,
+            maxB = 196,
+            aPerB = 0.048333332f,
+            bPerA = 0.44666666f,
         )
+
         Blue -> FilterParams(
-            aMin = 142,
-            aMax = 170,
-            bMin = 58,
-            bMax = 115,
-            aPerB = -0.5416666666666666,
-            bPerA = -0.0016666666666664831
+            minA = 142,
+            maxA = 170,
+            minB = 58,
+            maxB = 115,
+            aPerB = -0.5416667f,
+            bPerA = -0.0016666667f,
         )
     }
 }
