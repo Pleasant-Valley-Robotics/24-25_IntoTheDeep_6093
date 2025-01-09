@@ -131,43 +131,36 @@ object SamplePipeline : VisionProcessor {
         scaleCanvasDensity: Float,
         userContext: Any?
     ) {
-        if (userContext == null) return
-
-        @Suppress("UNCHECKED_CAST")
-        val context = userContext as Pair<List<Point>?, Point?>
-        val points = context.first
-        val point = context.second
-
-        if (points == null || point == null) return
-
         val pointPaint = Paint()
         pointPaint.setARGB(255, 255, 255, 0)
         pointPaint.style = Paint.Style.FILL
-
-
-        canvas.drawCircle(
-            point.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-            point.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-            20f, pointPaint
-        )
-
 
         val linePaint = Paint()
         linePaint.setARGB(255, 0, 255, 255)
         linePaint.style = Paint.Style.STROKE
         linePaint.strokeWidth = 5f
 
-        for (i in points.indices) {
-            val startPoint = points[i]
-            val endPoint = points[(i + 1) % points.size]
-            canvas.drawLine(
-                startPoint.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-                startPoint.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-                endPoint.x.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-                endPoint.y.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-                linePaint
+
+        for ((px, py) in contourCenters) {
+            canvas.drawCircle(
+                px.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                py.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                20f, pointPaint
             )
         }
+
+
+//        for (i in points.indices) {
+//            val (startX, startY) = points[i]
+//            val (endX, endY) = points[(i + 1) % points.size]
+//            canvas.drawLine(
+//                startX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+//                startY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+//                endX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+//                endY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+//                linePaint
+//            )
+//        }
     }
 
 }
