@@ -12,11 +12,11 @@ package org.firstinspires.ftc.teamcode.utility.control
  */
 class PidfController(
     private val kp: Double,
-    ti: Double,
-    td: Double,
+    ti: Double = Double.MAX_VALUE,
+    td: Double = 0.0,
     private val clamp: Double?,
     private val maxValue: Double,
-    private val feedforward: () -> Double,
+    private val feedforward: () -> Double = { 0.0 },
 ) {
     private val ki = kp / ti
     private val kd = kp * td
@@ -38,7 +38,7 @@ class PidfController(
 
         val closedLoop = prop + integral + dv
 
-        val openLoop = feedforward()
+        val openLoop = feedforward?.invoke() ?: 0.0
 
         return (closedLoop + openLoop).coerceIn(-maxValue, maxValue)
     }
