@@ -7,18 +7,22 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.IMU
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.teamcode.utility.CameraConstants
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.control.ClampController
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
-import org.firstinspires.ftc.teamcode.utility.maxOf
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
+import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * drivebase that contains all the code to drive our robot around.
@@ -73,7 +77,7 @@ class Drivebase(hardwareMap: HardwareMap) {
         val blpower = xInput + yInput - turnInput
         val brpower = xInput - yInput + turnInput
 
-        val maxPower = maxOf(1.0, flpower, frpower, blpower, brpower)
+        val maxPower = listOf(1.0, flpower, frpower, blpower, brpower).max()
 
         fldrive.power = flpower / maxPower
         frdrive.power = frpower / maxPower
@@ -99,17 +103,17 @@ class Drivebase(hardwareMap: HardwareMap) {
     /** distance sideways in inches read from wheel encoders */
     private val yDistance
         get() = motors
-            .map { it.currentPosition }
-            // notice how it is the same as the yInput row in mecanum drive
-            .zip(listOf(-1, 1, 1, -1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+                    .map { it.currentPosition }
+                    // notice how it is the same as the yInput row in mecanum drive
+                    .zip(listOf(-1, 1, 1, -1))
+                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /** distance forwards in inches read from wheel encoders */
     private val xDistance
         get() = motors
-            .map { it.currentPosition }
-            .zip(listOf(1, 1, 1, 1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+                    .map { it.currentPosition }
+                    .zip(listOf(1, 1, 1, 1))
+                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /**
      * wraps an angle in degrees to the range `[-180, 180]`
@@ -176,6 +180,59 @@ class Drivebase(hardwareMap: HardwareMap) {
         )
 
         motors.forEach { it.power = 0.0 }
+    }
+
+    /**
+     * intended to center the robot on the block, using camera feedback
+     * and PID controllers.
+     *
+     * @param camera the camera object to use for positioning
+     * @param cameraAngle the angle the camera is currently at, degrees
+     * @param extender the extender to extend with
+     * @param color the color of the block to center on
+     */
+    suspend fun centerBlock(
+        camera: Camera,
+        cameraAngle: Double,
+        extender: Extender,
+        color: BlockColor,
+    ) {
+        camera.sampleColor = color
+
+        val xError = ClampController(
+            pGain = 0.2,
+            maxControl = 0.3
+        )
+
+        val yError = ClampController(
+            pGain = 0.2,
+            maxControl = 0.3
+        )
+
+        val ox = CAMERA_OFFSET_Y_IN
+        val oy = CAMERA_RADIUS_IN
+
+        camera.samplePipelineActive = true
+
+        while (true) {
+            val pose = PerspectiveTransform.CameraPose(
+                cameraX = +ox * cos(cameraAngle) - oy * sin(cameraAngle),
+                cameraY = 0.0,
+                cameraZ = +ox * sin(cameraAngle) + oy * cos(cameraAngle),
+                cameraXRot = 0.0,
+                cameraYRot = cameraAngle,
+                cameraZRot = 0.0,
+            )
+
+            val (ex, ey) = camera.nearestCenterError
+            val extendPower = xError.accept(ex)
+            val strafePower = yError.accept(ey)
+
+            extender.extendSafe(extendPower)
+            controlMotors(0.0, strafePower, 0.0)
+
+            yield()
+        }
     }
 
     /**

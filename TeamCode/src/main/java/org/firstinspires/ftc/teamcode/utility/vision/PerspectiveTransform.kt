@@ -19,7 +19,7 @@ object PerspectiveTransform {
         pose: CameraPose,
         params: CameraParams
     ): Pair<Double, Double> {
-        // all of this is just matrix multiplications expanded manually for efficiency and
+        // all of this is just matrix multiplications groupCount() expanded manually for efficiency and
         // because i hate working with the opencv matrix library.
 
         // note heavy use of scoped functions to keep good variable names from making

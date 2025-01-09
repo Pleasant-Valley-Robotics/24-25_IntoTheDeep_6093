@@ -5,23 +5,18 @@ import android.graphics.Paint
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.BLOCK_HEIGHT_IN
 import org.firstinspires.ftc.vision.VisionProcessor
-import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
-import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
 
 /**
  * the general strategy for I/O on these pipelines is to have mutable public parameters,
  * and public value getters. these pipelines run on a separate thread, hopefully kotlin
  * respects the volatile field correctly.
  */
-object ColorFilterPipeline : VisionProcessor {
+object SamplePipeline : VisionProcessor {
     @Volatile
     lateinit var filterParams: ColorFilter.FilterParams
 
@@ -34,6 +29,7 @@ object ColorFilterPipeline : VisionProcessor {
     @Volatile
     lateinit var cameraPose: PerspectiveTransform.CameraPose
 
+    @Volatile
     lateinit var cameraParams: PerspectiveTransform.CameraParams
         private set
 
@@ -42,38 +38,28 @@ object ColorFilterPipeline : VisionProcessor {
                 && ::cameraPose.isInitialized
                 && ::cameraParams.isInitialized
 
-    val contourCenters: List<Pair<Double, Double>>
-        get() {
-            if (!allInitialized) return emptyList()
-
-            return contours
-                .map {
-                    Imgproc.moments(it).run { Pair(cameraParams.imWidth - m10 / m00, m01 / m00) }
-                }
-                .map {
-                    PerspectiveTransform.inversePerspective(
-                        u = it.first,
-                        v = it.second,
-                        pose = cameraPose,
-                        params = cameraParams,
-                    )
-                }
-        }
+    @Volatile
+    var contourCenters: List<Pair<Double, Double>> = emptyList()
+        private set
 
     private const val DECIMATION_FACTOR = 16
 
+    // the buffers can be lateinit without checking. init runs before the buffers are read
+    // in the processing code
     private lateinit var bufA: Mat
     private lateinit var bufB: Mat
     private lateinit var mask: Mat
-    private lateinit var bigMask: Mat
     private val hierarchy = Mat()
     private val contours: MutableList<MatOfPoint> = mutableListOf()
 
     override fun init(width: Int, height: Int, calibration: CameraCalibration) {
+        val newWidth = width / DECIMATION_FACTOR
+        val newHeight = height / DECIMATION_FACTOR
+
         cameraParams = calibration.run {
             PerspectiveTransform.CameraParams(
-                imWidth = width / DECIMATION_FACTOR,
-                imHeight = height / DECIMATION_FACTOR,
+                imWidth = newWidth,
+                imHeight = newHeight,
                 focalLengthX = focalLengthX.toDouble(),
                 focalLengthY = focalLengthY.toDouble(),
                 principalX = principalPointX.toDouble(),
@@ -83,10 +69,9 @@ object ColorFilterPipeline : VisionProcessor {
         }
 
 
-        bufA = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
-        bufB = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC3)
-        mask = Mat.zeros(height / DECIMATION_FACTOR, width / DECIMATION_FACTOR, CvType.CV_8UC1)
-        bigMask = Mat.zeros(height, width, CvType.CV_8UC1)
+        bufA = Mat.zeros(newHeight, newWidth, CvType.CV_8UC3)
+        bufB = Mat.zeros(newHeight, newWidth, CvType.CV_8UC3)
+        mask = Mat.zeros(newHeight, newWidth, CvType.CV_8UC1)
     }
 
     override fun processFrame(frame: Mat, processMs: Long): Any? {
@@ -124,7 +109,16 @@ object ColorFilterPipeline : VisionProcessor {
 
         contours.removeAll { Imgproc.contourArea(it) < 20 }
 
-        val centers = contours.map { Imgproc.moments(it).run { Pair(m10 / m00, m01 / m00) } }
+        contourCenters = contours
+            .map { Imgproc.moments(it).run { Pair(cameraParams.imWidth - m10 / m00, m01 / m00) } }
+            .map {
+                PerspectiveTransform.inversePerspective(
+                    u = it.first,
+                    v = it.second,
+                    pose = cameraPose,
+                    params = cameraParams,
+                )
+            }
 
         return null
     }
@@ -137,10 +131,12 @@ object ColorFilterPipeline : VisionProcessor {
         scaleCanvasDensity: Float,
         userContext: Any?
     ) {
-        @Suppress("UNCHECKED_CAST", "SafeCastWithReturn")
-        userContext as? Pair<List<Point>?, Point?> ?: return
-        val points = userContext.first
-        val point = userContext.second
+        if (userContext == null) return
+
+        @Suppress("UNCHECKED_CAST")
+        val context = userContext as Pair<List<Point>?, Point?>
+        val points = context.first
+        val point = context.second
 
         if (points == null || point == null) return
 

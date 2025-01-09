@@ -68,8 +68,13 @@ object FlipperConstants {
 }
 
 object CameraConstants {
+    const val PIVOT_HEIGHT_IN = 5.625
+    const val BLOCK_HEIGHT_IN = 1.5
+
+    const val CAMERA_RADIUS_IN = 2.875
+    const val CAMERA_OFFSET_Y_IN = 0.7086614173228347
+    const val CAMERA_OFFSET_X_IN = 1.6
+
     const val TARGET_BLOCK_OFFSET_IN = 1.0
-    const val CAMERA_OFFSET_IN = 0.0
-    const val CAMERA_RADIUS_IN = 0.0
-    const val BLOCK_HEIGHT_IN = 0.0
+
 }
