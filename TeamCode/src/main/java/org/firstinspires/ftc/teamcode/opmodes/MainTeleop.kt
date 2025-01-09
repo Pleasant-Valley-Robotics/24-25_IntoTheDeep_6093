@@ -43,7 +43,7 @@ class MainTeleop : LinearOpMode() {
 
         runBlocking {
             /**
-            * implements the controls from
+             * implements the controls from
              * [this diagram](https://github.com/Pleasant-Valley-Robotics/24-25_IntoTheDeep_6093/blob/c044f6bc06b16190bddb8a6cdaa9e33c1754b1b0/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/documentation/svgviewer-png-output(1).png?raw=true)
              */
             val endEffector = launch {
@@ -57,9 +57,9 @@ class MainTeleop : LinearOpMode() {
                     }
 
                     val (r, g, b) = when (state) {
-                        EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0)
-                        EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0)
-                        EndEffectorState.Override -> Triple(245.0, 39.0, 64.0)
+                        EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0) // green
+                        EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0) // purple
+                        EndEffectorState.Override -> Triple(245.0, 39.0, 64.0) // pink-red
                     }
 
                     gamepad2.setLedColor(r, g, b, LED_DURATION_CONTINUOUS)
