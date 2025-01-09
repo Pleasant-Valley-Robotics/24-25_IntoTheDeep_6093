@@ -14,15 +14,22 @@ import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.X_CORRECT_SPEED
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.X_CORRECT_THRESH_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_MAX
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_P
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_THRESH_IN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.control.BangBangController
 import org.firstinspires.ftc.teamcode.utility.control.ClampController
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
 import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
+import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -201,14 +208,14 @@ class Drivebase(hardwareMap: HardwareMap) {
     ) {
         camera.sampleColor = color
 
-        val xError = ClampController(
-            pGain = 0.2,
-            maxControl = 0.3
+        val xError = BangBangController(
+            speed = X_CORRECT_SPEED,
+            thresh = X_CORRECT_THRESH_IN,
         )
 
         val yError = ClampController(
-            pGain = 0.2,
-            maxControl = 0.3
+            pGain = Y_CORRECT_P,
+            maxControl = Y_CORRECT_MAX,
         )
 
         val pitch = PIVOT_DOWN_ANGLE_RAD
@@ -220,7 +227,7 @@ class Drivebase(hardwareMap: HardwareMap) {
 
         camera.samplePipelineActive = true
 
-        while (true) {
+        do {
             val pose = PerspectiveTransform.CameraPose(
                 cameraX = xNew,
                 cameraY = CAMERA_OFFSET_Y_IN,
@@ -238,7 +245,10 @@ class Drivebase(hardwareMap: HardwareMap) {
             controlMotors(0.0, strafePower, 0.0)
 
             yield()
-        }
+        } while (ex.absoluteValue > X_CORRECT_THRESH_IN && ey.absoluteValue > Y_CORRECT_THRESH_IN)
+
+        extender.extendSafe(0.0)
+        controlMotors(0.0, 0.0, 0.0)
     }
 
     /**

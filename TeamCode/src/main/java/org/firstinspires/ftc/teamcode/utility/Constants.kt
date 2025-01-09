@@ -58,6 +58,9 @@ object SpintakeConstants {
     const val PIVOT_UP_POS = 0.0
     const val PIVOT_DODGE_POS = 0.4
     const val PIVOT_DOWN_POS = 1.0
+
+    const val PIVOT_LOOK_POS = 0.6
+
     const val SERVO_VEL_ENC_S = (PIVOT_DOWN_POS - PIVOT_UP_POS) / 1.25
 }
 
@@ -80,4 +83,10 @@ object CameraConstants {
 
     const val TARGET_BLOCK_OFFSET_IN = 1.0
 
+    const val Y_CORRECT_P = 0.2
+    const val Y_CORRECT_MAX = 0.3
+    const val Y_CORRECT_THRESH_IN = 0.2
+
+    const val X_CORRECT_SPEED = 0.6
+    const val X_CORRECT_THRESH_IN = 0.2
 }

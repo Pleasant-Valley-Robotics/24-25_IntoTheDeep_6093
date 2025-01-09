@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.systems
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DODGE_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_LOOK_POS
 import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 
 /** thing with 2 grippy wheels that hand off to the flipper */
@@ -17,6 +18,7 @@ class Spintake(hardwareMap: HardwareMap) {
         Up,
         Down,
         Dodge,
+        Look,
     }
 
     enum class IntakeState {
@@ -50,6 +52,7 @@ class Spintake(hardwareMap: HardwareMap) {
             PivotState.Up -> PIVOT_UP_POS
             PivotState.Down -> PIVOT_DOWN_POS
             PivotState.Dodge -> PIVOT_DODGE_POS
+            PivotState.Look -> PIVOT_LOOK_POS
         }
     }
 
