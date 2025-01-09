@@ -75,6 +75,9 @@ object CameraConstants {
     const val CAMERA_OFFSET_Y_IN = 0.7086614173228347
     const val CAMERA_OFFSET_X_IN = 1.6
 
+    const val PIVOT_DOWN_ANGLE_RAD = Math.PI / 4
+    const val PIVOT_UP_ANGLE_RAD = 0.0
+
     const val TARGET_BLOCK_OFFSET_IN = 1.0
 
 }

@@ -10,8 +10,10 @@ import com.qualcomm.robotcore.hardware.IMU
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
@@ -187,13 +189,13 @@ class Drivebase(hardwareMap: HardwareMap) {
      * and PID controllers.
      *
      * @param camera the camera object to use for positioning
-     * @param cameraAngle the angle the camera is currently at, degrees
-     * @param extender the extender to extend with
+     * @param spintake the spintake
+     * @param extender the extender
      * @param color the color of the block to center on
      */
     suspend fun centerBlock(
         camera: Camera,
-        cameraAngle: Double,
+        spintake: Spintake,
         extender: Extender,
         color: BlockColor,
     ) {
@@ -209,18 +211,22 @@ class Drivebase(hardwareMap: HardwareMap) {
             maxControl = 0.3
         )
 
-        val ox = CAMERA_OFFSET_Y_IN
-        val oy = CAMERA_RADIUS_IN
+        val pitch = PIVOT_DOWN_ANGLE_RAD
+        val xOffset = CAMERA_OFFSET_X_IN
+        val zOffset = CAMERA_RADIUS_IN
+
+        val xNew = +xOffset * sin(pitch) - zOffset * cos(pitch)
+        val zNew = +xOffset * cos(pitch) + zOffset * sin(pitch)
 
         camera.samplePipelineActive = true
 
         while (true) {
             val pose = PerspectiveTransform.CameraPose(
-                cameraX = +ox * cos(cameraAngle) - oy * sin(cameraAngle),
-                cameraY = 0.0,
-                cameraZ = +ox * sin(cameraAngle) + oy * cos(cameraAngle),
-                cameraXRot = 0.0,
-                cameraYRot = cameraAngle,
+                cameraX = xNew,
+                cameraY = CAMERA_OFFSET_Y_IN,
+                cameraZ = zNew,
+                cameraXRot = 90.0,
+                cameraYRot = pitch,
                 cameraZRot = 0.0,
             )
 

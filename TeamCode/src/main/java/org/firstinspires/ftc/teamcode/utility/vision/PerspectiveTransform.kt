@@ -26,9 +26,9 @@ object PerspectiveTransform {
         // the code take a ton of screen space
 
         val rotation = let {
-            val rx = -Math.toRadians(pose.cameraXRot)
-            val ry = -Math.toRadians(pose.cameraYRot)
-            val rz = -Math.toRadians(pose.cameraZRot)
+            val rx = pose.cameraXRot
+            val ry = pose.cameraYRot
+            val rz = pose.cameraZRot
 
             val sx = sin(rx)
             val sy = sin(ry)
@@ -115,6 +115,15 @@ object PerspectiveTransform {
         return Pair(worldX, worldY)
     }
 
+    /**
+     * @param imWidth image width in pixels
+     * @param imHeight image height in pixels
+     * @param focalLengthX camera x focal distance in mm
+     * @param focalLengthY camera y focal distance in mm (if pixels are square, same as focalLengthX)
+     * @param principalX the X location of the center of the camera, pixels
+     * @param principalY the Y location in pixels
+     * @param detectedZ the height of the blocks, in inches
+     */
     data class CameraParams(
         val imWidth: Int,
         val imHeight: Int,
@@ -126,12 +135,12 @@ object PerspectiveTransform {
     )
 
     /**
-     * @param cameraX units in cm
-     * @param cameraY units in cm
-     * @param cameraZ units in cm
-     * @param cameraXRot units in deg
-     * @param cameraYRot units in deg
-     * @param cameraZRot units in deg
+     * @param cameraX units inches
+     * @param cameraY units inches
+     * @param cameraZ units inches
+     * @param cameraXRot units in radians
+     * @param cameraYRot units in radians
+     * @param cameraZRot units in radians
      */
     data class CameraPose(
         val cameraX: Double,
@@ -141,6 +150,8 @@ object PerspectiveTransform {
         val cameraYRot: Double,
         val cameraZRot: Double,
     )
+
+    fun partRadian(fraction: Double) = Math.PI * 2 * fraction
 
     /**
      * check out
@@ -162,19 +173,18 @@ object PerspectiveTransform {
         extensionDistance: Double,
         pivotAngle: Double,
     ): CameraPose {
-        val s = sin(Math.toRadians(pivotAngle))
-        val c = cos(Math.toRadians(pivotAngle))
+        val s = sin(pivotAngle)
+        val c = cos(pivotAngle)
 
         val localX = -cameraRadius * c - cameraOffset * s
         val localY = cameraRadius * s + cameraOffset * c
 
-        val cameraXcm = (localX + extensionDistance) * 2.54
-        val cameraZcm = localY * 2.54
+        val cameraXcm = (localX + extensionDistance)
 
         return CameraPose(
             cameraX = cameraXcm,
             cameraY = 0.0,
-            cameraZ = cameraZcm,
+            cameraZ = localY,
             cameraXRot = 0.0,
             cameraYRot = pivotAngle,
             cameraZRot = 0.0,
