@@ -8,10 +8,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.LeftLift
+import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
@@ -29,6 +31,8 @@ class MainTeleop : LinearOpMode() {
         val leftLift = LeftLift(hardwareMap)
         val rightLift = RightLift(hardwareMap)
         val extender = Extender(hardwareMap)
+        val odometry = Odometry(hardwareMap)
+        val camera = Camera(hardwareMap)
 
         telemetry.status("initialized motors")
 
@@ -155,6 +159,8 @@ class MainTeleop : LinearOpMode() {
                 drivebase.addTelemetry(telemetry)
                 leftLift.addTelemetry(telemetry)
                 extender.addTelemetry(telemetry)
+                camera.addTelemetry(telemetry)
+                odometry.addTelemetry(telemetry)
 
                 telemetry.status("running")
 
