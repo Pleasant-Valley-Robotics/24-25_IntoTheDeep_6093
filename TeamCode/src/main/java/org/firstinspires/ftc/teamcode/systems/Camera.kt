@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.TARGET_BLOCK_OFFSET_IN
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
@@ -36,4 +37,9 @@ class Camera(hardwareMap: HardwareMap) {
         set(value) {
             visionPortal.setProcessorEnabled(SamplePipeline, value)
         }
+
+    fun addTelemetry(telemetry: Telemetry) {
+        telemetry.addData("nearest center x", nearestCenterError.first)
+        telemetry.addData("nearest center y", nearestCenterError.second)
+    }
 }
