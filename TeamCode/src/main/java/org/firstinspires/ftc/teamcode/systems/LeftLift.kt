@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class LeftLift(hardwareMap: HardwareMap) : Lift(
-    hardwareMap.dcMotor.get("LeftLiftMotor")!!.apply {
+    hardwareMap.dcMotor.get("LLift")!!.apply {
         this.zeroPowerBehavior = BRAKE
         this.direction = REVERSE
     }

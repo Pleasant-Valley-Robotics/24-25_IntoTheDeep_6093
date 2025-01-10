@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.utility.FlipperConstants.FLIPPER_OUT_POS
 
 /** the thing on the lift that scores samples in the basket */
 class Flipper(hardwareMap: HardwareMap) {
-    private val flipperServo = hardwareMap.servo.get("BucketPivot").apply {
+    private val flipperServo = hardwareMap.servo.get("Bucket").apply {
         position = FLIPPER_IN_POS
     }
 

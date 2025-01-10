@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 
 /** thing with 2 grippy wheels that hand off to the flipper */
 class Spintake(hardwareMap: HardwareMap) {
-    private val clawLeft = hardwareMap.crservo.get("ClawLeft")
-    private val clawRight = hardwareMap.crservo.get("ClawRight")
-    private val pivotServo = hardwareMap.servo.get("ClawPivot").apply {
+    private val clawLeft = hardwareMap.crservo.get("LIntake")
+    private val clawRight = hardwareMap.crservo.get("RIntake")
+    private val pivotServo = hardwareMap.servo.get("Wrist").apply {
         this.position = PIVOT_UP_POS
     }
 

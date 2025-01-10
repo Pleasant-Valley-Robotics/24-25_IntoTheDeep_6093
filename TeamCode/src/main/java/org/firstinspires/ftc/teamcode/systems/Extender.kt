@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION_IN
 
 /** that thing the spintake is mounted to so we can reach into submersible */
 class Extender(hardwareMap: HardwareMap) {
-    private val extendMotor = hardwareMap.dcMotor.get("ExtendMotor")!!.apply {
+    private val extendMotor = hardwareMap.dcMotor.get("Extend")!!.apply {
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = DcMotorSimple.Direction.REVERSE
     }
