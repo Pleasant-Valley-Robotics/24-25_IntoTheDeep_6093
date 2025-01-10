@@ -11,7 +11,7 @@ class Odometry(hardwareMap: HardwareMap) {
         // x is sideways offset, positive left
         // y is front-back offset, positive forward
         // offsets in mm
-        this.setOffsets(-84.0, -168.0)
+        this.setOffsets(-95.0, -192.0)
 
         this.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
 
@@ -36,7 +36,7 @@ class Odometry(hardwareMap: HardwareMap) {
 
     val posX get() = odometry.position.getX(DistanceUnit.INCH)
     val posY get() = odometry.position.getY(DistanceUnit.INCH)
-    val headingDeg get() = odometry.position.getHeading(AngleUnit.DEGREES)
+    val headingRad get() = odometry.position.getHeading(AngleUnit.RADIANS)
 
     /*
     Gets the Pinpoint device status. Pinpoint can reflect a few states. But we'll primarily see
@@ -52,7 +52,7 @@ class Odometry(hardwareMap: HardwareMap) {
     fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("robot pos x", posX)
         telemetry.addData("robot pos y", posY)
-        telemetry.addData("robot heading", headingDeg)
+        telemetry.addData("robot heading", headingRad)
         telemetry.addData("odometry status", deviceStatus)
         telemetry.addData("odometry frequency", odometry.frequency)
     }
