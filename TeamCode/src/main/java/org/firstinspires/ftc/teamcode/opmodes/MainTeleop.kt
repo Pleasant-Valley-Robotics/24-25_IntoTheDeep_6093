@@ -152,6 +152,8 @@ class MainTeleop : LinearOpMode() {
 
             val driving = launch {
                 while (isActive) {
+                    odometry.update()
+
                     // the negations are because the robot uses a different coordinate system.
                     val xInput = -gamepad1.left_stick_y.toDouble()
                     val yInput = -gamepad1.left_stick_x.toDouble()
