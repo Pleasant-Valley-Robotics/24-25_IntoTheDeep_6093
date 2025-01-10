@@ -237,7 +237,7 @@ class Drivebase(hardwareMap: HardwareMap) {
                 cameraZRot = 0.0,
             )
 
-            val (ex, ey) = camera.nearestCenterError
+            val (ex, ey) = camera.nearestCenterError ?: Pair(0.0, 0.0)
             val extendPower = xError.accept(ex)
             val strafePower = yError.accept(ey)
 

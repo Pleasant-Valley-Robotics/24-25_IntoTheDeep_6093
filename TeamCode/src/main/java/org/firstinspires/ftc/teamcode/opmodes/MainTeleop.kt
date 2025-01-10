@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -33,6 +34,9 @@ class MainTeleop : LinearOpMode() {
         val extender = Extender(hardwareMap)
         val odometry = Odometry(hardwareMap)
         val camera = Camera(hardwareMap)
+
+        camera.sampleColor = BlockColor.Blue
+        camera.samplePipelineActive = true
 
         telemetry.status("initialized motors")
 
@@ -53,6 +57,8 @@ class MainTeleop : LinearOpMode() {
             val endEffector = launch {
                 var state = EndEffectorState.Intake
                 while (isActive) {
+                    val oldState = state
+
                     state = when {
                         gamepad2.dpad_left -> EndEffectorState.Intake
                         gamepad2.dpad_up -> EndEffectorState.Outtake
@@ -60,13 +66,15 @@ class MainTeleop : LinearOpMode() {
                         else -> state
                     }
 
-                    val (r, g, b) = when (state) {
-                        EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0) // green
-                        EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0) // purple
-                        EndEffectorState.Override -> Triple(245.0, 39.0, 64.0) // pink-red
-                    }
+                    if (oldState != state) {
+                        val (r, g, b) = when (state) {
+                            EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0) // green
+                            EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0) // purple
+                            EndEffectorState.Override -> Triple(245.0, 39.0, 64.0) // pink-red
+                        }
 
-                    gamepad2.setLedColor(r, g, b, LED_DURATION_CONTINUOUS)
+                        gamepad2.setLedColor(r, g, b, LED_DURATION_CONTINUOUS)
+                    }
 
                     if (gamepad2.dpad_down) {
                         leftLift.resetLift()
@@ -83,8 +91,8 @@ class MainTeleop : LinearOpMode() {
                             val clawSlide = gamepad2.right_stick_x.toDouble()
                             val clawPull = -gamepad2.right_stick_y.toDouble()
 
-                            val clawLeft = (clawSlide - clawPull).coerceIn(-1.0..1.0)
-                            val clawRight = (clawSlide + clawPull).coerceIn(-1.0..1.0)
+                            val clawLeft = (clawSlide + clawPull).coerceIn(-1.0..1.0)
+                            val clawRight = (clawSlide - clawPull).coerceIn(-1.0..1.0)
 
                             // collision conditions
                             val extendedOut = extender.extendPosition > 2.0

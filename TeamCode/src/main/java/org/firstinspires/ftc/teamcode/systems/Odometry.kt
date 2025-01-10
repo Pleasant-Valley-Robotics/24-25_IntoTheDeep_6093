@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -22,16 +21,18 @@ class Odometry(hardwareMap: HardwareMap) {
             GoBildaPinpointDriver.EncoderDirection.FORWARD,
             GoBildaPinpointDriver.EncoderDirection.FORWARD
         )
-
-        telemetry.addData("Status", "Initialized");
-        telemetry.addData("X offset", this.xOffset);
-        telemetry.addData("Y offset", this.yOffset);
-        telemetry.addData("Device Version Number:", this.deviceVersion);
-        telemetry.addData("Device Scalar", this.yawScalar);
-        telemetry.update();
+//
+//        telemetry.addData("Status", "Initialized");
+//        telemetry.addData("X offset", this.xOffset);
+//        telemetry.addData("Y offset", this.yOffset);
+//        telemetry.addData("Device Version Number:", this.deviceVersion);
+//        telemetry.addData("Device Scalar", this.yawScalar);
+//        telemetry.update();
 
         this.resetPosAndIMU()
     }
+
+    fun update() = odometry.update()
 
     val posX get() = odometry.position.getX(DistanceUnit.INCH)
     val posY get() = odometry.position.getY(DistanceUnit.INCH)
