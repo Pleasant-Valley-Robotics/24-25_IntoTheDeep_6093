@@ -145,6 +145,30 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
      */
     private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
 
+    suspend fun driveOffsetGlobal(xInches: Double, yInches: Double, maxPower: Double) {
+        resetMotorEncoders()
+
+        val xControl = SqrtController(DRIVING_P_GAIN, maxPower)
+        val yControl = SqrtController(STRAFING_P_GAIN, maxPower)
+
+        do {
+            val xError = xInches - odometry.posX
+            val yError = yInches - odometry.posY
+
+            val xInput = xControl.accept(xError)
+            val yInput = yControl.accept(yError)
+
+            controlMotors(xInput, yInput, 0.0)
+
+            yield()
+        } while (xError.absoluteValue > MOVEMENT_TOL_INCH || yError.absoluteValue > MOVEMENT_TOL_INCH)
+
+        motors.forEach { it.power = 0.0 }
+
+
+        motors.forEach { it.power = 0.0 }
+    }
+
     /**
      * drives the robot forward
      *
@@ -156,11 +180,9 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
 
         val controller = SqrtController(DRIVING_P_GAIN, maxPower)
 
-        val (tx, ty) = calculateGlobal(inches, 0.0)
-
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { inches - calculateLocal(tx, ty).first },
+            error = { inches - xDistance },
             output = { controlMotors(it, 0.0, 0.0) }
         )
 
@@ -178,11 +200,9 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
 
         val controller = SqrtController(STRAFING_P_GAIN, maxPower)
 
-        val (tx, ty) = calculateGlobal(0.0, inches)
-
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { inches - calculateLocal(tx, ty).second },
+            error = { inches - yDistance },
             output = { controlMotors(0.0, it, 0.0) }
         )
 

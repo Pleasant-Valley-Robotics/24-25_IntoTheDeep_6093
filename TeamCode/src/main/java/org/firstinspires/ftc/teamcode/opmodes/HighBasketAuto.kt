@@ -42,28 +42,31 @@ class HighBasketAuto : LinearOpMode() {
                 val sideSpeed = 0.5
                 val turnSpeed = 0.8
 
+                spintake.pivotState(Spintake.PivotState.Dodge)
+
                 parallelWait({
-                    drivebase.strafeLeft(14.0, sideSpeed)
-                    drivebase.driveForward(-18.0, driveSpeed)
+                    drivebase.driveOffsetGlobal(-14.0, 18.0, driveSpeed)
+                    drivebase.turnToAngle(45.0, turnSpeed)
+                    drivebase.driveForward(-12.0, 0.2)
                 }, {
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH - 3)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 })
 
-                drivebase.turnToAngle(45.0, turnSpeed)
-                drivebase.driveForward(-10.0, 0.2)
-
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 flipper.pivotState(Flipper.FlipperState.Out)
-                delay(1000) // give flipper time to extend
+                delay(500) // give flipper time to extend
                 flipper.pivotState(Flipper.FlipperState.In)
 
+                drivebase.driveForward(4.0, driveSpeed)
+
                 parallelWait({
-                    drivebase.driveForward(14.0, driveSpeed)
+                    drivebase.driveForward(2.0, driveSpeed)
                     drivebase.turnToAngle(90.0, turnSpeed)
                 }, {
                     lift.moveLiftTo(0.0)
                 })
 
-                drivebase.driveForward(8.0, driveSpeed)
+                drivebase.driveForward(10.0, driveSpeed)
 
                 spintake.pivotState(Spintake.PivotState.Down)
                 spintake.controlIntakeState(Spintake.IntakeState.Suck)
@@ -76,19 +79,22 @@ class HighBasketAuto : LinearOpMode() {
                     delay(3000)
                     spintake.pivotState(Spintake.PivotState.Dodge)
                     spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH - 3)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 }, {
                     drivebase.driveForward(-10.0, driveSpeed)
                     drivebase.turnToAngle(45.0, turnSpeed)
                 })
 
-                drivebase.driveForward(-16.0, 0.2)
+                drivebase.driveForward(-10.0, driveSpeed)
+                drivebase.driveForward(-4.0, 0.2)
+
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
 
                 flipper.pivotState(Flipper.FlipperState.Out)
                 delay(1000) // give flipper time to extend
                 flipper.pivotState(Flipper.FlipperState.In)
 
-                drivebase.driveForward(4.0, driveSpeed)
+                drivebase.driveForward(8.0, driveSpeed)
                 lift.moveLiftTo(9.2)
             }
 

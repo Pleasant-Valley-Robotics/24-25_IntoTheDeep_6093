@@ -50,7 +50,7 @@ abstract class Lift(private val liftMotor: DcMotor) {
      */
     suspend fun moveLiftTo(inches: Double) {
         val threshold = 1.0
-        val power = 0.5
+        val power = 0.8
 
         do {
             val error = inches - liftHeight
