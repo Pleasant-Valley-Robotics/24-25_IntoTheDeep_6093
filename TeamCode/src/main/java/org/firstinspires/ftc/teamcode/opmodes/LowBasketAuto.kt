@@ -10,6 +10,7 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.LeftLift
+import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
@@ -18,7 +19,8 @@ class LowBasketAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing motors")
 
-        val drivebase = Drivebase(hardwareMap)
+        val odometry = Odometry(hardwareMap)
+        val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
 
         lift.resetLift()

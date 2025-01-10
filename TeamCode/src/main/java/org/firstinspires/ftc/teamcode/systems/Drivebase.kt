@@ -39,7 +39,7 @@ import kotlin.math.sin
  * [uses standard coordinate frame](https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html)
  * which means positive x is forward, positive y is left, and positive yaw is left.
  */
-class Drivebase(hardwareMap: HardwareMap) {
+class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
     private val fldrive = hardwareMap.dcMotor.get("FLDrive")!!
     private val frdrive = hardwareMap.dcMotor.get("FRDrive")!!
     private val bldrive = hardwareMap.dcMotor.get("BLDrive")!!
@@ -106,6 +106,21 @@ class Drivebase(hardwareMap: HardwareMap) {
         }
     }
 
+    private fun calculateGlobal(xOffset: Double, yOffset: Double) = Pair(
+        cos(odometry.headingRad) * xOffset - sin(odometry.headingRad) + odometry.posX,
+        sin(odometry.headingRad) * yOffset + cos(odometry.headingRad) + odometry.posY,
+    )
+
+    private fun calculateLocal(xGlobal: Double, yGlobal: Double) = Pair(
+        xGlobal - odometry.posX,
+        yGlobal - odometry.posY,
+    ).run {
+        Pair(
+            cos(odometry.headingRad) * first + sin(odometry.headingRad) * second,
+            -sin(odometry.headingRad) * first + cos(odometry.headingRad) * second,
+        )
+    }
+
     /** heading in degrees */
     private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
 
@@ -141,9 +156,11 @@ class Drivebase(hardwareMap: HardwareMap) {
 
         val controller = SqrtController(DRIVING_P_GAIN, maxPower)
 
+        val (tx, ty) = calculateGlobal(inches, 0.0)
+
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { inches - xDistance },
+            error = { inches - calculateLocal(tx, ty).first },
             output = { controlMotors(it, 0.0, 0.0) }
         )
 
@@ -161,9 +178,11 @@ class Drivebase(hardwareMap: HardwareMap) {
 
         val controller = SqrtController(STRAFING_P_GAIN, maxPower)
 
+        val (tx, ty) = calculateGlobal(0.0, inches)
+
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { inches - yDistance },
+            error = { inches - calculateLocal(tx, ty).second },
             output = { controlMotors(0.0, it, 0.0) }
         )
 
@@ -184,7 +203,7 @@ class Drivebase(hardwareMap: HardwareMap) {
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { wrapAngle(degrees - heading) },
+            error = { wrapAngle(degrees - odometry.headingRad / Math.PI * 180.0) },
             output = { controlMotors(0.0, 0.0, it) }
         )
 

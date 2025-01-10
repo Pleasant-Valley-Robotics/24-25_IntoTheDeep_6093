@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.LeftLift
+import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
 @Autonomous(name = "PushbotAuto")
@@ -16,7 +17,8 @@ class PushbotAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing")
 
-        val drivebase = Drivebase(hardwareMap)
+        val odometry = Odometry(hardwareMap)
+        val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
 
         telemetry.status("Initialized")

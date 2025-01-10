@@ -28,11 +28,11 @@ class MainTeleop : LinearOpMode() {
 
     override fun runOpMode() {
         telemetry.status("initializing motors")
-        val drivebase = Drivebase(hardwareMap)
+        val odometry = Odometry(hardwareMap)
+        val drivebase = Drivebase(hardwareMap, odometry)
         val leftLift = LeftLift(hardwareMap)
         val rightLift = RightLift(hardwareMap)
         val extender = Extender(hardwareMap)
-        val odometry = Odometry(hardwareMap)
         val camera = Camera(hardwareMap)
 
         camera.sampleColor = BlockColor.Blue

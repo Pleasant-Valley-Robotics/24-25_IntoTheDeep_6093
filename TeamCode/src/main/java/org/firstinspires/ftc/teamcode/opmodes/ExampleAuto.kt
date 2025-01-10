@@ -7,12 +7,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.systems.Odometry
 
 @Autonomous(name = "ExampleAuto")
 class ExampleAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing Drivebase")
-        val drivebase = Drivebase(hardwareMap)
+        val odometry = Odometry(hardwareMap)
+        val drivebase = Drivebase(hardwareMap, odometry)
 
         telemetry.status("Initialized")
         waitForStart()
