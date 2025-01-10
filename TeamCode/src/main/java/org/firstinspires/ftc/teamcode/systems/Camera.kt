@@ -10,36 +10,38 @@ import org.firstinspires.ftc.vision.VisionPortal
 
 class Camera(hardwareMap: HardwareMap) {
     private val cameraName = hardwareMap.get(WebcamName::class.java, "Webcam 1")!!
+    private val pipeline = SamplePipeline()
     private val visionPortal = VisionPortal.easyCreateWithDefaults(
         cameraName,
         // ...processors =
-        SamplePipeline,
-    ).apply { setProcessorEnabled(SamplePipeline, false) }
+        pipeline,
+    ).apply { setProcessorEnabled(pipeline, false) }
 
     private fun Double.sqr() = this * this
 
-    val nearestCenterError: Pair<Double, Double>
-        get() = SamplePipeline
+    val nearestCenterError: Pair<Double, Double>?
+        get() = pipeline
             .contourCenters
             .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
-            .minBy { (x, y) -> x.sqr() + y.sqr() }
+            .minByOrNull { (x, y) -> x.sqr() + y.sqr() }
+
 
     var sampleColor: BlockColor? = null
         set(value) {
             if (value != null) {
-                SamplePipeline.filterParams = value.getFilterParams()
+                pipeline.filterParams = value.getFilterParams()
             }
             field = value
         }
 
     var samplePipelineActive: Boolean
-        get() = visionPortal.getProcessorEnabled(SamplePipeline)
+        get() = visionPortal.getProcessorEnabled(pipeline)
         set(value) {
-            visionPortal.setProcessorEnabled(SamplePipeline, value)
+            visionPortal.setProcessorEnabled(pipeline, value)
         }
 
     fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("nearest center x", nearestCenterError.first)
-        telemetry.addData("nearest center y", nearestCenterError.second)
+        telemetry.addData("nearest center x", nearestCenterError?.first)
+        telemetry.addData("nearest center y", nearestCenterError?.second)
     }
 }

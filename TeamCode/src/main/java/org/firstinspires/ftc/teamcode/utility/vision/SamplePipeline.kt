@@ -16,7 +16,7 @@ import org.opencv.imgproc.Imgproc
  * and public value getters. these pipelines run on a separate thread, hopefully kotlin
  * respects the volatile field correctly.
  */
-object SamplePipeline : VisionProcessor {
+class SamplePipeline : VisionProcessor {
     @Volatile
     lateinit var filterParams: ColorFilter.FilterParams
 
@@ -42,7 +42,7 @@ object SamplePipeline : VisionProcessor {
     var contourCenters: List<Pair<Double, Double>> = emptyList()
         private set
 
-    private const val DECIMATION_FACTOR = 16
+    private val DECIMATION_FACTOR = 16
 
     // the buffers can be lateinit without checking. init runs before the buffers are read
     // in the processing code
