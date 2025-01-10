@@ -43,7 +43,7 @@ object LiftConstants {
     private const val PITCH_DIAMETER = 38.2 * (0.1 / 2.54)
 
     const val ENCODER_PER_INCH = TICKS_PER_REV / (PITCH_DIAMETER * PI)
-    const val MAX_LIFT_HEIGHT_INCH = 15.0
+    const val MAX_LIFT_HEIGHT_INCH = 36.0
     const val MIN_LIFT_HEIGHT_INCH = 0.5
 }
 
