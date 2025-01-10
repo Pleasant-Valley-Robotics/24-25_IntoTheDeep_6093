@@ -55,9 +55,9 @@ object ExtenderConstants {
 
 object SpintakeConstants {
     // positive is down
-    const val PIVOT_UP_POS = 0.0
-    const val PIVOT_DODGE_POS = 0.4
-    const val PIVOT_DOWN_POS = 1.0
+    const val PIVOT_UP_POS = 1.0
+    const val PIVOT_DODGE_POS = 0.8
+    const val PIVOT_DOWN_POS = 0.0
 
     const val PIVOT_LOOK_POS = 0.6
 
