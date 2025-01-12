@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Flipper
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
@@ -22,6 +23,7 @@ class HighBasketAuto : LinearOpMode() {
         val odometry = Odometry(hardwareMap)
         val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
+        val extender = Extender(hardwareMap)
 
         lift.resetLift()
 
@@ -60,22 +62,27 @@ class HighBasketAuto : LinearOpMode() {
                 drivebase.driveForward(4.0, driveSpeed)
 
                 parallelWait({
-                    drivebase.driveForward(2.0, driveSpeed)
+                    drivebase.driveForward(5.0, driveSpeed)
                     drivebase.turnToAngle(90.0, turnSpeed)
                 }, {
                     lift.moveLiftTo(0.0)
                 })
 
-                drivebase.driveForward(10.0, driveSpeed)
+                drivebase.driveForward(11.0, driveSpeed)
+                drivebase.driveForward(-0.5, 0.2)
+//                drivebase.driveForward(-1.0, 0.2)
 
                 spintake.pivotState(Spintake.PivotState.Down)
-                spintake.controlIntakeState(Spintake.IntakeState.Suck)
+                spintake.controlIntakeState(Spintake.IntakeState.Spit)
                 delay(2000)
 
                 parallelWait({
+                    extender.extendTo(0.0, 0.5)
+                }, {
+                    spintake.controlIntakeState(Spintake.IntakeState.Off)
                     spintake.pivotState(Spintake.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.IntakeState.Spit)
+                    spintake.controlIntakeState(Spintake.IntakeState.Suck)
                     delay(3000)
                     spintake.pivotState(Spintake.PivotState.Dodge)
                     spintake.controlIntakeState(Spintake.IntakeState.Off)

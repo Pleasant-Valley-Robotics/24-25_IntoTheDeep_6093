@@ -4,9 +4,13 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION_INCH
+import org.firstinspires.ftc.teamcode.utility.control.SqrtController
+import kotlin.math.exp
 
 /** that thing the spintake is mounted to so we can reach into submersible */
 class Extender(hardwareMap: HardwareMap) {
@@ -43,6 +47,21 @@ class Extender(hardwareMap: HardwareMap) {
             power < 0 && inExtLimitLower -> power
             else -> 0.0
         }
+    }
+
+    suspend fun extendTo(inches: Double, maxPower: Double) {
+        extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        val controller = SqrtController(0.5, maxPower)
+
+        controller.controlThing(
+            tolerance = 0.2,
+            error = { inches - extendPosition },
+            output = { extendMotor.power = it }
+        )
+
+        extendMotor.power = 0.0
     }
 
     fun addTelemetry(telemetry: Telemetry) {
