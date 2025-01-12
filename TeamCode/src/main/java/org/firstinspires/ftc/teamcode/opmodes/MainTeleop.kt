@@ -154,10 +154,13 @@ class MainTeleop : LinearOpMode() {
                 while (isActive) {
                     odometry.update()
 
+                    val slowMode = gamepad1.right_trigger > 0.5;
+                    val slowdown = if (slowMode) 0.5 else 1.0
+
                     // the negations are because the robot uses a different coordinate system.
-                    val xInput = -gamepad1.left_stick_y.toDouble()
-                    val yInput = -gamepad1.left_stick_x.toDouble()
-                    val turnInput = -gamepad1.right_stick_x.toDouble()
+                    val xInput = -gamepad1.left_stick_y.toDouble() * slowdown
+                    val yInput = -gamepad1.left_stick_x.toDouble() * slowdown
+                    val turnInput = -gamepad1.right_stick_x.toDouble() * slowdown
 
                     drivebase.controlMotors(xInput, yInput, turnInput)
 
