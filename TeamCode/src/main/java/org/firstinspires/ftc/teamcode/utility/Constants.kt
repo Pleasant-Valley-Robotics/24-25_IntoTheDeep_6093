@@ -65,7 +65,7 @@ object SpintakeConstants {
     const val PIVOT_DODGE_POS = 0.6
     const val PIVOT_DOWN_POS = 0.0
 
-    const val PIVOT_LOOK_POS = 0.6
+    const val PIVOT_LOOK_POS = 0.45
 
     const val SERVO_VEL_ENC_S = (PIVOT_DOWN_POS - PIVOT_UP_POS) / 1.25
 }

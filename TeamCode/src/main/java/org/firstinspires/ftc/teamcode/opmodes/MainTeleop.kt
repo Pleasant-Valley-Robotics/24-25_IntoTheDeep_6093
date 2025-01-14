@@ -16,7 +16,18 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_UP_ANGLE_RAD
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
+import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
+import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -35,8 +46,6 @@ class MainTeleop : LinearOpMode() {
         val extender = Extender(hardwareMap)
         val camera = Camera(hardwareMap)
 
-        camera.sampleColor = BlockColor.Blue
-        camera.samplePipelineActive = true
 
         telemetry.status("initialized motors")
 

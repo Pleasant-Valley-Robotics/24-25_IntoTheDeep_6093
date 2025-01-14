@@ -5,6 +5,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.TARGET_BLOCK_OFFSET_IN
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
+import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
 import org.firstinspires.ftc.teamcode.utility.vision.SamplePipeline
 import org.firstinspires.ftc.vision.VisionPortal
 
@@ -31,6 +32,12 @@ class Camera(hardwareMap: HardwareMap) {
             if (value != null) {
                 pipeline.filterParams = value.getFilterParams()
             }
+            field = value
+        }
+
+    var pose: PerspectiveTransform.CameraPose? = null
+        set(value) {
+            if (value != null) pipeline.cameraPose = value
             field = value
         }
 

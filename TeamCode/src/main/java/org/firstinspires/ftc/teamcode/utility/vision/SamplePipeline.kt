@@ -4,6 +4,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.BLOCK_HEIGHT_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_HEIGHT_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.TARGET_BLOCK_OFFSET_IN
 import org.firstinspires.ftc.vision.VisionProcessor
 import org.opencv.core.CvType
 import org.opencv.core.Mat
@@ -42,7 +44,12 @@ class SamplePipeline : VisionProcessor {
     var contourCenters: List<Pair<Double, Double>> = emptyList()
         private set
 
-    private val DECIMATION_FACTOR = 16
+    private fun Double.sqr() = this * this
+
+    @Volatile
+    private var maxContour: List<Pair<Double, Double>> = emptyList()
+
+    private val DECIMATION_FACTOR = 1
 
     // the buffers can be lateinit without checking. init runs before the buffers are read
     // in the processing code
@@ -64,7 +71,7 @@ class SamplePipeline : VisionProcessor {
                 focalLengthY = focalLengthY.toDouble(),
                 principalX = principalPointX.toDouble(),
                 principalY = principalPointY.toDouble(),
-                detectedZ = BLOCK_HEIGHT_IN,
+                detectedZ = BLOCK_HEIGHT_IN - PIVOT_HEIGHT_IN,
             )
         }
 
@@ -120,7 +127,19 @@ class SamplePipeline : VisionProcessor {
                 )
             }
 
-        return null
+        maxContour = contourCenters
+            .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
+            .zip(contours)
+            .minByOrNull { (p, _) -> p.first.sqr() + p.second.sqr() }
+            ?.second
+            ?.toList()
+            ?.map { it.x to it.y }
+            ?: emptyList()
+
+        contours.clear()
+        hierarchy.release()
+
+        return frame
     }
 
     override fun onDrawFrame(
@@ -140,6 +159,7 @@ class SamplePipeline : VisionProcessor {
         linePaint.style = Paint.Style.STROKE
         linePaint.strokeWidth = 5f
 
+        val points = maxContour
 
         for ((px, py) in contourCenters) {
             canvas.drawCircle(
@@ -149,18 +169,17 @@ class SamplePipeline : VisionProcessor {
             )
         }
 
-
-//        for (i in points.indices) {
-//            val (startX, startY) = points[i]
-//            val (endX, endY) = points[(i + 1) % points.size]
-//            canvas.drawLine(
-//                startX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-//                startY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-//                endX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-//                endY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
-//                linePaint
-//            )
-//        }
+        for (i in points.indices) {
+            val (startX, startY) = points[i]
+            val (endX, endY) = points[(i + 1) % points.size]
+            canvas.drawLine(
+                startX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                startY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                endX.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                endY.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
+                linePaint
+            )
+        }
     }
 
 }
