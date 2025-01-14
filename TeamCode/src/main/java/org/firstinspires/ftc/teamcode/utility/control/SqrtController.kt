@@ -8,6 +8,5 @@ class SqrtController(
     private val pGain: Double,
     private val maxControl: Double,
 ) : ErrorController {
-
     override fun accept(error: Double): Double = (pGain * sqrt(error.absoluteValue) * error.sign).coerceIn(-maxControl, maxControl)
 }

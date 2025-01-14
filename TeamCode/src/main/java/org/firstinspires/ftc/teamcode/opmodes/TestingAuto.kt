@@ -8,9 +8,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import kotlin.math.PI
 
-@Autonomous(name = "ExampleAuto")
-class ExampleAuto : LinearOpMode() {
+@Autonomous(name = "TestingAuto")
+class TestingAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing Drivebase")
         val odometry = Odometry(hardwareMap)
@@ -21,12 +22,20 @@ class ExampleAuto : LinearOpMode() {
 
         runBlocking {
             val auto = launch {
-                drivebase.turnToAngle(90.0, 0.5)
+                drivebase.driveOffsetGlobal(
+                    xInches = 10.0,
+                    yInches = 0.0,
+                    angleRadians = 0.0,
+                    maxPower = 1.0
+                )
             }
 
             while (opModeIsActive() && auto.isActive) {
                 drivebase.addTelemetry(telemetry)
+                odometry.addTelemetry(telemetry)
                 telemetry.status("Running")
+
+                odometry.update()
 
                 yield()
             }

@@ -47,7 +47,7 @@ class HighBasketAuto : LinearOpMode() {
                 spintake.pivotState(Spintake.PivotState.Dodge)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(-14.0, 18.0, driveSpeed)
+                    drivebase.driveOffsetGlobal(-14.0, 18.0, 0.0, driveSpeed)
                     drivebase.turnToAngle(45.0, turnSpeed)
                     drivebase.driveForward(-12.0, 0.2)
                 }, {

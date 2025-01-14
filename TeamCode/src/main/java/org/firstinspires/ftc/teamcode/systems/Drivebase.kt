@@ -19,16 +19,25 @@ import org.firstinspires.ftc.teamcode.utility.CameraConstants.X_CORRECT_THRESH_I
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_MAX
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_P
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_THRESH_IN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG
 import org.firstinspires.ftc.teamcode.utility.control.BangBangController
 import org.firstinspires.ftc.teamcode.utility.control.ClampController
+import org.firstinspires.ftc.teamcode.utility.control.PidController
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
 import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
+import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
@@ -39,7 +48,7 @@ import kotlin.math.sin
  * [uses standard coordinate frame](https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html)
  * which means positive x is forward, positive y is left, and positive yaw is left.
  */
-class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
+class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     private val fldrive = hardwareMap.dcMotor.get("FLDrive")!!
     private val frdrive = hardwareMap.dcMotor.get("FRDrive")!!
     private val bldrive = hardwareMap.dcMotor.get("BLDrive")!!
@@ -94,6 +103,10 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
         brdrive.power = brpower / maxPower
     }
 
+    fun controlMotorsGlobal(xInput: Double, yInput: Double, turnInput: Double) {
+        val (xLocal, yLocal) = rotate(Pair(xInput, yInput), -odometry.headingRad)
+        controlMotors(xLocal, yLocal, turnInput)
+    }
 
     /**
      * resets motor encoders. note that this also sets power to zero and
@@ -106,20 +119,10 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
         }
     }
 
-    private fun calculateGlobal(xOffset: Double, yOffset: Double) = Pair(
-        cos(odometry.headingRad) * xOffset - sin(odometry.headingRad) + odometry.posX,
-        sin(odometry.headingRad) * yOffset + cos(odometry.headingRad) + odometry.posY,
+    private fun rotate(point: Pair<Double, Double>, angleRadians: Double) = Pair(
+        cos(angleRadians) * point.first - sin(angleRadians) * point.second,
+        sin(angleRadians) * point.first + cos(angleRadians) * point.second,
     )
-
-    private fun calculateLocal(xGlobal: Double, yGlobal: Double) = Pair(
-        xGlobal - odometry.posX,
-        yGlobal - odometry.posY,
-    ).run {
-        Pair(
-            cos(odometry.headingRad) * first + sin(odometry.headingRad) * second,
-            -sin(odometry.headingRad) * first + cos(odometry.headingRad) * second,
-        )
-    }
 
     /** heading in degrees */
     private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
@@ -127,17 +130,17 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
     /** distance sideways in inches read from wheel encoders */
     private val yDistance
         get() = motors
-                    .map { it.currentPosition }
-                    // notice how it is the same as the yInput row in mecanum drive
-                    .zip(listOf(-1, 1, 1, -1))
-                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+            .map { it.currentPosition }
+            // notice how it is the same as the yInput row in mecanum drive
+            .zip(listOf(-1, 1, 1, -1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /** distance forwards in inches read from wheel encoders */
     private val xDistance
         get() = motors
-                    .map { it.currentPosition }
-                    .zip(listOf(1, 1, 1, 1))
-                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+            .map { it.currentPosition }
+            .zip(listOf(1, 1, 1, 1))
+            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /**
      * wraps an angle in degrees to the range `[-180, 180]`
@@ -145,23 +148,55 @@ class Drivebase(hardwareMap: HardwareMap, val odometry: Odometry) {
      */
     private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
 
-    suspend fun driveOffsetGlobal(xInches: Double, yInches: Double, maxPower: Double) {
+    suspend fun driveOffsetGlobal(
+        xInches: Double,
+        yInches: Double,
+        angleRadians: Double,
+        maxPower: Double,
+    ) {
         resetMotorEncoders()
 
-        val xControl = SqrtController(DRIVING_P_GAIN, maxPower)
-        val yControl = SqrtController(STRAFING_P_GAIN, maxPower)
+        val xControl = PidController(
+            DRIVING_P_GAIN,
+            DRIVING_I_GAIN,
+            DRIVING_D_GAIN,
+            null,
+            maxPower
+        )
+        val yControl = PidController(
+            STRAFING_P_GAIN,
+            STRAFING_I_GAIN,
+            STRAFING_D_GAIN,
+            null,
+            maxPower
+        )
+        val angControl = PidController(
+            TURNING_P_GAIN,
+            TURNING_I_GAIN,
+            TURNING_D_GAIN,
+            null,
+            maxPower
+        )
 
         do {
             val xError = xInches - odometry.posX
             val yError = yInches - odometry.posY
+            val angError = angleRadians - odometry.headingRad
 
-            val xInput = xControl.accept(xError)
-            val yInput = yControl.accept(yError)
+            val (xErrorLocal, yErrorLocal) = rotate(Pair(xError, yError), -odometry.headingRad)
 
-            controlMotors(xInput, yInput, 0.0)
+            val xInput = xControl.accept(xErrorLocal)
+            val yInput = yControl.accept(yErrorLocal)
+            val angInput = angControl.accept(angError)
+
+            controlMotors(xInput, yInput, angInput)
 
             yield()
-        } while (xError.absoluteValue > MOVEMENT_TOL_INCH || yError.absoluteValue > MOVEMENT_TOL_INCH)
+        } while (
+            xError.absoluteValue > MOVEMENT_TOL_INCH
+            || yError.absoluteValue > MOVEMENT_TOL_INCH
+            || angError.absoluteValue > TURNING_TOL_DEG / 180.0 * PI
+        )
 
         motors.forEach { it.power = 0.0 }
 
