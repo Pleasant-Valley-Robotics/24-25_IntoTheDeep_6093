@@ -10,29 +10,29 @@ enum class BlockColor {
     fun getFilterParams(): FilterParams = when (this) {
         Red -> FilterParams(
             minA = 148,
-            maxA = 196,
-            minB = 138,
-            maxB = 179,
-            aPerB = 0.0016666667f,
-            bPerA = 0.6566667f,
+            maxA = 201,
+            minB = 121,
+            maxB = 158,
+            aPerB = -0.4116666666666666f,
+            bPerA = 0.6566666666666667f,
         )
 
         Yellow -> FilterParams(
-            minA = 113,
-            maxA = 147,
-            minB = 149,
-            maxB = 196,
-            aPerB = 0.048333332f,
-            bPerA = 0.44666666f,
+            minA = 107,
+            maxA = 150,
+            minB = 138,
+            maxB = 201,
+            aPerB = 0.03500000000000014f,
+            bPerA = 0.2616666666666667f,
         )
 
         Blue -> FilterParams(
-            minA = 142,
-            maxA = 170,
-            minB = 58,
-            maxB = 115,
-            aPerB = -0.5416667f,
-            bPerA = -0.0016666667f,
+            minA = 131,
+            maxA = 204,
+            minB = 28,
+            maxB = 96,
+            aPerB = -0.6416666666666666f, 
+            bPerA = -0.0016666666666664831f,
         )
     }
 }
