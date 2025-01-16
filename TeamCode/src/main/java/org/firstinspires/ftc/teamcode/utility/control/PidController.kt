@@ -17,6 +17,7 @@ class PidController(
     private val kd: Double = 0.0,
     private val clamp: Double?,
     private val maxValue: Double,
+    private val derivativeGetter: (() -> Double)? = null,
 ) : ErrorController {
     private val timer = ElapsedTime()
     private var lastError = 0.0
@@ -29,7 +30,8 @@ class PidController(
         val proportional = error * kp
         integral += error * deltaTime * ki
         if (clamp != null) integral = integral.coerceIn(-clamp, clamp)
-        val derivative = (error - lastError) / deltaTime * kd
+        val errorRate = derivativeGetter?.invoke() ?: ((error - lastError) / deltaTime)
+        val derivative = errorRate * kd
 
         lastError = error
 

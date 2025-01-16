@@ -104,7 +104,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     }
 
     fun controlMotorsGlobal(xInput: Double, yInput: Double, turnInput: Double) {
-        val (xLocal, yLocal) = rotate(Pair(xInput, yInput), -odometry.headingRad)
+        val (xLocal, yLocal) = rotate(Pair(xInput, yInput), -odometry.posRad)
         controlMotors(xLocal, yLocal, turnInput)
     }
 
@@ -162,29 +162,32 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             DRIVING_I_GAIN,
             DRIVING_D_GAIN,
             0.2,
-            maxPower
+            maxPower,
+            odometry::velX,
         )
         val yControl = PidController(
             STRAFING_P_GAIN,
             STRAFING_I_GAIN,
             STRAFING_D_GAIN,
             0.2,
-            maxPower
+            maxPower,
+            odometry::velY,
         )
         val angControl = PidController(
             TURNING_P_GAIN,
             TURNING_I_GAIN,
             TURNING_D_GAIN,
             0.2,
-            maxPower
+            maxPower,
+            odometry::velRad,
         )
 
         do {
             val xError = xInches - odometry.posX
             val yError = yInches - odometry.posY
-            val angError = wrapRadians(angleRadians - odometry.headingRad)
+            val angError = wrapRadians(angleRadians - odometry.posRad)
 
-            val (xErrorLocal, yErrorLocal) = rotate(Pair(xError, yError), -odometry.headingRad)
+            val (xErrorLocal, yErrorLocal) = rotate(Pair(xError, yError), -odometry.posRad)
 
             val xInput = xControl.accept(xErrorLocal)
             val yInput = yControl.accept(yErrorLocal)
@@ -259,7 +262,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH,
-            error = { wrapAngle(degrees - odometry.headingRad / Math.PI * 180.0) },
+            error = { wrapAngle(degrees - odometry.posRad / Math.PI * 180.0) },
             output = { controlMotors(0.0, 0.0, it) }
         )
 

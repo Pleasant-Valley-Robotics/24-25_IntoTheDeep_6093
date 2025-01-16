@@ -5,7 +5,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.CALIBRATING
-import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.READY
 
 
 class Odometry(hardwareMap: HardwareMap) {
@@ -35,7 +34,10 @@ class Odometry(hardwareMap: HardwareMap) {
 
     val posX get() = odometry.position.getX(DistanceUnit.INCH)
     val posY get() = odometry.position.getY(DistanceUnit.INCH)
-    val headingRad get() = odometry.position.getHeading(AngleUnit.RADIANS)
+    val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS)
+    val velX get() = odometry.velX * 0.03937008
+    val velY get() = odometry.velY * 0.03937008
+    val velRad get() = odometry.headingVelocity
 
     /*
     Gets the Pinpoint device status. Pinpoint can reflect a few states. But we'll primarily see
@@ -51,7 +53,7 @@ class Odometry(hardwareMap: HardwareMap) {
     fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("robot pos x", posX)
         telemetry.addData("robot pos y", posY)
-        telemetry.addData("robot heading", headingRad)
+        telemetry.addData("robot heading", posRad)
         telemetry.addData("odometry status", deviceStatus)
         telemetry.addData("odometry frequency", odometry.frequency)
     }
