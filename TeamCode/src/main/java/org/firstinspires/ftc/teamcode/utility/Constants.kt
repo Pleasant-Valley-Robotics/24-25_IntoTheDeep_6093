@@ -23,21 +23,30 @@ object DriveConstants {
     const val ENCODER_PER_INCH = TICKS_PER_REV / (WHEEL_DIAMETER * PI)
     const val STRAFING_CORRECTION = 1.1
 
-    const val DRIVING_P_GAIN = 0.6 * 0.2 // Tu .51
-    const val DRIVING_I_GAIN = 1.2 * 0.2 / (.51 * 2)
-    const val DRIVING_D_GAIN = 0.075 * 0.2 * (.51 * 2)
+    // max gain = first gain that causes oscillations
+    // max time = how long each one of those oscillations takes
+    // https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
+    private const val D_GAIN = 0.2
+    private const val D_TIME = .51
+    private const val S_GAIN = 0.3
+    private const val S_TIME = .6
+    private const val T_GAIN = 2.7
+    private const val T_TIME = .23
 
-    const val STRAFING_P_GAIN = 0.6 * 0.2 // Tu .6
-    const val STRAFING_I_GAIN = 1.2 * 0.2 / (.6 * 2)
-    const val STRAFING_D_GAIN = 0.075 * 0.2 * (.6 * 2)
+    const val DRIVING_P_GAIN = 0.33 * D_GAIN
+    const val DRIVING_I_GAIN = 0.66 * D_GAIN / D_TIME
+    const val DRIVING_D_GAIN = 0.11 * D_GAIN * D_TIME
+
+    const val STRAFING_P_GAIN = 0.33 * S_GAIN
+    const val STRAFING_I_GAIN = 0.66 * S_GAIN / S_TIME
+    const val STRAFING_D_GAIN = 0.11 * S_GAIN * S_TIME
+
+    const val TURNING_P_GAIN = 0.33 * T_GAIN
+    const val TURNING_I_GAIN = 0.66 * T_GAIN / T_TIME
+    const val TURNING_D_GAIN = 0.11 * T_GAIN * T_TIME
 
     const val MOVEMENT_TOL_INCH = 0.2
-
     const val TURNING_TOL_DEG = 5.0
-
-    const val TURNING_P_GAIN = 0.6 * 2.7 // Tu .23
-    const val TURNING_I_GAIN = 1.2 * 2.7 / (.23 * 2)
-    const val TURNING_D_GAIN = 0.075 * 2.7 * (.23 * 2)
 }
 
 object LiftConstants {
