@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
  * @param kd derivative time
  * @param clamp max value for integrator. if `null` no clamp is applied. integrator clamped into `[-x, x]`
  * @param maxValue maximum value for entire system. output clamped into `[-x, x]`
+ * @param derivativeGetter replaces the internal finite differences calculation for derivative if supplied.
  */
 class PidController(
     private val kp: Double,
@@ -28,6 +29,7 @@ class PidController(
         timer.reset()
 
         val proportional = error * kp
+        if (error * lastError < 0.0) integral *= -0.25
         integral += error * deltaTime * ki
         if (clamp != null) integral = integral.coerceIn(-clamp, clamp)
         val errorRate = derivativeGetter?.invoke() ?: ((error - lastError) / deltaTime)
