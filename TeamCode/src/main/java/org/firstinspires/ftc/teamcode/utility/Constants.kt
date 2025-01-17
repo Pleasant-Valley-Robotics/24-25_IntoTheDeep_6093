@@ -23,22 +23,21 @@ object DriveConstants {
     const val ENCODER_PER_INCH = TICKS_PER_REV / (WHEEL_DIAMETER * PI)
     const val STRAFING_CORRECTION = 1.1
 
-    const val DRIVING_P_GAIN = 0.1
-    const val DRIVING_I_GAIN = 0.0
-    const val DRIVING_D_GAIN = 0.0
+    const val DRIVING_P_GAIN = 0.6 * 0.2 // Tu .51
+    const val DRIVING_I_GAIN = 1.2 * 0.2 / (.51 * 2)
+    const val DRIVING_D_GAIN = 0.075 * 0.2 * (.51 * 2)
 
-    const val STRAFING_P_GAIN = 0.1 / 1.0
-    const val STRAFING_I_GAIN = 0.1 / 1.0
-    const val STRAFING_D_GAIN = 0.1 / 1.0
+    const val STRAFING_P_GAIN = 0.6 * 0.2 // Tu .6
+    const val STRAFING_I_GAIN = 1.2 * 0.2 / (.6 * 2)
+    const val STRAFING_D_GAIN = 0.075 * 0.2 * (.6 * 2)
 
-    const val MOVEMENT_TOL_INCH = -0.1
+    const val MOVEMENT_TOL_INCH = 0.2
 
-    const val TURNING_TOL_DEG = -0.1
+    const val TURNING_TOL_DEG = 5.0
 
-    // 0.5 power for 1/16 turn
-    const val TURNING_P_GAIN = 0.2 / (2 * PI / 16)
-    const val TURNING_I_GAIN = 0.2 / (2 * PI / 16)
-    const val TURNING_D_GAIN = 0.2 / (2 * PI / 16)
+    const val TURNING_P_GAIN = 0.6 * 2.7 // Tu .23
+    const val TURNING_I_GAIN = 1.2 * 2.7 / (.23 * 2)
+    const val TURNING_D_GAIN = 0.075 * 2.7 * (.23 * 2)
 }
 
 object LiftConstants {
@@ -65,7 +64,7 @@ object SpintakeConstants {
     const val PIVOT_DODGE_POS = 0.6
     const val PIVOT_DOWN_POS = 0.0
 
-    const val PIVOT_LOOK_POS = 0.45
+    const val PIVOT_LOOK_POS = 0.30
 
     const val SERVO_VEL_ENC_S = (PIVOT_DOWN_POS - PIVOT_UP_POS) / 1.25
 }

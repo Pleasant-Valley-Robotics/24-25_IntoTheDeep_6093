@@ -147,6 +147,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
      * @param n angle to wrap
      */
     private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
+    private fun wrapRadians(n: Double) = (n + PI).mod(PI * 2) - PI
 
     suspend fun driveOffsetGlobal(
         xInches: Double,
@@ -160,28 +161,28 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             DRIVING_P_GAIN,
             DRIVING_I_GAIN,
             DRIVING_D_GAIN,
-            null,
+            0.2,
             maxPower
         )
         val yControl = PidController(
             STRAFING_P_GAIN,
             STRAFING_I_GAIN,
             STRAFING_D_GAIN,
-            null,
+            0.2,
             maxPower
         )
         val angControl = PidController(
             TURNING_P_GAIN,
             TURNING_I_GAIN,
             TURNING_D_GAIN,
-            null,
+            0.2,
             maxPower
         )
 
         do {
             val xError = xInches - odometry.posX
             val yError = yInches - odometry.posY
-            val angError = angleRadians - odometry.headingRad
+            val angError = wrapRadians(angleRadians - odometry.headingRad)
 
             val (xErrorLocal, yErrorLocal) = rotate(Pair(xError, yError), -odometry.headingRad)
 

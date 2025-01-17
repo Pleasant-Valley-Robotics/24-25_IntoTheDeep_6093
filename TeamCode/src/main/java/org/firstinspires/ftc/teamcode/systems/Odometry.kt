@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.CALIBRATING
+import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.READY
 
 
 class Odometry(hardwareMap: HardwareMap) {
@@ -21,15 +23,12 @@ class Odometry(hardwareMap: HardwareMap) {
             GoBildaPinpointDriver.EncoderDirection.FORWARD,
             GoBildaPinpointDriver.EncoderDirection.FORWARD
         )
-//
-//        telemetry.addData("Status", "Initialized");
-//        telemetry.addData("X offset", this.xOffset);
-//        telemetry.addData("Y offset", this.yOffset);
-//        telemetry.addData("Device Version Number:", this.deviceVersion);
-//        telemetry.addData("Device Scalar", this.yawScalar);
-//        telemetry.update();
 
         this.resetPosAndIMU()
+
+        while (this.deviceStatus == CALIBRATING) {
+            this.update()
+        }
     }
 
     fun update() = odometry.update()

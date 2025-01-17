@@ -18,27 +18,23 @@ class TestingAuto : LinearOpMode() {
         telemetry.status("Initializing Drivebase")
         val odometry = Odometry(hardwareMap)
         val drivebase = Drivebase(hardwareMap, odometry)
-        val camera = Camera(hardwareMap)
 
-        camera.sampleColor = BlockColor.Yellow
-        camera.samplePipelineActive = true
-
+        odometry.update()
+        odometry.addTelemetry(telemetry)
         telemetry.status("Initialized")
         waitForStart()
 
         runBlocking {
             val auto = launch {
                 drivebase.driveOffsetGlobal(
-                    xInches = 10.0,
+                    xInches = 0.0,
                     yInches = 0.0,
-                    angleRadians = 0.0,
+                    angleRadians = Math.PI / 2,
                     maxPower = 1.0
                 )
             }
 
             while (opModeIsActive() && auto.isActive) {
-                camera.addTelemetry(telemetry)
-
                 drivebase.addTelemetry(telemetry)
                 odometry.addTelemetry(telemetry)
 
