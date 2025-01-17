@@ -23,14 +23,16 @@ import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_D_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH_LOOSE
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH_TIGHT
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_D_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_D_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG_LOOSE
+import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG_TIGHT
 import org.firstinspires.ftc.teamcode.utility.control.BangBangController
 import org.firstinspires.ftc.teamcode.utility.control.ClampController
 import org.firstinspires.ftc.teamcode.utility.control.PidController
@@ -41,6 +43,7 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * drivebase that contains all the code to drive our robot around.
@@ -124,6 +127,10 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         sin(angleRadians) * point.first + cos(angleRadians) * point.second,
     )
 
+    private fun dist(point: Pair<Double, Double>) = point.run {
+        sqrt(first * first + second * second)
+    }
+
     /** heading in degrees */
     private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
 
@@ -154,6 +161,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         yInches: Double,
         angleRadians: Double,
         maxPower: Double,
+        precise: Boolean,
     ) {
         resetMotorEncoders()
 
@@ -163,7 +171,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             DRIVING_D_GAIN,
             0.2,
             maxPower,
-            odometry::velX,
+//            odometry::velX,
         )
         val yControl = PidController(
             STRAFING_P_GAIN,
@@ -171,7 +179,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             STRAFING_D_GAIN,
             0.2,
             maxPower,
-            odometry::velY,
+//            odometry::velY,
         )
         val angControl = PidController(
             TURNING_P_GAIN,
@@ -197,13 +205,9 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
 
             yield()
         } while (
-            xError.absoluteValue > MOVEMENT_TOL_INCH
-            || yError.absoluteValue > MOVEMENT_TOL_INCH
-            || angError.absoluteValue > TURNING_TOL_DEG / 180.0 * PI
+            dist(xError to yError) > (if (precise) MOVEMENT_TOL_INCH_TIGHT else MOVEMENT_TOL_INCH_LOOSE)
+            || angError.absoluteValue > (if (precise) TURNING_TOL_DEG_TIGHT else TURNING_TOL_DEG_LOOSE) / 180.0 * PI
         )
-
-        motors.forEach { it.power = 0.0 }
-
 
         motors.forEach { it.power = 0.0 }
     }
@@ -220,7 +224,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         val controller = SqrtController(DRIVING_P_GAIN, maxPower)
 
         controller.controlThing(
-            tolerance = MOVEMENT_TOL_INCH,
+            tolerance = MOVEMENT_TOL_INCH_LOOSE,
             error = { inches - xDistance },
             output = { controlMotors(it, 0.0, 0.0) }
         )
@@ -240,7 +244,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         val controller = SqrtController(STRAFING_P_GAIN, maxPower)
 
         controller.controlThing(
-            tolerance = MOVEMENT_TOL_INCH,
+            tolerance = MOVEMENT_TOL_INCH_LOOSE,
             error = { inches - yDistance },
             output = { controlMotors(0.0, it, 0.0) }
         )
@@ -261,7 +265,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         val controller = SqrtController(TURNING_P_GAIN, maxPower)
 
         controller.controlThing(
-            tolerance = MOVEMENT_TOL_INCH,
+            tolerance = TURNING_TOL_DEG_LOOSE,
             error = { wrapAngle(degrees - odometry.posRad / Math.PI * 180.0) },
             output = { controlMotors(0.0, 0.0, it) }
         )
