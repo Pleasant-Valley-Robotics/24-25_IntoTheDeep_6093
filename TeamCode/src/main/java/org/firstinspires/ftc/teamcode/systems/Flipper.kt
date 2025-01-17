@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.systems
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.utility.FlipperConstants.FLIPPER_IN_POS
 import org.firstinspires.ftc.teamcode.utility.FlipperConstants.FLIPPER_OUT_POS
+import org.firstinspires.ftc.teamcode.utility.FlipperConstants.FLIPPER_TOUCH_POS
 
 /** the thing on the lift that scores samples in the basket */
 class Flipper(hardwareMap: HardwareMap) {
@@ -12,7 +13,8 @@ class Flipper(hardwareMap: HardwareMap) {
 
     enum class FlipperState {
         In,
-        Out
+        Out,
+        Touch,
     }
 
     /**
@@ -36,6 +38,7 @@ class Flipper(hardwareMap: HardwareMap) {
         flipperServo.position = when (state) {
             FlipperState.In -> FLIPPER_IN_POS
             FlipperState.Out -> FLIPPER_OUT_POS
+            FlipperState.Touch -> FLIPPER_TOUCH_POS
         }
     }
 }
