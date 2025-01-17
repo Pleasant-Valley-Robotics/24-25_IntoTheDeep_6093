@@ -11,6 +11,7 @@ import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
+import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 
 /**
@@ -49,19 +50,26 @@ class SamplePipeline : VisionProcessor {
     @Volatile
     private var maxContour: List<Pair<Double, Double>> = emptyList()
 
+    @Volatile
+    var maxContourCenter: Pair<Double, Double>? = null
+
     private val DECIMATION_FACTOR = 1
 
     // the buffers can be lateinit without checking. init runs before the buffers are read
     // in the processing code
     private lateinit var bufA: Mat
     private lateinit var bufB: Mat
+    private lateinit var bufC: Mat
     private lateinit var mask: Mat
     private val hierarchy = Mat()
     private val contours: MutableList<MatOfPoint> = mutableListOf()
 
+    private var newWidth: Int = 0
+    private var newHeight: Int = 0
+
     override fun init(width: Int, height: Int, calibration: CameraCalibration) {
-        val newWidth = width / DECIMATION_FACTOR
-        val newHeight = height / DECIMATION_FACTOR
+        newWidth = width / DECIMATION_FACTOR
+        newHeight = height / DECIMATION_FACTOR
 
         cameraParams = calibration.run {
             PerspectiveTransform.CameraParams(
@@ -74,6 +82,8 @@ class SamplePipeline : VisionProcessor {
                 detectedZ = BLOCK_HEIGHT_IN - PIVOT_HEIGHT_IN,
             )
         }
+
+        println(cameraParams)
 
 
         bufA = Mat.zeros(newHeight, newWidth, CvType.CV_8UC3)
@@ -93,21 +103,33 @@ class SamplePipeline : VisionProcessor {
             /* interpolation = */ Imgproc.INTER_NEAREST,
         )
 
-        Imgproc.cvtColor(bufA, bufB, Imgproc.COLOR_RGB2Lab)
+        Imgproc.cvtColor(bufA, bufB, Imgproc.COLOR_RGBA2RGB)
+        Imgproc.cvtColor(bufB, bufB, Imgproc.COLOR_RGB2Lab)
 
+        bufC = Mat.zeros(newHeight, newWidth, CvType.CV_8UC3)
         // modifies mask, bufB now has filtered image in it
-        ColorFilter.colorFilter(bufB, filterParams)
+        ColorFilter.colorFilter(bufB, filterParams, bufC)
+
+        maxContourCenter = Imgproc.moments(bufC)
+            .run { Pair(m10 / m00, m01 / m00) }
+            .let { (x, y) -> Pair(x - cameraParams.principalX, y - cameraParams.principalY) }
+
+
+
+        Imgproc.blur(bufC, bufB, Size(5.0, 5.0))
 
         Imgproc.Canny(
             /* image = */ bufB,
-            /* edges = */ bufA,
-            /* threshold1 = */ 100.0,
-            /* threshold2 = */ 200.0,
+            /* edges = */ bufC,
+            /* threshold1 = */ 25.0,
+            /* threshold2 = */ 100.0,
             /* apertureSize = */ 3,
         )
 
+        Imgproc.blur(bufC, bufB, Size(5.0, 5.0))
+
         Imgproc.findContours(
-            /* image = */ bufA,
+            /* image = */ bufB,
             /* contours = */ contours,
             /* hierarchy = */ hierarchy,
             /* mode = */ Imgproc.RETR_TREE,
@@ -117,7 +139,7 @@ class SamplePipeline : VisionProcessor {
         contours.removeAll { Imgproc.contourArea(it) < 20 }
 
         contourCenters = contours
-            .map { Imgproc.moments(it).run { Pair(cameraParams.imWidth - m10 / m00, m01 / m00) } }
+            .map { Imgproc.moments(it).run { Pair(m10 / m00, m01 / m00) } }
             .map {
                 PerspectiveTransform.inversePerspective(
                     u = it.first,
@@ -127,14 +149,25 @@ class SamplePipeline : VisionProcessor {
                 )
             }
 
-        maxContour = contourCenters
-            .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
-            .zip(contours)
-            .minByOrNull { (p, _) -> p.first.sqr() + p.second.sqr() }
-            ?.second
+//        maxContour = contourCenters
+//            .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
+//            .zip(contours)
+//            .minByOrNull { (p, _) -> p.first.sqr() + p.second.sqr() }
+//            ?.second
+//            ?.toList()
+//            ?.map { it.x to it.y }
+//            ?: emptyList()
+
+        maxContour = contours
+            .maxByOrNull { Imgproc.contourArea(it) }
             ?.toList()
             ?.map { it.x to it.y }
             ?: emptyList()
+
+//        maxContourCenter = maxContour
+//            .reduceOrNull { (x1, y1), (x2, y2) -> Pair(x1 + x2, y1 + y2) }
+//            ?.let { (x, y) -> Pair(x / maxContour.size, y / maxContour.size) }
+
 
         contours.clear()
         hierarchy.release()
@@ -161,7 +194,7 @@ class SamplePipeline : VisionProcessor {
 
         val points = maxContour
 
-        for ((px, py) in contourCenters) {
+        for ((px, py) in maxContourCenter?.let { listOf(it) } ?: emptyList()) {
             canvas.drawCircle(
                 px.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,
                 py.toFloat() * scaleBmpPxToCanvasPx * DECIMATION_FACTOR,

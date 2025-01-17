@@ -19,13 +19,14 @@ class Camera(hardwareMap: HardwareMap) {
     ).apply { setProcessorEnabled(pipeline, false) }
 
     private fun Double.sqr() = this * this
+//
+//    val nearestCenterError: Pair<Double, Double>?
+//        get() = pipeline
+//            .contourCenters
+//            .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
+//            .minByOrNull { (x, y) -> x.sqr() + y.sqr() }
 
-    val nearestCenterError: Pair<Double, Double>?
-        get() = pipeline
-            .contourCenters
-            .map { (x, y) -> x - TARGET_BLOCK_OFFSET_IN to y }
-            .minByOrNull { (x, y) -> x.sqr() + y.sqr() }
-
+    val nearestCenterError: Pair<Double, Double>? by pipeline::maxContourCenter
 
     var sampleColor: BlockColor? = null
         set(value) {

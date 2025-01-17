@@ -24,7 +24,7 @@ object ColorFilter {
      * @param image the image to filter, will be modified. datatype should be [CvType.CV_8UC3]
      * @param params the parameters for the color filter.
      */
-    fun colorFilter(image: Mat, params: FilterParams) = params.run {
+    fun colorFilter(image: Mat, params: FilterParams, outMask: Mat) = params.run {
         if (scratch.size() != image.size()) resize(image.size())
 
         // not even gonna try to explain this, check the python code
@@ -61,7 +61,9 @@ object ColorFilter {
             /* upperb = */ Scalar(255.0, maxShiftA.toDouble(), maxShiftB.toDouble()),
             /* dst = */ mask
         )
-        Core.bitwise_and(scratch, scratch, image, mask)
+
+//        image.copyTo(outMask, mask)
+        mask.copyTo(outMask)
     }
 
     data class FilterParams(
