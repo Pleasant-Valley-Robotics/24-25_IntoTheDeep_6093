@@ -4,13 +4,10 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION_INCH
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION_INCH
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
-import kotlin.math.exp
 
 /** that thing the spintake is mounted to so we can reach into submersible */
 class Extender(hardwareMap: HardwareMap) {

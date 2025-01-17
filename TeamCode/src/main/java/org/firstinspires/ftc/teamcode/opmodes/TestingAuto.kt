@@ -27,10 +27,11 @@ class TestingAuto : LinearOpMode() {
         runBlocking {
             val auto = launch {
                 drivebase.driveOffsetGlobal(
-                    xInches = 0.0,
-                    yInches = 0.0,
-                    angleRadians = Math.PI / 2,
-                    maxPower = 1.0
+                    xInches = -23.22,
+                    yInches = 7.938,
+                    angleRadians = 0.8,
+                    maxPower = 0.5,
+                    precise = false,
                 )
             }
 
