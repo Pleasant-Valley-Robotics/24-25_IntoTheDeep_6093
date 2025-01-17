@@ -26,12 +26,12 @@ object DriveConstants {
     // max gain = first gain that causes oscillations
     // max time = how long each one of those oscillations takes
     // https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
-    private const val D_GAIN = 0.2
-    private const val D_TIME = .51
-    private const val S_GAIN = 0.3
-    private const val S_TIME = .6
-    private const val T_GAIN = 2.7
-    private const val T_TIME = .23
+    private const val D_GAIN = 0.3
+    private const val D_TIME = .51 * 2
+    private const val S_GAIN = 0.4
+    private const val S_TIME = .6 * 2
+    private const val T_GAIN = 1.7
+    private const val T_TIME = .7 * 2
 
     const val DRIVING_P_GAIN = 0.33 * D_GAIN
     const val DRIVING_I_GAIN = 0.66 * D_GAIN / D_TIME
@@ -45,8 +45,10 @@ object DriveConstants {
     const val TURNING_I_GAIN = 0.66 * T_GAIN / T_TIME
     const val TURNING_D_GAIN = 0.11 * T_GAIN * T_TIME
 
-    const val MOVEMENT_TOL_INCH = 0.2
-    const val TURNING_TOL_DEG = 5.0
+    const val MOVEMENT_TOL_INCH_LOOSE = 0.5
+    const val TURNING_TOL_DEG_LOOSE = 4.0
+    const val MOVEMENT_TOL_INCH_TIGHT = 0.1
+    const val TURNING_TOL_DEG_TIGHT = 2.0
 }
 
 object LiftConstants {
@@ -81,6 +83,7 @@ object SpintakeConstants {
 object FlipperConstants {
     const val FLIPPER_IN_POS = 1.0
     const val FLIPPER_OUT_POS = 0.4
+    const val FLIPPER_TOUCH_POS = 0.0
     const val SERVO_VEL_ENC_S = (FLIPPER_IN_POS - FLIPPER_OUT_POS) / 0.8
 }
 
