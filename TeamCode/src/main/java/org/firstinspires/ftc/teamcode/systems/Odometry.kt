@@ -12,7 +12,11 @@ class Odometry(hardwareMap: HardwareMap) {
         // x is sideways offset, positive left
         // y is front-back offset, positive forward
         // offsets in mm
-        this.setOffsets(-95.0, -192.0)
+        this.setOffsets(
+            // thanks johnny
+            119.75,
+            -182.103,
+        )
 
         this.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
 
@@ -25,6 +29,8 @@ class Odometry(hardwareMap: HardwareMap) {
 
         this.resetPosAndIMU()
 
+        Thread.sleep(100)
+
         while (this.deviceStatus == CALIBRATING) {
             this.update()
         }
@@ -35,9 +41,10 @@ class Odometry(hardwareMap: HardwareMap) {
     val posX get() = odometry.position.getX(DistanceUnit.INCH)
     val posY get() = odometry.position.getY(DistanceUnit.INCH)
     val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS)
-    val velX get() = odometry.velX * 0.03937008
-    val velY get() = odometry.velY * 0.03937008
-    val velRad get() = odometry.headingVelocity
+
+    //    val velX get() = odometry.velX * 0.03937008
+//    val velY get() = odometry.velY * 0.03937008
+    val velRad get() = -odometry.headingVelocity
 
     /*
     Gets the Pinpoint device status. Pinpoint can reflect a few states. But we'll primarily see
@@ -48,7 +55,7 @@ class Odometry(hardwareMap: HardwareMap) {
     FAULT_X_POD_NOT_DETECTED - The device does not detect an X pod plugged in
     FAULT_Y_POD_NOT_DETECTED - The device does not detect a Y pod plugged in
     */
-    val deviceStatus get() = odometry.deviceStatus!!
+    private val deviceStatus get() = odometry.deviceStatus!!
 
     fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("robot pos x", posX)
