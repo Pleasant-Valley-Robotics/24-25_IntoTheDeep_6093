@@ -159,10 +159,22 @@ class MainTeleop : LinearOpMode() {
                 }
             }
 
+            val actions = launch {
+                while (isActive) {
+                    if (gamepad1.b) odometry.resetOdometry()
+                    if (gamepad1.a) parallelRace({
+                        drivebase.moveToBucket()
+                    }, {
+                        while (gamepad1.left_stick_y == 0f
+                            && gamepad1.right_stick_y == 0f
+                            && gamepad1.right_stick_x == 0f
+                        ) yield()
+                    })
+                }
+            }
+
             val driving = launch {
                 while (isActive) {
-                    odometry.update()
-
                     val slowMode = gamepad1.right_trigger > 0.5;
                     val slowdown = if (slowMode) 0.5 else 1.0
 
@@ -183,12 +195,14 @@ class MainTeleop : LinearOpMode() {
                 extender.addTelemetry(telemetry)
                 camera.addTelemetry(telemetry)
                 odometry.addTelemetry(telemetry)
-
                 telemetry.status("running")
+
+                odometry.update()
 
                 yield()
             }
 
+            actions.cancelAndJoin()
             driving.cancelAndJoin()
             endEffector.cancelAndJoin()
 
