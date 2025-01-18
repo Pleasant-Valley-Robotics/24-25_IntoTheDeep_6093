@@ -48,13 +48,7 @@ class HighBasketAuto : LinearOpMode() {
                 spintake.pivotState(Spintake.PivotState.Dodge)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(
-                        xInches = -23.22,
-                        yInches = 7.938,
-                        angleRadians = 0.8,
-                        maxPower = 0.5,
-                        precise = false,
-                    )
+                    drivebase.moveToBucket()
                 }, {
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 })
@@ -94,13 +88,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.IntakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 }, {
-                    drivebase.driveOffsetGlobal(
-                        xInches = -23.22,
-                        yInches = 7.938,
-                        angleRadians = 0.8,
-                        maxPower = 0.5,
-                        precise = false,
-                    )
+                    drivebase.moveToBucket()
                 })
 
                 lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
@@ -140,13 +128,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.IntakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
                 }, {
-                    drivebase.driveOffsetGlobal(
-                        xInches = -23.22,
-                        yInches = 7.938,
-                        angleRadians = 0.8,
-                        maxPower = 0.5,
-                        precise = false,
-                    )
+                    drivebase.moveToBucket()
                 })
 
                 lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
