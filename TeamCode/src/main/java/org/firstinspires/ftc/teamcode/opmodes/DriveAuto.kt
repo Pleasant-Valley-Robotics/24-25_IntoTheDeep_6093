@@ -16,6 +16,7 @@ class DriveAuto : LinearOpMode() {
         telemetry.status("Initializing")
 
         val odometry = Odometry(hardwareMap)
+        odometry.resetOdometry()
         val drivebase = Drivebase(hardwareMap, odometry)
 
         telemetry.status("Initialized")

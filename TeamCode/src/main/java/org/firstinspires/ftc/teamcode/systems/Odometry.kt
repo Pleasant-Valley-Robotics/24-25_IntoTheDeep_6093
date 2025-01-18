@@ -27,12 +27,16 @@ class Odometry(hardwareMap: HardwareMap) {
             GoBildaPinpointDriver.EncoderDirection.FORWARD
         )
 
-        this.resetPosAndIMU()
+
+    }
+
+    fun resetOdometry() {
+        odometry.resetPosAndIMU()
 
         Thread.sleep(100)
 
-        while (this.deviceStatus == CALIBRATING) {
-            this.update()
+        while (odometry.deviceStatus == CALIBRATING) {
+            odometry.update()
         }
     }
 
@@ -55,7 +59,7 @@ class Odometry(hardwareMap: HardwareMap) {
     FAULT_X_POD_NOT_DETECTED - The device does not detect an X pod plugged in
     FAULT_Y_POD_NOT_DETECTED - The device does not detect a Y pod plugged in
     */
-    private val deviceStatus get() = odometry.deviceStatus!!
+    private val deviceStatus get() = odometry.deviceStatus
 
     fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("robot pos x", posX)

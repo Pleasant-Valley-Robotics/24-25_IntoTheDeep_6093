@@ -17,9 +17,9 @@ class TestingAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing Drivebase")
         val odometry = Odometry(hardwareMap)
+        odometry.resetOdometry()
         val drivebase = Drivebase(hardwareMap, odometry)
 
-        odometry.update()
         odometry.addTelemetry(telemetry)
         telemetry.status("Initialized")
         waitForStart()

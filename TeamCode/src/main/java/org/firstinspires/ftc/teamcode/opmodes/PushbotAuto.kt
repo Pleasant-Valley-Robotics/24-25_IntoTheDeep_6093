@@ -18,6 +18,7 @@ class PushbotAuto : LinearOpMode() {
         telemetry.status("Initializing")
 
         val odometry = Odometry(hardwareMap)
+        odometry.resetOdometry()
         val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
 
