@@ -16,18 +16,6 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_UP_ANGLE_RAD
-import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_DOWN_POS
-import org.firstinspires.ftc.teamcode.utility.SpintakeConstants.PIVOT_UP_POS
-import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
-import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -175,7 +163,7 @@ class MainTeleop : LinearOpMode() {
 
             val driving = launch {
                 while (isActive) {
-                    val slowMode = gamepad1.right_trigger > 0.5;
+                    val slowMode = gamepad1.right_trigger > 0.5
                     val slowdown = if (slowMode) 0.5 else 1.0
 
                     // the negations are because the robot uses a different coordinate system.

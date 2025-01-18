@@ -6,11 +6,8 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
-import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Odometry
-import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
-import kotlin.math.PI
 
 @Autonomous(name = "TestingAuto")
 class TestingAuto : LinearOpMode() {
