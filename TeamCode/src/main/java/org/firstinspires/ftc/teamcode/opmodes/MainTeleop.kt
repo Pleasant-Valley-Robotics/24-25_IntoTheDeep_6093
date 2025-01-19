@@ -94,7 +94,7 @@ class MainTeleop : LinearOpMode() {
                             // collision conditions
                             val extendedOut = extender.extendPosition > 2.0
                             val liftDown = leftLift.liftHeight < 3.0
-                            val liftFullyDown = leftLift.liftHeight < 0.4
+                            val liftFullyDown = leftLift.liftHeight < 0.8
                             val cancelBucket = liftDown && !extendedOut
 
                             // slightly nudge left lift because of bucket collisions when retracting
@@ -147,7 +147,7 @@ class MainTeleop : LinearOpMode() {
                 }
             }
 
-            val actions = launch {
+            val driving = launch {
                 while (isActive) {
                     if (gamepad1.b) odometry.resetOdometry()
                     if (gamepad1.a) parallelRace({
@@ -158,11 +158,7 @@ class MainTeleop : LinearOpMode() {
                             && gamepad1.right_stick_x == 0f
                         ) yield()
                     })
-                }
-            }
 
-            val driving = launch {
-                while (isActive) {
                     val slowMode = gamepad1.right_trigger > 0.5
                     val slowdown = if (slowMode) 0.5 else 1.0
 
@@ -190,7 +186,6 @@ class MainTeleop : LinearOpMode() {
                 yield()
             }
 
-            actions.cancelAndJoin()
             driving.cancelAndJoin()
             endEffector.cancelAndJoin()
 
