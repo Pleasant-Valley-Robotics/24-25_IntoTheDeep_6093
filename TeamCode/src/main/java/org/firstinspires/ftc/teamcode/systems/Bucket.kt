@@ -7,9 +7,7 @@ import org.firstinspires.ftc.teamcode.utility.BucketConstants.BUCKET_TOUCH_POS
 
 /** the thing on the lift that scores samples in the basket */
 class Bucket(hardwareMap: HardwareMap) {
-    private val bucketServo = hardwareMap.servo.get("Bucket").apply {
-        position = BUCKET_IN_POS
-    }
+    private val bucketServo = hardwareMap.servo.get("Bucket")
 
     enum class BucketState {
         In,

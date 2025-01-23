@@ -7,9 +7,7 @@ import org.firstinspires.ftc.teamcode.utility.PivotConstants.PIVOT_LOOK_POS
 import org.firstinspires.ftc.teamcode.utility.PivotConstants.PIVOT_UP_POS
 
 class Pivot(hardwareMap: HardwareMap) {
-    private val pivotServo = hardwareMap.servo.get("Wrist").apply {
-        this.position = PIVOT_UP_POS
-    }
+    private val pivotServo = hardwareMap.servo.get("Wrist")
 
     enum class PivotState {
         Up,

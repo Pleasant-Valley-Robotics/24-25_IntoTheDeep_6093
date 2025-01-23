@@ -28,26 +28,20 @@ class MainTeleop : LinearOpMode() {
     }
 
     override fun runOpMode() {
-        telemetry.status("initializing motors")
+        telemetry.status("initializing")
         val odometry = Odometry(hardwareMap)
         val drivebase = Drivebase(hardwareMap, odometry)
         val leftLift = LeftLift(hardwareMap)
         val rightLift = RightLift(hardwareMap)
         val extender = Extender(hardwareMap)
         val camera = Camera(hardwareMap)
-
-
-        telemetry.status("initialized motors")
-
-        waitForStart()
-
-        telemetry.status("initializing servos")
-        // initialize spintake after starting to comply with ftc rules about moving before match
         val spintake = Spintake(hardwareMap)
         val pivot = Pivot(hardwareMap)
         val bucket = Bucket(hardwareMap)
 
-        telemetry.status("initialized servos")
+        telemetry.status("initialized")
+
+        waitForStart()
 
         runBlocking {
             /**
@@ -157,8 +151,8 @@ class MainTeleop : LinearOpMode() {
                         drivebase.moveToBucket()
                     }, {
                         while (gamepad1.left_stick_y == 0f
-                            && gamepad1.right_stick_y == 0f
-                            && gamepad1.right_stick_x == 0f
+                               && gamepad1.right_stick_y == 0f
+                               && gamepad1.right_stick_x == 0f
                         ) yield()
                     })
 

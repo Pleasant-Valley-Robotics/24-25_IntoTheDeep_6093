@@ -19,33 +19,28 @@ import org.firstinspires.ftc.teamcode.utility.LiftConstants
 @Autonomous(name = "HighBasketAuto")
 class HighBasketAuto : LinearOpMode() {
     override fun runOpMode() {
-        telemetry.status("initializing motors")
+        telemetry.status("initializing")
 
         val odometry = Odometry(hardwareMap)
-        odometry.resetOdometry()
         val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
         val extender = Extender(hardwareMap)
-
-        lift.resetLift()
-
-        telemetry.status("initialized motors")
-
-        waitForStart()
 
         val flipper = Bucket(hardwareMap)
         val spintake = Spintake(hardwareMap)
         val pivot = Pivot(hardwareMap)
 
+        odometry.resetOdometry()
+        lift.resetLift()
+        extender.resetExtender()
 
-        telemetry.status("initialized servos")
+        telemetry.status("initialized")
 
+        waitForStart()
 
         runBlocking {
             val auto = launch {
                 val driveSpeed = 0.5
-                val sideSpeed = 0.5
-                val turnSpeed = 0.8
 
                 pivot.pivotState(Pivot.PivotState.Dodge)
 
@@ -165,11 +160,9 @@ class HighBasketAuto : LinearOpMode() {
                 drivebase.addTelemetry(telemetry)
                 lift.addTelemetry(telemetry)
                 odometry.addTelemetry(telemetry)
-
                 telemetry.status("Running")
 
                 odometry.update()
-
                 yield()
             }
 
