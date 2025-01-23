@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
@@ -31,6 +32,7 @@ class LowBasketAuto : LinearOpMode() {
 
         val flipper = Bucket(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
 
 
         telemetry.status("initialized servos")
@@ -65,17 +67,17 @@ class LowBasketAuto : LinearOpMode() {
 
                 drivebase.driveForward(8.0, driveSpeed)
 
-                spintake.pivotState(Spintake.SpintakePivotState.Down)
-                spintake.controlIntakeState(Spintake.SpintakeIntakeState.Suck)
+                pivot.pivotState(Pivot.PivotState.Down)
+                spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                 delay(2000)
 
                 parallelWait({
-                    spintake.pivotState(Spintake.SpintakePivotState.Up)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Spit)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(3000)
-                    spintake.pivotState(Spintake.SpintakePivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT + 1)
                 }, {
                     drivebase.driveForward(-10.0, driveSpeed)

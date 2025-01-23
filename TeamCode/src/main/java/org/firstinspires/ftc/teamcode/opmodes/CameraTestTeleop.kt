@@ -6,6 +6,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Camera
+import org.firstinspires.ftc.teamcode.systems.Pivot
+import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
@@ -21,6 +23,7 @@ import kotlin.math.sin
 class CameraTestTeleop : LinearOpMode() {
     override fun runOpMode() {
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
         val camera = Camera(hardwareMap)
 
         camera.sampleColor = BlockColor.Yellow
@@ -46,7 +49,7 @@ class CameraTestTeleop : LinearOpMode() {
 
         camera.pose = pose
 
-        spintake.pivotState(Spintake.SpintakePivotState.Look)
+        pivot.pivotState(PivotState.Look)
 
         telemetry.status("initialized")
         waitForStart()

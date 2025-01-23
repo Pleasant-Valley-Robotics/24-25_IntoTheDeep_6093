@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
@@ -33,6 +34,7 @@ class HighBasketAuto : LinearOpMode() {
 
         val flipper = Bucket(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
 
 
         telemetry.status("initialized servos")
@@ -44,7 +46,7 @@ class HighBasketAuto : LinearOpMode() {
                 val sideSpeed = 0.5
                 val turnSpeed = 0.8
 
-                spintake.pivotState(Spintake.SpintakePivotState.Dodge)
+                pivot.pivotState(Pivot.PivotState.Dodge)
 
                 parallelWait({
                     drivebase.driveOffsetGlobal(
@@ -74,8 +76,8 @@ class HighBasketAuto : LinearOpMode() {
                         precise = true,
                     )
 
-                    spintake.pivotState(Spintake.SpintakePivotState.Down)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Spit)
+                    pivot.pivotState(Pivot.PivotState.Down)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -84,13 +86,13 @@ class HighBasketAuto : LinearOpMode() {
                 parallelWait({
                     extender.extendTo(0.0, 0.5)
                 }, {
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Off)
-                    spintake.pivotState(Spintake.SpintakePivotState.Up)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(1000)
-                    spintake.pivotState(Spintake.SpintakePivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
                     drivebase.driveOffsetGlobal(
@@ -120,8 +122,8 @@ class HighBasketAuto : LinearOpMode() {
                         precise = true,
                     )
 
-                    spintake.pivotState(Spintake.SpintakePivotState.Down)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Spit)
+                    pivot.pivotState(Pivot.PivotState.Down)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -130,13 +132,13 @@ class HighBasketAuto : LinearOpMode() {
                 parallelWait({
                     extender.extendTo(0.0, 0.5)
                 }, {
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Off)
-                    spintake.pivotState(Spintake.SpintakePivotState.Up)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(1000)
-                    spintake.pivotState(Spintake.SpintakePivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.SpintakeIntakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
                     drivebase.driveOffsetGlobal(

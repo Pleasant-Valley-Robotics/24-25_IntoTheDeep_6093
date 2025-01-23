@@ -75,13 +75,13 @@ object ExtenderConstants {
     const val MIN_EXTENSION = 0.7
 }
 
-object SpintakeConstants {
+object PivotConstants {
     // positive is down
-    const val SPINTAKE_UP_POS = 1.0
-    const val SPINTAKE_DODGE_POS = 0.6
-    const val SPINTAKE_DOWN_POS = 0.0
+    const val PIVOT_UP_POS = 1.0
+    const val PIVOT_DODGE_POS = 0.6
+    const val PIVOT_DOWN_POS = 0.0
 
-    const val SPINTAKE_LOOK_POS = 0.30
+    const val PIVOT_LOOK_POS = 0.30
 }
 
 object BucketConstants {
