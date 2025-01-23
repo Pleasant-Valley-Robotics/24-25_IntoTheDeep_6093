@@ -4,13 +4,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.BLOCK_HEIGHT_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_HEIGHT_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.TARGET_BLOCK_OFFSET_IN
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.SPINTAKE_HEIGHT_IN
 import org.firstinspires.ftc.vision.VisionProcessor
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
-import org.opencv.core.Point
 import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 
@@ -79,7 +77,7 @@ class SamplePipeline : VisionProcessor {
                 focalLengthY = focalLengthY.toDouble(),
                 principalX = principalPointX.toDouble(),
                 principalY = principalPointY.toDouble(),
-                detectedZ = BLOCK_HEIGHT_IN - PIVOT_HEIGHT_IN,
+                detectedZ = BLOCK_HEIGHT_IN - SPINTAKE_HEIGHT_IN,
             )
         }
 

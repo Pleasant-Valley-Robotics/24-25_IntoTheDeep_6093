@@ -10,8 +10,7 @@ import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_UP_ANGLE_RAD
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.SPINTAKE_DOWN_ANGLE_RAD
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
 import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
 import kotlin.math.PI
@@ -27,7 +26,7 @@ class CameraTestTeleop : LinearOpMode() {
         camera.sampleColor = BlockColor.Yellow
         camera.samplePipelineActive = true
 
-        val pitch = PIVOT_DOWN_ANGLE_RAD
+        val pitch = SPINTAKE_DOWN_ANGLE_RAD
         val xOffset = CAMERA_OFFSET_X_IN
         val zOffset = CAMERA_RADIUS_IN
 
@@ -47,7 +46,7 @@ class CameraTestTeleop : LinearOpMode() {
 
         camera.pose = pose
 
-        spintake.pivotState(Spintake.PivotState.Look)
+        spintake.pivotState(Spintake.SpintakePivotState.Look)
 
         telemetry.status("initialized")
         waitForStart()

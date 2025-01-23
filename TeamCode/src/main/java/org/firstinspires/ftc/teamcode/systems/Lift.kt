@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_INCH
-import org.firstinspires.ftc.teamcode.utility.LiftConstants.MIN_LIFT_HEIGHT_INCH
+import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
+import org.firstinspires.ftc.teamcode.utility.LiftConstants.MIN_LIFT_HEIGHT
 import kotlin.math.absoluteValue
 import kotlin.math.withSign
 
@@ -27,12 +27,12 @@ abstract class Lift(private val liftMotor: DcMotor) {
      * @param power the power to move the lift with. `[-1, 1]`
      * @param override whether to override the lift limits
      *
-     * @see MAX_LIFT_HEIGHT_INCH
-     * @see MIN_LIFT_HEIGHT_INCH
+     * @see MAX_LIFT_HEIGHT_LEFT
+     * @see MIN_LIFT_HEIGHT
      */
     fun setLiftPowerSafe(power: Double, override: Boolean = false) {
-        val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_INCH
-        val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT_INCH
+        val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_LEFT
+        val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT
 
         liftMotor.power = when {
             override -> power
@@ -46,7 +46,7 @@ abstract class Lift(private val liftMotor: DcMotor) {
     /**
      * tries to set the lift height
      *
-     * @param inches the lift's new position, in inches. maximum of [MAX_LIFT_HEIGHT_INCH]
+     * @param inches the lift's new position, in inches. maximum of [MAX_LIFT_HEIGHT_LEFT]
      */
     suspend fun moveLiftTo(inches: Double) {
         val threshold = 1.0
