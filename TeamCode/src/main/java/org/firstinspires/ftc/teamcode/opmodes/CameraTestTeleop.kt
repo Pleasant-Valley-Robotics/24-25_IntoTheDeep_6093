@@ -49,7 +49,7 @@ class CameraTestTeleop : LinearOpMode() {
 
         camera.pose = pose
 
-        pivot.pivotState(PivotState.Look)
+        pivot.movePivot(PivotState.Look)
 
         telemetry.status("initialized")
         waitForStart()

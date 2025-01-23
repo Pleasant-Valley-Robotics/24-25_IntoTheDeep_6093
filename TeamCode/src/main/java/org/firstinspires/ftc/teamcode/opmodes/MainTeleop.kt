@@ -118,7 +118,7 @@ class MainTeleop : LinearOpMode() {
                             rightLift.setLiftPowerSafe(rightSlideInput)
                             extender.extendSafe(0.0)
 
-                            pivot.pivotState(PivotState.Dodge)
+                            pivot.movePivot(PivotState.Dodge)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
                             bucket.pivotParam(if (cancelBucket) 0.0 else bucketInput)
                         }
@@ -148,7 +148,7 @@ class MainTeleop : LinearOpMode() {
                 while (isActive) {
                     if (gamepad1.b) odometry.resetOdometry()
                     if (gamepad1.a) parallelRace({
-                        drivebase.moveToBucket()
+                        drivebase.moveToBasket()
                     }, {
                         while (gamepad1.left_stick_y == 0f
                                && gamepad1.right_stick_y == 0f

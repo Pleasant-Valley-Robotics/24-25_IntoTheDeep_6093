@@ -32,7 +32,7 @@ class Bucket(hardwareMap: HardwareMap) {
      *
      * @param state what to do with the flipper
      */
-    fun pivotState(state: BucketState) {
+    fun moveBucket(state: BucketState) {
         bucketServo.position = when (state) {
             BucketState.In -> BUCKET_IN_POS
             BucketState.Out -> BUCKET_OUT_POS

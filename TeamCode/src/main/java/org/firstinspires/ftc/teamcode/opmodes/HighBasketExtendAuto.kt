@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 
 @Autonomous(name = "HighBasketExtendAuto")
-class HighBasketExtendAuto :LinearOpMode() {
+class HighBasketExtendAuto : LinearOpMode() {
     override fun runOpMode() {
     }
 }

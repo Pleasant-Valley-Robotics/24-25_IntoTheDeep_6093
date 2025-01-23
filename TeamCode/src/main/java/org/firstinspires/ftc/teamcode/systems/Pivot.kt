@@ -36,7 +36,7 @@ class Pivot(hardwareMap: HardwareMap) {
      * @see PIVOT_DOWN_POS
      * @see PIVOT_DODGE_POS
      */
-    fun pivotState(pivotState: PivotState) {
+    fun movePivot(pivotState: PivotState) {
         pivotServo.position = when (pivotState) {
             PivotState.Up -> PIVOT_UP_POS
             PivotState.Down -> PIVOT_DOWN_POS
