@@ -66,13 +66,13 @@ class LowBasketAuto : LinearOpMode() {
                 drivebase.driveForward(8.0, driveSpeed)
 
                 pivot.movePivot(Pivot.PivotState.Down)
-                spintake.controlIntakeState(Spintake.SpintakeState.Suck)
+                spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                 delay(2000)
 
                 parallelWait({
                     pivot.movePivot(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(3000)
                     pivot.movePivot(Pivot.PivotState.Dodge)
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)

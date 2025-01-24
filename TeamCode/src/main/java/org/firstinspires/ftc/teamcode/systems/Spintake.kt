@@ -8,8 +8,8 @@ class Spintake(hardwareMap: HardwareMap) {
     private val spinRight = hardwareMap.crservo.get("RIntake")
 
     enum class SpintakeState {
-        Suck,
         Spit,
+        Suck,
         Off,
     }
 
@@ -20,8 +20,8 @@ class Spintake(hardwareMap: HardwareMap) {
      */
     fun controlIntakeState(spintakeState: SpintakeState) {
         val power = when (spintakeState) {
-            SpintakeState.Suck -> -1.0
-            SpintakeState.Spit -> 1.0
+            SpintakeState.Spit -> -1.0
+            SpintakeState.Suck -> 1.0
             SpintakeState.Off -> 0.0
         }
 

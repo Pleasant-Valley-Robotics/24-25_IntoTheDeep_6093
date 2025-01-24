@@ -67,7 +67,7 @@ class HighBasketAuto : LinearOpMode() {
                     )
 
                     pivot.movePivot(Pivot.PivotState.Down)
-                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -79,7 +79,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     pivot.movePivot(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(1000)
                     pivot.movePivot(Pivot.PivotState.Dodge)
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
@@ -107,7 +107,7 @@ class HighBasketAuto : LinearOpMode() {
                     )
 
                     pivot.movePivot(Pivot.PivotState.Down)
-                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -119,7 +119,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     pivot.movePivot(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(1000)
                     pivot.movePivot(Pivot.PivotState.Dodge)
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
