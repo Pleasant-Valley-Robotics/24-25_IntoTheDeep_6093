@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Bucket
+import org.firstinspires.ftc.teamcode.systems.Clipper
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot
@@ -38,6 +39,7 @@ class MainTeleop : LinearOpMode() {
         val spintake = Spintake(hardwareMap)
         val pivot = Pivot(hardwareMap)
         val bucket = Bucket(hardwareMap)
+        val clipper = Clipper(hardwareMap)
 
         telemetry.status("initialized")
 
@@ -78,7 +80,6 @@ class MainTeleop : LinearOpMode() {
 
                     when (state) {
                         EndEffectorState.Intake -> {
-                            val bucketInput = gamepad2.left_trigger.toDouble()
                             val pivotInput = gamepad2.right_trigger.toDouble()
                             val extendInput = -gamepad2.left_stick_y.toDouble()
 
@@ -101,13 +102,15 @@ class MainTeleop : LinearOpMode() {
 
                             pivot.pivotParam(pivotInput)
                             spintake.controlIntakeDirect(clawLeft, clawRight)
-                            bucket.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                            bucket.moveBucket(Bucket.BucketState.In)
+                            clipper.moveClaw(Clipper.ClipperState.Open)
                         }
 
                         EndEffectorState.Outtake -> {
                             val bucketInput = gamepad2.left_trigger.toDouble()
                             val leftSlideInput = -gamepad2.left_stick_y.toDouble()
                             val rightSlideInput = -gamepad2.right_stick_y.toDouble()
+                            val clipperInput = gamepad2.right_bumper
 
                             // collision condition
                             val extendedOut = extender.extendPosition > 2.0
@@ -121,6 +124,7 @@ class MainTeleop : LinearOpMode() {
                             pivot.movePivot(PivotState.Dodge)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
                             bucket.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                            clipper.moveClaw(if (clipperInput) Clipper.ClipperState.Closed else Clipper.ClipperState.Open)
                         }
 
                         EndEffectorState.Override -> {
@@ -129,6 +133,7 @@ class MainTeleop : LinearOpMode() {
                             val leftSlideInput = -gamepad2.left_stick_y.toDouble()
                             val rightSlideInput = -gamepad2.right_stick_y.toDouble()
                             val extendInput = gamepad2.right_stick_x.toDouble()
+                            val clipperInput = gamepad2.right_bumper
 
                             leftLift.setLiftPowerSafe(leftSlideInput, true)
                             rightLift.setLiftPowerSafe(rightSlideInput, true)
@@ -137,6 +142,7 @@ class MainTeleop : LinearOpMode() {
                             pivot.pivotParam(pivotInput)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
                             bucket.pivotParam(bucketInput)
+                            clipper.moveClaw(if (clipperInput) Clipper.ClipperState.Closed else Clipper.ClipperState.Open)
                         }
                     }
 
