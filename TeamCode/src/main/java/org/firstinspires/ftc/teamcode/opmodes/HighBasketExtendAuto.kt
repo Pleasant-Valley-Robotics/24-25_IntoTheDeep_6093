@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
@@ -12,7 +13,11 @@ import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot
+import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.systems.Spintake.SpintakeState
+import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
+import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 
 @Autonomous(name = "HighBasketExtendAuto")
 class HighBasketExtendAuto : LinearOpMode() {
@@ -37,7 +42,68 @@ class HighBasketExtendAuto : LinearOpMode() {
         waitForStart()
 
         runBlocking {
-            val auto = launch {  }
+            suspend fun grabBlock() {
+                spintake.controlIntakeState(SpintakeState.Suck)
+                pivot.movePivot(PivotState.Down)
+                delay(1000)
+                spintake.controlIntakeState(SpintakeState.Off)
+                pivot.movePivot(PivotState.Dodge)
+                delay(500)
+            }
+
+            suspend fun dropBlock() {
+                spintake.controlIntakeState(SpintakeState.Spit)
+                pivot.movePivot(PivotState.Up)
+                delay(1000)
+                pivot.movePivot(PivotState.Dodge)
+                spintake.controlIntakeState(SpintakeState.Off)
+            }
+
+            suspend fun scoreBlock() {
+                parallelWait(
+                    { drivebase.moveToBasket() },
+                    { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT) },
+                    { extender.extendTo(MAX_EXTENSION, 1.0) },
+                )
+
+                lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT)
+
+                bucket.moveBucket(Bucket.BucketState.Out)
+                delay(500)
+                bucket.moveBucket(Bucket.BucketState.In)
+
+                drivebase.driveForward(4.0, 0.5)
+            }
+
+            suspend fun goGrabBlock(blockX: Double, blockY: Double, angle: Double) {
+                parallelWait(
+                    {
+                        drivebase.driveOffsetGlobal(
+                            xInches = blockX,
+                            yInches = blockY,
+                            angleRadians = angle,
+                            maxPower = 0.5,
+                            precise = true,
+                        )
+                        extender.extendTo(MAX_EXTENSION, 1.0)
+                        grabBlock()
+                    },
+                    { lift.moveLiftTo(0.0) },
+                )
+
+                extender.extendTo(0.0, 1.0)
+                dropBlock()
+            }
+
+            val auto = launch {
+                scoreBlock()
+                goGrabBlock(-20.98, 14.97, 1.3628)
+                scoreBlock()
+                goGrabBlock(-24.87, 13.97, 1.6714)
+                scoreBlock()
+                goGrabBlock(-24.46, 17.07, 2.1198)
+                scoreBlock()
+            }
 
             while (opModeIsActive() && auto.isActive) {
                 drivebase.addTelemetry(telemetry)
