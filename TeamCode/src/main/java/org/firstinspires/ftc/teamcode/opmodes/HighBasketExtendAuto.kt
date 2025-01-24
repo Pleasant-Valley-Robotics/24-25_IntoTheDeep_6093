@@ -45,16 +45,15 @@ class HighBasketExtendAuto : LinearOpMode() {
             suspend fun grabBlock() {
                 spintake.controlIntakeState(SpintakeState.Suck)
                 pivot.movePivot(PivotState.Down)
-                delay(1000)
+                delay(1250)
                 spintake.controlIntakeState(SpintakeState.Off)
                 pivot.movePivot(PivotState.Dodge)
-                delay(500)
             }
 
             suspend fun dropBlock() {
                 spintake.controlIntakeState(SpintakeState.Spit)
                 pivot.movePivot(PivotState.Up)
-                delay(1000)
+                delay(750)
                 pivot.movePivot(PivotState.Dodge)
                 spintake.controlIntakeState(SpintakeState.Off)
             }
@@ -63,16 +62,16 @@ class HighBasketExtendAuto : LinearOpMode() {
                 parallelWait(
                     { drivebase.moveToBasket() },
                     { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT) },
-                    { extender.extendTo(MAX_EXTENSION, 1.0) },
+                    { extender.extendTo(MAX_EXTENSION - 1.0, 1.0) },
                 )
 
-                lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT)
+//                lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT)
 
                 bucket.moveBucket(Bucket.BucketState.Out)
-                delay(500)
+                delay(750)
                 bucket.moveBucket(Bucket.BucketState.In)
 
-                drivebase.driveForward(4.0, 0.5)
+//                drivebase.driveForward(4.0, 1.0)
             }
 
             suspend fun goGrabBlock(blockX: Double, blockY: Double, angle: Double) {
@@ -85,13 +84,14 @@ class HighBasketExtendAuto : LinearOpMode() {
                             maxPower = 0.5,
                             precise = true,
                         )
-                        extender.extendTo(MAX_EXTENSION, 1.0)
+                        extender.extendTo(MAX_EXTENSION - 1.8, 1.0)
                         grabBlock()
                     },
-                    { lift.moveLiftTo(0.0) },
+                    { lift.moveLiftTo(1.4) },
                 )
 
                 extender.extendTo(0.0, 1.0)
+//                lift.moveLiftTo(1.4)
                 dropBlock()
             }
 

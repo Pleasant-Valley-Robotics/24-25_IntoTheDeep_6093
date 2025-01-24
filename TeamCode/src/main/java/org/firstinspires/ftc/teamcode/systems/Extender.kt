@@ -47,9 +47,6 @@ class Extender(hardwareMap: HardwareMap) {
     }
 
     suspend fun extendTo(inches: Double, maxPower: Double) {
-        extendMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        extendMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-
         val controller = SqrtController(0.5, maxPower)
 
         controller.controlThing(
