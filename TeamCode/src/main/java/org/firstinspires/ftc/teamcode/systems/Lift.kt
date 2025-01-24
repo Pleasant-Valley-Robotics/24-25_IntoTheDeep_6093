@@ -11,6 +11,7 @@ import kotlin.math.withSign
 
 abstract class Lift(private val liftMotor: DcMotor) {
     val liftHeight get() = liftMotor.currentPosition / ENCODER_PER_INCH
+    abstract val maxLiftHeight: Double
 
     fun resetLift() {
         liftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -31,7 +32,7 @@ abstract class Lift(private val liftMotor: DcMotor) {
      * @see MIN_LIFT_HEIGHT
      */
     fun setLiftPowerSafe(power: Double, override: Boolean = false) {
-        val inLiftLimitUpper = liftHeight <= MAX_LIFT_HEIGHT_LEFT
+        val inLiftLimitUpper = liftHeight <= maxLiftHeight
         val inLiftLimitLower = liftHeight >= MIN_LIFT_HEIGHT
 
         liftMotor.power = when {

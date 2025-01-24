@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 
 class LeftLift(hardwareMap: HardwareMap) : Lift(
     hardwareMap.dcMotor.get("LLift")!!.apply {
@@ -11,6 +12,7 @@ class LeftLift(hardwareMap: HardwareMap) : Lift(
         this.direction = REVERSE
     }
 ) {
+    override val maxLiftHeight = MAX_LIFT_HEIGHT_LEFT
     override fun addTelemetry(telemetry: Telemetry) {
         telemetry.addData("left lift height", liftHeight)
     }
