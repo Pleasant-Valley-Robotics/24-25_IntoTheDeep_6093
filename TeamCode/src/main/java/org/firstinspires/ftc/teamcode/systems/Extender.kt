@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION_INCH
-import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION_INCH
+import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
+import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
 
 /** that thing the spintake is mounted to so we can reach into submersible */
@@ -31,12 +31,12 @@ class Extender(hardwareMap: HardwareMap) {
      * @param power power to extend with. `[-1, 1]`
      * @param override override for lift limits
      *
-     * @see MAX_EXTENSION_INCH
-     * @see MIN_EXTENSION_INCH
+     * @see MAX_EXTENSION
+     * @see MIN_EXTENSION
      */
     fun extendSafe(power: Double, override: Boolean = false) {
-        val inExtLimitUpper = extendPosition <= MAX_EXTENSION_INCH
-        val inExtLimitLower = extendPosition >= MIN_EXTENSION_INCH
+        val inExtLimitUpper = extendPosition <= MAX_EXTENSION
+        val inExtLimitLower = extendPosition >= MIN_EXTENSION
 
         extendMotor.power = when {
             override -> power

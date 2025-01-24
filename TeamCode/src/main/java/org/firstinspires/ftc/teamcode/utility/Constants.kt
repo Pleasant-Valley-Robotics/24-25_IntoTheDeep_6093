@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode.utility
 
+import org.firstinspires.ftc.teamcode.utility.MotorConstants.BELT_PITCH_DIAMETER
+import org.firstinspires.ftc.teamcode.utility.MotorConstants.TICKS_PER_REV_19_2TO1
+import org.firstinspires.ftc.teamcode.utility.MotorConstants.TICKS_PER_REV_26_9TO1
+import org.firstinspires.ftc.teamcode.utility.MotorConstants.WHEEL_DIAMETER
 import kotlin.math.PI
 
 // note that we should be using inches, seconds, and degrees unless specified otherwise
 
-private const val BASE_PPR = 28
 
-object DriveConstants {
+object MotorConstants {
+    private const val BASE_PPR = 28
     // dan wheel diameter and ticks
     // private const val WHEEL_DIAMETER = 4
     // NeveRest 20 gearmotors with a 7:9 gearing on top
@@ -14,13 +18,20 @@ object DriveConstants {
     // private const val TICKS_PER_REV = 537.6 * 7 / 9
 
     // 5203 gobilda 19.2:1s
-    private const val TICKS_PER_REV = 19.20320855614973 * BASE_PPR
+    const val TICKS_PER_REV_19_2TO1 = 19.20320855614973 * BASE_PPR
+
+    // 5203 gobilda 26.9:1s
+    const val TICKS_PER_REV_26_9TO1 = 26.85123966942149 * BASE_PPR
+
+    // 2mm pitch gt2 hub mount, 38.2 pitch diameter
+    const val BELT_PITCH_DIAMETER = 38.2 * (0.1 / 2.54)
 
     // gobilda 140mm wheels as inches
-    private const val WHEEL_DIAMETER = 140 * (0.1 / 2.54)
+    const val WHEEL_DIAMETER = 140 * (0.1 / 2.54)
+}
 
-
-    const val ENCODER_PER_INCH = TICKS_PER_REV / (WHEEL_DIAMETER * PI)
+object DrivebaseConstants {
+    const val ENCODER_PER_INCH = TICKS_PER_REV_19_2TO1 / (WHEEL_DIAMETER * PI)
     const val STRAFING_CORRECTION = 1.1
 
     // max gain = first gain that causes oscillations
@@ -52,51 +63,43 @@ object DriveConstants {
 }
 
 object LiftConstants {
-    // 5203 gobilda 26.9:1s
-    private const val TICKS_PER_REV = 26.85123966942149 * BASE_PPR
-
-    // 2mm pitch gt2 hub mount, 38.2 pitch diameter
-    private const val PITCH_DIAMETER = 38.2 * (0.1 / 2.54)
-
-    const val ENCODER_PER_INCH = TICKS_PER_REV / (PITCH_DIAMETER * PI)
-    const val MAX_LIFT_HEIGHT_INCH = 36.0
-    const val MIN_LIFT_HEIGHT_INCH = 0.5
+    const val ENCODER_PER_INCH = TICKS_PER_REV_26_9TO1 / (BELT_PITCH_DIAMETER * PI)
+    const val MAX_LIFT_HEIGHT_LEFT = 36.0
+    const val MAX_LIFT_HEIGHT_RIGHT = 18.0
+    const val MIN_LIFT_HEIGHT = 0.5
 }
 
 object ExtenderConstants {
-    const val ENCODER_PER_INCH = LiftConstants.ENCODER_PER_INCH
-    const val MAX_EXTENSION_INCH = 19.0
-    const val MIN_EXTENSION_INCH = 0.7
+    const val ENCODER_PER_INCH = TICKS_PER_REV_26_9TO1 / (BELT_PITCH_DIAMETER * PI)
+    const val MAX_EXTENSION = 19.0
+    const val MIN_EXTENSION = 0.7
 }
 
-object SpintakeConstants {
+object PivotConstants {
     // positive is down
     const val PIVOT_UP_POS = 1.0
     const val PIVOT_DODGE_POS = 0.6
     const val PIVOT_DOWN_POS = 0.0
 
     const val PIVOT_LOOK_POS = 0.30
-
-    const val SERVO_VEL_ENC_S = (PIVOT_DOWN_POS - PIVOT_UP_POS) / 1.25
 }
 
-object FlipperConstants {
-    const val FLIPPER_IN_POS = 1.0
-    const val FLIPPER_OUT_POS = 0.4
-    const val FLIPPER_TOUCH_POS = 0.0
-    const val SERVO_VEL_ENC_S = (FLIPPER_IN_POS - FLIPPER_OUT_POS) / 0.8
+object BucketConstants {
+    const val BUCKET_IN_POS = 1.0
+    const val BUCKET_OUT_POS = 0.4
+    const val BUCKET_TOUCH_POS = 0.0
 }
 
 object CameraConstants {
-    const val PIVOT_HEIGHT_IN = 5.625
+    const val SPINTAKE_HEIGHT_IN = 5.625
     const val BLOCK_HEIGHT_IN = 1.5
 
     const val CAMERA_RADIUS_IN = 2.875
     const val CAMERA_OFFSET_Y_IN = 0.7086614173228347
     const val CAMERA_OFFSET_X_IN = 1.6
 
-    const val PIVOT_DOWN_ANGLE_RAD = Math.PI / 4
-    const val PIVOT_UP_ANGLE_RAD = 0.0
+    const val SPINTAKE_DOWN_ANGLE_RAD = Math.PI / 4
+    const val SPINTAKE_UP_ANGLE_RAD = 0.0
 
     const val TARGET_BLOCK_OFFSET_IN = 1.0
 

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
 
-class SpecimenClipper(hardwareMap: HardwareMap) {
+class Clipper(hardwareMap: HardwareMap) {
     private val clipperServo = hardwareMap.servo.get("Clipper")!!.apply {
         this.position = 1.0
     }

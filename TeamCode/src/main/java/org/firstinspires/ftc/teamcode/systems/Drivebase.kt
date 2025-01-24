@@ -13,26 +13,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_X_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_OFFSET_Y_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.CAMERA_RADIUS_IN
-import org.firstinspires.ftc.teamcode.utility.CameraConstants.PIVOT_DOWN_ANGLE_RAD
+import org.firstinspires.ftc.teamcode.utility.CameraConstants.SPINTAKE_DOWN_ANGLE_RAD
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.X_CORRECT_SPEED
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.X_CORRECT_THRESH_IN
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_MAX
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_P
 import org.firstinspires.ftc.teamcode.utility.CameraConstants.Y_CORRECT_THRESH_IN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_D_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_I_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.DRIVING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.ENCODER_PER_INCH
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH_LOOSE
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.MOVEMENT_TOL_INCH_TIGHT
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_D_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_I_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.STRAFING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_D_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_I_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_P_GAIN
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG_LOOSE
-import org.firstinspires.ftc.teamcode.utility.DriveConstants.TURNING_TOL_DEG_TIGHT
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_I_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.ENCODER_PER_INCH
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.MOVEMENT_TOL_INCH_LOOSE
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.MOVEMENT_TOL_INCH_TIGHT
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.STRAFING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.STRAFING_I_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.STRAFING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_D_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_I_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_P_GAIN
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_TOL_DEG_LOOSE
+import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_TOL_DEG_TIGHT
 import org.firstinspires.ftc.teamcode.utility.control.BangBangController
 import org.firstinspires.ftc.teamcode.utility.control.ClampController
 import org.firstinspires.ftc.teamcode.utility.control.PidController
@@ -309,7 +309,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             maxControl = Y_CORRECT_MAX,
         )
 
-        val pitch = PIVOT_DOWN_ANGLE_RAD
+        val pitch = SPINTAKE_DOWN_ANGLE_RAD
         val xOffset = CAMERA_OFFSET_X_IN
         val zOffset = CAMERA_RADIUS_IN
 

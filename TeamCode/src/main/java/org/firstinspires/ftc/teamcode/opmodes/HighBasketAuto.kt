@@ -9,9 +9,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
-import org.firstinspires.ftc.teamcode.systems.Flipper
+import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
@@ -32,8 +33,9 @@ class HighBasketAuto : LinearOpMode() {
 
         waitForStart()
 
-        val flipper = Flipper(hardwareMap)
+        val flipper = Bucket(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
 
 
         telemetry.status("initialized servos")
@@ -45,18 +47,18 @@ class HighBasketAuto : LinearOpMode() {
                 val sideSpeed = 0.5
                 val turnSpeed = 0.8
 
-                spintake.pivotState(Spintake.PivotState.Dodge)
+                pivot.pivotState(Pivot.PivotState.Dodge)
 
                 parallelWait({
                     drivebase.moveToBucket()
                 }, {
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 })
 
-                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
-                flipper.pivotState(Flipper.FlipperState.Out)
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
+                flipper.pivotState(Bucket.BucketState.Out)
                 delay(500) // give flipper time to extend
-                flipper.pivotState(Flipper.FlipperState.In)
+                flipper.pivotState(Bucket.BucketState.In)
 
                 drivebase.driveForward(4.0, driveSpeed)
 
@@ -69,8 +71,8 @@ class HighBasketAuto : LinearOpMode() {
                         precise = true,
                     )
 
-                    spintake.pivotState(Spintake.PivotState.Down)
-                    spintake.controlIntakeState(Spintake.IntakeState.Spit)
+                    pivot.pivotState(Pivot.PivotState.Down)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -79,23 +81,23 @@ class HighBasketAuto : LinearOpMode() {
                 parallelWait({
                     extender.extendTo(0.0, 0.5)
                 }, {
-                    spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    spintake.pivotState(Spintake.PivotState.Up)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.IntakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(1000)
-                    spintake.pivotState(Spintake.PivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
                     drivebase.moveToBucket()
                 })
 
-                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
 
-                flipper.pivotState(Flipper.FlipperState.Out)
+                flipper.pivotState(Bucket.BucketState.Out)
                 delay(500)
-                flipper.pivotState(Flipper.FlipperState.In)
+                flipper.pivotState(Bucket.BucketState.In)
 
                 drivebase.driveForward(4.0, driveSpeed)
 
@@ -109,8 +111,8 @@ class HighBasketAuto : LinearOpMode() {
                         precise = true,
                     )
 
-                    spintake.pivotState(Spintake.PivotState.Down)
-                    spintake.controlIntakeState(Spintake.IntakeState.Spit)
+                    pivot.pivotState(Pivot.PivotState.Down)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(2000)
                 }, {
                     lift.moveLiftTo(0.0)
@@ -119,23 +121,23 @@ class HighBasketAuto : LinearOpMode() {
                 parallelWait({
                     extender.extendTo(0.0, 0.5)
                 }, {
-                    spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    spintake.pivotState(Spintake.PivotState.Up)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.IntakeState.Suck)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(1000)
-                    spintake.pivotState(Spintake.PivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
                     drivebase.moveToBucket()
                 })
 
-                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH)
+                lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
 
-                flipper.pivotState(Flipper.FlipperState.Out)
+                flipper.pivotState(Bucket.BucketState.Out)
                 delay(500)
-                flipper.pivotState(Flipper.FlipperState.In)
+                flipper.pivotState(Bucket.BucketState.In)
 
                 drivebase.driveForward(4.0, driveSpeed)
 

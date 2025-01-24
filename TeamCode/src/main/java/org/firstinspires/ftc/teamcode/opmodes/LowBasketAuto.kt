@@ -8,9 +8,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import org.firstinspires.ftc.teamcode.systems.Flipper
+import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
@@ -30,8 +31,9 @@ class LowBasketAuto : LinearOpMode() {
 
         waitForStart()
 
-        val flipper = Flipper(hardwareMap)
+        val flipper = Bucket(hardwareMap)
         val spintake = Spintake(hardwareMap)
+        val pivot = Pivot(hardwareMap)
 
 
         telemetry.status("initialized servos")
@@ -47,15 +49,15 @@ class LowBasketAuto : LinearOpMode() {
                     drivebase.strafeLeft(14.0, sideSpeed)
                     drivebase.driveForward(-18.0, driveSpeed)
                 }, {
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH + 1)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT + 1)
                 })
 
                 drivebase.turnToAngle(45.0, turnSpeed)
                 drivebase.driveForward(-10.0, 0.2)
 
-                flipper.pivotState(Flipper.FlipperState.Out)
+                flipper.pivotState(Bucket.BucketState.Out)
                 delay(1000) // give flipper time to extend
-                flipper.pivotState(Flipper.FlipperState.In)
+                flipper.pivotState(Bucket.BucketState.In)
 
                 parallelWait({
                     drivebase.driveForward(14.0, driveSpeed)
@@ -66,18 +68,18 @@ class LowBasketAuto : LinearOpMode() {
 
                 drivebase.driveForward(8.0, driveSpeed)
 
-                spintake.pivotState(Spintake.PivotState.Down)
-                spintake.controlIntakeState(Spintake.IntakeState.Suck)
+                pivot.pivotState(Pivot.PivotState.Down)
+                spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                 delay(2000)
 
                 parallelWait({
-                    spintake.pivotState(Spintake.PivotState.Up)
+                    pivot.pivotState(Pivot.PivotState.Up)
                     delay(1000)
-                    spintake.controlIntakeState(Spintake.IntakeState.Spit)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Spit)
                     delay(3000)
-                    spintake.pivotState(Spintake.PivotState.Dodge)
-                    spintake.controlIntakeState(Spintake.IntakeState.Off)
-                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_INCH + 1)
+                    pivot.pivotState(Pivot.PivotState.Dodge)
+                    spintake.controlIntakeState(Spintake.SpintakeState.Off)
+                    lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT + 1)
                 }, {
                     drivebase.driveForward(-10.0, driveSpeed)
                     drivebase.turnToAngle(45.0, turnSpeed)
@@ -85,9 +87,9 @@ class LowBasketAuto : LinearOpMode() {
 
                 drivebase.driveForward(-16.0, 0.2)
 
-                flipper.pivotState(Flipper.FlipperState.Out)
+                flipper.pivotState(Bucket.BucketState.Out)
                 delay(1000) // give flipper time to extend
-                flipper.pivotState(Flipper.FlipperState.In)
+                flipper.pivotState(Bucket.BucketState.In)
 
                 drivebase.driveForward(4.0, driveSpeed)
                 lift.moveLiftTo(9.2)

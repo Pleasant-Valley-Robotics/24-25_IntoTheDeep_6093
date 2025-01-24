@@ -11,9 +11,11 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
-import org.firstinspires.ftc.teamcode.systems.Flipper
+import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.systems.Pivot
+import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
@@ -42,7 +44,8 @@ class MainTeleop : LinearOpMode() {
         telemetry.status("initializing servos")
         // initialize spintake after starting to comply with ftc rules about moving before match
         val spintake = Spintake(hardwareMap)
-        val flipper = Flipper(hardwareMap)
+        val pivot = Pivot(hardwareMap)
+        val bucket = Bucket(hardwareMap)
 
         telemetry.status("initialized servos")
 
@@ -82,7 +85,7 @@ class MainTeleop : LinearOpMode() {
                     when (state) {
                         EndEffectorState.Intake -> {
                             val bucketInput = gamepad2.left_trigger.toDouble()
-                            val clawInput = gamepad2.right_trigger.toDouble()
+                            val pivotInput = gamepad2.right_trigger.toDouble()
                             val extendInput = -gamepad2.left_stick_y.toDouble()
 
                             val clawSlide = gamepad2.right_stick_x.toDouble()
@@ -102,9 +105,9 @@ class MainTeleop : LinearOpMode() {
                             rightLift.setLiftPowerSafe(0.0)
                             extender.extendSafe(extendInput)
 
-                            spintake.pivotParam(clawInput)
+                            pivot.pivotParam(pivotInput)
                             spintake.controlIntakeDirect(clawLeft, clawRight)
-                            flipper.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                            bucket.pivotParam(if (cancelBucket) 0.0 else bucketInput)
                         }
 
                         EndEffectorState.Outtake -> {
@@ -121,14 +124,14 @@ class MainTeleop : LinearOpMode() {
                             rightLift.setLiftPowerSafe(rightSlideInput)
                             extender.extendSafe(0.0)
 
-                            spintake.pivotState(Spintake.PivotState.Dodge)
+                            pivot.pivotState(PivotState.Dodge)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
-                            flipper.pivotParam(if (cancelBucket) 0.0 else bucketInput)
+                            bucket.pivotParam(if (cancelBucket) 0.0 else bucketInput)
                         }
 
                         EndEffectorState.Override -> {
                             val bucketInput = gamepad2.left_trigger.toDouble()
-                            val clawInput = gamepad2.right_trigger.toDouble()
+                            val pivotInput = gamepad2.right_trigger.toDouble()
                             val leftSlideInput = -gamepad2.left_stick_y.toDouble()
                             val rightSlideInput = -gamepad2.right_stick_y.toDouble()
                             val extendInput = gamepad2.right_stick_x.toDouble()
@@ -137,9 +140,9 @@ class MainTeleop : LinearOpMode() {
                             rightLift.setLiftPowerSafe(rightSlideInput, true)
                             extender.extendSafe(extendInput, true)
 
-                            spintake.pivotParam(clawInput)
+                            pivot.pivotParam(pivotInput)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
-                            flipper.pivotParam(bucketInput)
+                            bucket.pivotParam(bucketInput)
                         }
                     }
 
