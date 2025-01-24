@@ -84,6 +84,11 @@ object PivotConstants {
     const val PIVOT_LOOK_POS = 0.30
 }
 
+object ClipperConstants {
+    const val CLIPPER_OPEN_POS = 1.0
+    const val CLIPPER_CLOSED_POS = 0.0
+}
+
 object BucketConstants {
     const val BUCKET_IN_POS = 1.0
     const val BUCKET_OUT_POS = 0.4

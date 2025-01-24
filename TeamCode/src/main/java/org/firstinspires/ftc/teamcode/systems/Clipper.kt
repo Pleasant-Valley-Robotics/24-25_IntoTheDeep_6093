@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.systems
 
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.utility.ClipperConstants
 
 class Clipper(hardwareMap: HardwareMap) {
-    private val clipperServo = hardwareMap.servo.get("Clipper")!!.apply {
-        this.position = 1.0
-    }
+    private val clipperServo = hardwareMap.servo.get("Clipper")!!
 
     enum class ClipperState {
         Open,
@@ -14,9 +13,8 @@ class Clipper(hardwareMap: HardwareMap) {
 
     fun moveClaw(state: ClipperState) {
         clipperServo.position = when (state) {
-            // TODO: change position constants
-            ClipperState.Open -> 1.0
-            ClipperState.Closed -> 0.0
+            ClipperState.Open -> ClipperConstants.CLIPPER_OPEN_POS
+            ClipperState.Closed -> ClipperConstants.CLIPPER_CLOSED_POS
         }
     }
 }
