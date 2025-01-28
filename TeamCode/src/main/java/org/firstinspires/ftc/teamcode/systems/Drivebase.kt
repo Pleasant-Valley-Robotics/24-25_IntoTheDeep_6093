@@ -137,17 +137,17 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     /** distance sideways in inches read from wheel encoders */
     private val yDistance
         get() = motors
-            .map { it.currentPosition }
-            // notice how it is the same as the yInput row in mecanum drive
-            .zip(listOf(-1, 1, 1, -1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+                    .map { it.currentPosition }
+                    // notice how it is the same as the yInput row in mecanum drive
+                    .zip(listOf(-1, 1, 1, -1))
+                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /** distance forwards in inches read from wheel encoders */
     private val xDistance
         get() = motors
-            .map { it.currentPosition }
-            .zip(listOf(1, 1, 1, 1))
-            .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
+                    .map { it.currentPosition }
+                    .zip(listOf(1, 1, 1, 1))
+                    .sumOf { (a, b) -> a * b } / 4 / ENCODER_PER_INCH
 
     /**
      * wraps an angle in degrees to the range `[-180, 180]`
@@ -230,7 +230,9 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     suspend fun driveForward(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = SqrtController(DRIVING_P_GAIN, maxPower)
+        val controller = PidController(
+            DRIVING_P_GAIN, DRIVING_I_GAIN, DRIVING_D_GAIN, 0.2, maxPower
+        )
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH_LOOSE,
@@ -250,7 +252,9 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = SqrtController(STRAFING_P_GAIN, maxPower)
+        val controller = PidController(
+            STRAFING_P_GAIN, STRAFING_I_GAIN, STRAFING_D_GAIN, 0.2, maxPower
+        )
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH_LOOSE,
