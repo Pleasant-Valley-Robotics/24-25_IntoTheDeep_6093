@@ -230,9 +230,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     suspend fun driveForward(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = PidController(
-            DRIVING_P_GAIN, DRIVING_I_GAIN, DRIVING_D_GAIN, 0.2, maxPower
-        )
+        val controller = ClampController(DRIVING_P_GAIN, maxPower)
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH_LOOSE,
@@ -252,9 +250,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
 
-        val controller = PidController(
-            STRAFING_P_GAIN, STRAFING_I_GAIN, STRAFING_D_GAIN, 0.2, maxPower
-        )
+        val controller = ClampController(STRAFING_P_GAIN, maxPower)
 
         controller.controlThing(
             tolerance = MOVEMENT_TOL_INCH_LOOSE,
