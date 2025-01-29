@@ -52,6 +52,8 @@ class MainTeleop : LinearOpMode() {
              */
             val endEffector = launch {
                 var state = EndEffectorState.Intake
+                val rightBumper = RisingEdgeDetector(gamepad2::right_bumper)
+
                 while (isActive) {
                     val oldState = state
 
@@ -63,6 +65,8 @@ class MainTeleop : LinearOpMode() {
                     }
 
                     if (oldState != state) {
+                        rightBumper.set(false)
+
                         val (r, g, b) = when (state) {
                             EndEffectorState.Intake -> Triple(157.0, 205.0, 73.0) // green
                             EndEffectorState.Outtake -> Triple(140.0, 142.0, 226.0) // purple
@@ -90,10 +94,7 @@ class MainTeleop : LinearOpMode() {
                             val clawRight = (clawSlide - clawPull).coerceIn(-1.0..1.0)
 
                             // collision conditions
-                            val extendedOut = extender.extendPosition > 2.0
-                            val liftDown = leftLift.liftHeight < 3.0
                             val liftFullyDown = leftLift.liftHeight < 0.8
-                            val cancelBucket = liftDown && !extendedOut
 
                             // slightly nudge left lift because of bucket collisions when retracting
                             leftLift.setLiftPowerSafe(if (liftFullyDown) 0.1 else 0.0)
@@ -110,7 +111,7 @@ class MainTeleop : LinearOpMode() {
                             val bucketInput = gamepad2.left_trigger.toDouble()
                             val leftSlideInput = -gamepad2.left_stick_y.toDouble()
                             val rightSlideInput = -gamepad2.right_stick_y.toDouble()
-                            val clipperInput = gamepad2.right_bumper
+                            val clipperInput = rightBumper.get()
 
                             // collision condition
                             val extendedOut = extender.extendPosition > 2.0

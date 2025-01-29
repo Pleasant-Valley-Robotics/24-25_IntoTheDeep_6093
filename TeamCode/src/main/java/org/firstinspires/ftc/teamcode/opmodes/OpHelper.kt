@@ -1,30 +1,34 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+import androidx.appcompat.app.ActionBarDrawerToggle.Delegate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 fun Telemetry.status(status: String) {
     addData("Status", status)
     update()
 }
 
-fun onRisingEdge(buttonState: () -> Boolean, callback: (Boolean) -> Unit): () -> Unit {
-    var lastPressed = false
-    var on = false
+class RisingEdgeDetector(val buttonState: () -> Boolean) {
+    private var wasPressed = false
+    private var on = false
 
-    return {
+    fun get(): Boolean {
         val nowPressed = buttonState()
-        if (nowPressed && !lastPressed) {
-            on = !on
-        }
+        if (nowPressed && !wasPressed) on = !on
+        wasPressed = nowPressed
 
-        callback(on)
+        return on
+    }
 
-        lastPressed = nowPressed
+    fun set(value: Boolean) {
+        on = value
     }
 }
 
