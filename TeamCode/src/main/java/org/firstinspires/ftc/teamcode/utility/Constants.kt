@@ -46,17 +46,17 @@ object DrivebaseConstants {
 
     const val DRIVING_P_GAIN = 0.33 * D_GAIN
     const val DRIVING_I_GAIN = 0.66 * D_GAIN / D_TIME
-    const val DRIVING_D_GAIN = 0.11 * D_GAIN * D_TIME
+    const val DRIVING_D_GAIN = 0.07 * D_GAIN * D_TIME
 
     const val STRAFING_P_GAIN = 0.33 * S_GAIN
     const val STRAFING_I_GAIN = 0.66 * S_GAIN / S_TIME
-    const val STRAFING_D_GAIN = 0.11 * S_GAIN * S_TIME
+    const val STRAFING_D_GAIN = 0.07 * S_GAIN * S_TIME
 
     const val TURNING_P_GAIN = 0.33 * T_GAIN
     const val TURNING_I_GAIN = 0.66 * T_GAIN / T_TIME
     const val TURNING_D_GAIN = 0.11 * T_GAIN * T_TIME
 
-    const val MOVEMENT_TOL_INCH_LOOSE = 0.5
+    const val MOVEMENT_TOL_INCH_LOOSE = 1.5
     const val TURNING_TOL_DEG_LOOSE = 4.0
     const val MOVEMENT_TOL_INCH_TIGHT = 0.1
     const val TURNING_TOL_DEG_TIGHT = 2.0
