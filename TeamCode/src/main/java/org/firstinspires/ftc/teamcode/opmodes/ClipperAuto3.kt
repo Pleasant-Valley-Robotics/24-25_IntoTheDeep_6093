@@ -94,6 +94,11 @@ class ClipperAuto3 : LinearOpMode() {
                 clipper.moveClaw(Clipper.ClipperState.Closed)
                 delay(250L)
                 scorePole(6.0)
+
+                parallelWait(
+                    { drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false) },
+                    { lift.moveLiftTo(0.0) }
+                )
             }
 
             while (opModeIsActive() && auto.isActive) {
