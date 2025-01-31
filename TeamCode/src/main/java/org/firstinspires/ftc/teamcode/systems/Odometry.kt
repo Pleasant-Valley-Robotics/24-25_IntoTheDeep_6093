@@ -11,12 +11,8 @@ import org.firstinspires.ftc.teamcode.utility.rotate
 
 class Odometry(
     hardwareMap: HardwareMap,
-    poseOffset: Pose2D? = null
+    var poseOffset: Pose2D? = null
 ) {
-    val posXOffset = poseOffset?.getX(DistanceUnit.INCH) ?: 0.0
-    val posYOffset = poseOffset?.getY(DistanceUnit.INCH) ?: 0.0
-    val posRadOffset = poseOffset?.getHeading(AngleUnit.RADIANS) ?: 0.0
-
     private val odometry = hardwareMap.get(GoBildaPinpointDriver::class.java, "odometry")!!.apply {
         // x is sideways offset, positive left
         // y is front-back offset, positive forward
@@ -48,6 +44,10 @@ class Odometry(
     }
 
     fun update() = odometry.update()
+
+    private val posXOffset get() = poseOffset?.getX(DistanceUnit.INCH) ?: 0.0
+    private val posYOffset get() = poseOffset?.getY(DistanceUnit.INCH) ?: 0.0
+    private val posRadOffset get() = poseOffset?.getHeading(AngleUnit.RADIANS) ?: 0.0
 
     val localPosX get() = odometry.position.getX(DistanceUnit.INCH)
     val localPosY get() = odometry.position.getY(DistanceUnit.INCH)
