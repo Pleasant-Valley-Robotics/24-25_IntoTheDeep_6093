@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.utility
 
 import org.firstinspires.ftc.teamcode.utility.MotorConstants.BELT_PITCH_DIAMETER
+import org.firstinspires.ftc.teamcode.utility.MotorConstants.TICKS_PER_REV_13_7TO1
 import org.firstinspires.ftc.teamcode.utility.MotorConstants.TICKS_PER_REV_19_2TO1
 import org.firstinspires.ftc.teamcode.utility.MotorConstants.TICKS_PER_REV_26_9TO1
 import org.firstinspires.ftc.teamcode.utility.MotorConstants.WHEEL_DIAMETER
@@ -22,6 +23,9 @@ object MotorConstants {
 
     // 5203 gobilda 26.9:1s
     const val TICKS_PER_REV_26_9TO1 = 26.85123966942149 * BASE_PPR
+
+    // 5203 gobilda 13.7:1s
+    const val TICKS_PER_REV_13_7TO1 = 13.73356401384083 * BASE_PPR
 
     // 2mm pitch gt2 hub mount, 38.2 pitch diameter
     const val BELT_PITCH_DIAMETER = 38.2 * (0.1 / 2.54)
@@ -54,7 +58,7 @@ object DrivebaseConstants {
 
     const val TURNING_P_GAIN = 0.33 * T_GAIN
     const val TURNING_I_GAIN = 0.66 * T_GAIN / T_TIME
-    const val TURNING_D_GAIN = 0.11 * T_GAIN * T_TIME
+    const val TURNING_D_GAIN = 0.07 * T_GAIN * T_TIME
 
     const val MOVEMENT_TOL_INCH_LOOSE = 1.5
     const val TURNING_TOL_DEG_LOOSE = 4.0
@@ -70,7 +74,7 @@ object LiftConstants {
 }
 
 object ExtenderConstants {
-    const val ENCODER_PER_INCH = TICKS_PER_REV_26_9TO1 / (BELT_PITCH_DIAMETER * PI)
+    const val ENCODER_PER_INCH = TICKS_PER_REV_13_7TO1 / (BELT_PITCH_DIAMETER * PI)
     const val MAX_EXTENSION = 19.0
     const val MIN_EXTENSION = 0.7
 }

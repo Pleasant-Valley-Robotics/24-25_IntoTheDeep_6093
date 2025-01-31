@@ -4,10 +4,19 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
 import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.CALIBRATING
+import org.firstinspires.ftc.teamcode.utility.rotate
 
 
-class Odometry(hardwareMap: HardwareMap) {
+class Odometry(
+    hardwareMap: HardwareMap,
+    poseOffset: Pose2D? = null
+) {
+    val posXOffset = poseOffset?.getX(DistanceUnit.INCH) ?: 0.0
+    val posYOffset = poseOffset?.getY(DistanceUnit.INCH) ?: 0.0
+    val posRadOffset = poseOffset?.getHeading(AngleUnit.RADIANS) ?: 0.0
+
     private val odometry = hardwareMap.get(GoBildaPinpointDriver::class.java, "odometry")!!.apply {
         // x is sideways offset, positive left
         // y is front-back offset, positive forward
@@ -26,8 +35,6 @@ class Odometry(hardwareMap: HardwareMap) {
             GoBildaPinpointDriver.EncoderDirection.FORWARD,
             GoBildaPinpointDriver.EncoderDirection.FORWARD
         )
-
-
     }
 
     fun resetOdometry() {
@@ -42,9 +49,13 @@ class Odometry(hardwareMap: HardwareMap) {
 
     fun update() = odometry.update()
 
-    val posX get() = odometry.position.getX(DistanceUnit.INCH)
-    val posY get() = odometry.position.getY(DistanceUnit.INCH)
-    val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS)
+    private val localPosX get() = odometry.position.getX(DistanceUnit.INCH)
+    private val localPosY get() = odometry.position.getY(DistanceUnit.INCH)
+    private val globalPos get() = rotate(localPosX to localPosY, posRadOffset)
+
+    val posX get() = globalPos.first + posXOffset
+    val posY get() = globalPos.second + posYOffset
+    val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS) + posRadOffset
 
     //    val velX get() = odometry.velX * 0.03937008
 //    val velY get() = odometry.velY * 0.03937008

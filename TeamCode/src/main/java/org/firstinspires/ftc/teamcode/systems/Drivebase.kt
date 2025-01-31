@@ -37,6 +37,8 @@ import org.firstinspires.ftc.teamcode.utility.control.BangBangController
 import org.firstinspires.ftc.teamcode.utility.control.ClampController
 import org.firstinspires.ftc.teamcode.utility.control.PidController
 import org.firstinspires.ftc.teamcode.utility.control.SqrtController
+import org.firstinspires.ftc.teamcode.utility.dist
+import org.firstinspires.ftc.teamcode.utility.rotate
 import org.firstinspires.ftc.teamcode.utility.vision.BlockColor
 import org.firstinspires.ftc.teamcode.utility.vision.PerspectiveTransform
 import kotlin.math.PI
@@ -120,15 +122,6 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
-    }
-
-    private fun rotate(point: Pair<Double, Double>, angleRadians: Double) = Pair(
-        cos(angleRadians) * point.first - sin(angleRadians) * point.second,
-        sin(angleRadians) * point.first + cos(angleRadians) * point.second,
-    )
-
-    private fun dist(point: Pair<Double, Double>) = point.run {
-        sqrt(first * first + second * second)
     }
 
     /** heading in degrees */

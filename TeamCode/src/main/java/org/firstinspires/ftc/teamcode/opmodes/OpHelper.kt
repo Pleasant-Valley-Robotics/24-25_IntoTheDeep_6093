@@ -11,7 +11,7 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 fun Telemetry.status(status: String) {
-    addData("Status", status)
+    addData("status", status)
     update()
 }
 

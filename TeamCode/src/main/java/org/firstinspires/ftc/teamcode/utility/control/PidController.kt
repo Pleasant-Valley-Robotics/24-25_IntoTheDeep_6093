@@ -29,7 +29,7 @@ class PidController(
         timer.reset()
 
         val proportional = error * kp
-        if (error * lastError < 0.0) integral *= -0.5
+        if (error * lastError < 0.0) integral *= -0.25
         integral += error * deltaTime * ki
         if (clamp != null) integral = integral.coerceIn(-clamp, clamp)
         val errorRate = derivativeGetter?.invoke() ?: ((error - lastError) / deltaTime)
