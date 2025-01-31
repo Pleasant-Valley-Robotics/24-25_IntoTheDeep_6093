@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import androidx.appcompat.app.ActionBarDrawerToggle.Delegate
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.systems.Clipper
 import org.firstinspires.ftc.teamcode.systems.Drivebase
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
+import org.firstinspires.ftc.teamcode.systems.RightLift
+import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
+import kotlin.math.PI
 
 fun Telemetry.status(status: String) {
     addData("status", status)
@@ -54,3 +55,39 @@ suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) =
         maxPower = maxSpeed,
         precise = false,
     )
+
+suspend fun scoreSample(
+    drivebase: Drivebase,
+    lift: RightLift,
+    clipper: Clipper,
+    param: Double,
+) {
+    val xParam = (1 - param) * 20.4613 + param * 44.8
+    parallelWait(
+        {
+            drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
+            drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
+        },
+        { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 2.0) },
+    )
+
+    lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 7.0)
+    clipper.moveClaw(Clipper.ClipperState.Open)
+}
+
+suspend fun pickClip(
+    drivebase: Drivebase,
+    lift: RightLift,
+    clipper: Clipper
+) {
+    //clip pos (69.3698, -1.9069, 1.5408)
+    parallelWait({
+        drivebase.driveOffsetGlobal(69.3698, 4.9069, PI / 2, 1.0, false)
+        drivebase.driveOffsetGlobal(69.3698, -1.9069, PI / 2, 1.0, false)
+    },
+        { lift.moveLiftTo(0.0) }
+    )
+
+    clipper.moveClaw(Clipper.ClipperState.Closed)
+    delay(250L)
+}
