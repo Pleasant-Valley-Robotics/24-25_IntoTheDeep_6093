@@ -45,7 +45,6 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 /**
  * drivebase that contains all the code to drive our robot around.
@@ -164,16 +163,14 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             DRIVING_D_GAIN,
             0.2,
             maxPower,
-//            odometry::velX,
-        )
+        ) { -odometry.localVelX }
         val yControl = PidController(
             STRAFING_P_GAIN,
             STRAFING_I_GAIN,
             STRAFING_D_GAIN,
             0.2,
             maxPower,
-//            odometry::velY,
-        )
+        ) { -odometry.localVelY }
         val angControl = PidController(
             TURNING_P_GAIN,
             TURNING_I_GAIN,
@@ -184,8 +181,8 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         )
 
         do {
-            val xError = xInches - odometry.posX
-            val yError = yInches - odometry.posY
+            val xError = xInches - odometry.globalPosX
+            val yError = yInches - odometry.globalPosY
             val angError = wrapRadians(angleRadians - odometry.posRad)
 
             val (xErrorLocal, yErrorLocal) = rotate(Pair(xError, yError), -odometry.posRad)

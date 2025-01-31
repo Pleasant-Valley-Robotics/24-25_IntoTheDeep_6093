@@ -7,6 +7,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.teamcode.systems.Drivebase
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -45,16 +46,6 @@ suspend fun parallelRace(vararg tasks: suspend () -> Unit) = coroutineScope {
     this.coroutineContext.cancelChildren()
 }
 
-class WorkGroup private constructor(
-    private val tasks: MutableList<Job>,
-) {
-    fun just(job: Job): WorkGroup {
-        return WorkGroup(mutableListOf(job))
-    }
+suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) {
 
-    fun work() {
-
-    }
 }
-
-// work({}, {}, {})

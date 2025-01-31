@@ -49,16 +49,21 @@ class Odometry(
 
     fun update() = odometry.update()
 
-    private val localPosX get() = odometry.position.getX(DistanceUnit.INCH)
-    private val localPosY get() = odometry.position.getY(DistanceUnit.INCH)
+    val localPosX get() = odometry.position.getX(DistanceUnit.INCH)
+    val localPosY get() = odometry.position.getY(DistanceUnit.INCH)
+
     private val globalPos get() = rotate(localPosX to localPosY, posRadOffset)
+    val globalPosX get() = globalPos.first + posXOffset
+    val globalPosY get() = globalPos.second + posYOffset
 
-    val posX get() = globalPos.first + posXOffset
-    val posY get() = globalPos.second + posYOffset
+    private val localVels get() = rotate(globalVelX to globalVelY, -posRad)
+    val localVelX get() = localVels.first
+    val localVelY get() = localVels.second
+
+    val globalVelX get() = odometry.velX * 0.03937008
+    val globalVelY get() = odometry.velY * 0.03937008
+
     val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS) + posRadOffset
-
-    //    val velX get() = odometry.velX * 0.03937008
-//    val velY get() = odometry.velY * 0.03937008
     val velRad get() = -odometry.headingVelocity
 
     /*
@@ -73,8 +78,8 @@ class Odometry(
     private val deviceStatus get() = odometry.deviceStatus
 
     fun addTelemetry(telemetry: Telemetry) {
-        telemetry.addData("robot pos x", posX)
-        telemetry.addData("robot pos y", posY)
+        telemetry.addData("robot pos x", globalPosX)
+        telemetry.addData("robot pos y", globalPosY)
         telemetry.addData("robot heading", posRad)
         telemetry.addData("odometry status", deviceStatus)
         telemetry.addData("odometry frequency", odometry.frequency)
