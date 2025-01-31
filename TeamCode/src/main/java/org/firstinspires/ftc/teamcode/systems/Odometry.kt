@@ -56,7 +56,7 @@ class Odometry(
     val globalPosX get() = globalPos.first + posXOffset
     val globalPosY get() = globalPos.second + posYOffset
 
-    private val localVels get() = rotate(globalVelX to globalVelY, -posRad)
+    private val localVels get() = rotate(globalVelX to globalVelY, -odometry.position.getHeading(AngleUnit.RADIANS))
     val localVelX get() = localVels.first
     val localVelY get() = localVels.second
 
@@ -64,7 +64,7 @@ class Odometry(
     val globalVelY get() = odometry.velY * 0.03937008
 
     val posRad get() = odometry.position.getHeading(AngleUnit.RADIANS) + posRadOffset
-    val velRad get() = -odometry.headingVelocity
+    val velRad get() = odometry.headingVelocity
 
     /*
     Gets the Pinpoint device status. Pinpoint can reflect a few states. But we'll primarily see

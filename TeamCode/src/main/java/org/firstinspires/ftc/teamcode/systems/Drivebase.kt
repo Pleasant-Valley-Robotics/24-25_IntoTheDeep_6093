@@ -177,8 +177,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
             TURNING_D_GAIN,
             0.2,
             maxPower,
-            odometry::velRad,
-        )
+        ) { -odometry.velRad }
 
         do {
             val xError = xInches - odometry.globalPosX

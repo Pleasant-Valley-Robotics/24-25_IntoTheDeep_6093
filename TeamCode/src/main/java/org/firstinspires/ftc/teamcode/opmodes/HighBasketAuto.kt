@@ -45,7 +45,7 @@ class HighBasketAuto : LinearOpMode() {
                 pivot.movePivot(Pivot.PivotState.Dodge)
 
                 parallelWait({
-                    drivebase.moveToBasket()
+                    moveToBasket(drivebase)
                 }, {
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 })
@@ -85,7 +85,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
-                    drivebase.moveToBasket()
+                    moveToBasket(drivebase)
                 })
 
                 lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
@@ -125,7 +125,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)
                 }, {
-                    drivebase.moveToBasket()
+                    moveToBasket(drivebase)
                 })
 
                 lift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT)

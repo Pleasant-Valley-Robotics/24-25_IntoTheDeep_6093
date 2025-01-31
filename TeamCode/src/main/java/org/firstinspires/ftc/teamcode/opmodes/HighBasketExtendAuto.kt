@@ -60,7 +60,7 @@ class HighBasketExtendAuto : LinearOpMode() {
 
             suspend fun scoreBlock() {
                 parallelWait(
-                    { drivebase.moveToBasket() },
+                    { moveToBasket(drivebase) },
                     { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT) },
                     { extender.extendTo(MAX_EXTENSION - 1.0, 1.0) },
                 )
