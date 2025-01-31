@@ -46,6 +46,11 @@ suspend fun parallelRace(vararg tasks: suspend () -> Unit) = coroutineScope {
     this.coroutineContext.cancelChildren()
 }
 
-suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) {
-
-}
+suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) =
+    drivebase.driveOffsetGlobal(
+        xInches = -23.22,
+        yInches = 7.938,
+        angleRadians = 0.8,
+        maxPower = maxSpeed,
+        precise = false,
+    )

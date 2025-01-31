@@ -202,14 +202,6 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         motors.forEach { it.power = 0.0 }
     }
 
-    suspend fun moveToBasket() = this.driveOffsetGlobal(
-        xInches = -23.22,
-        yInches = 7.938,
-        angleRadians = 0.8,
-        maxPower = 0.5,
-        precise = false,
-    )
-
 
     /**
      * drives the robot forward
