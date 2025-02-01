@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.isActive
@@ -32,6 +33,12 @@ class MainTeleop : LinearOpMode() {
         Override,
     }
 
+    val Gamepad.anyStick: Boolean
+        get() = left_stick_x != 0f
+                || left_stick_y != 0f
+                || right_stick_x != 0f
+                || right_stick_y != 0f
+
     override fun runOpMode() {
         telemetry.status("initializing")
         val odometry = Odometry(
@@ -55,16 +62,71 @@ class MainTeleop : LinearOpMode() {
         waitForStart()
 
         runBlocking {
+            var inDriveAction = false
+            var inArmAction = false
+            val rightBumper = RisingEdgeDetector(gamepad2::right_bumper)
+
+            val actions = launch {
+                while (isActive) {
+                    if (gamepad1.a) {
+                        inDriveAction = true
+                        cancelWith({ gamepad1.anyStick }) { moveToBasket(drivebase) }
+                        inDriveAction = false
+                    } else if (gamepad1.x) {
+                        inDriveAction = true
+                        cancelWith({ gamepad1.anyStick }) { moveToSubLeft(drivebase) }
+                        inDriveAction = false
+                    } else if (gamepad1.y) {
+                        inDriveAction = true
+                        cancelWith({ gamepad1.anyStick }) { moveToRungs(drivebase) }
+                        inDriveAction = false
+                    } else if (gamepad1.b) {
+                        inDriveAction = true
+                        cancelWith({ gamepad1.anyStick }) { moveToSubRight(drivebase) }
+                        inDriveAction = false
+                    } else if (gamepad2.touchpad) {
+                        inDriveAction = true
+                        inArmAction = true
+                        cancelWith({ gamepad2.anyStick }) {
+                            scoreSample(
+                                drivebase,
+                                rightLift,
+                                clipper,
+                                (gamepad2.touchpad_finger_1_x + 1.0) / 2.0
+                            )
+                            rightBumper.set(false)
+                        }
+                        inDriveAction = false
+                        inArmAction = false
+                    } else if (gamepad2.square) {
+                        inDriveAction = true
+                        inArmAction = true
+                        cancelWith({ gamepad2.anyStick }) {
+                            pickClip(drivebase, rightLift, clipper)
+                            rightBumper.set(true)
+                        }
+                        inDriveAction = false
+                        inArmAction = false
+                    }
+
+                    yield()
+                }
+            }
+
             /**
              * implements the controls from
              * [this diagram](https://github.com/Pleasant-Valley-Robotics/24-25_IntoTheDeep_6093/blob/c044f6bc06b16190bddb8a6cdaa9e33c1754b1b0/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/documentation/svgviewer-png-output(1).png?raw=true)
              */
             val endEffector = launch {
                 var state = EndEffectorState.Intake
-                val rightBumper = RisingEdgeDetector(gamepad2::right_bumper)
 
                 while (isActive) {
                     val oldState = state
+
+                    if (inArmAction) {
+                        yield()
+                        continue
+                    }
 
                     state = when {
                         gamepad2.dpad_left -> EndEffectorState.Intake
@@ -162,15 +224,11 @@ class MainTeleop : LinearOpMode() {
 
             val driving = launch {
                 while (isActive) {
-                    if (gamepad1.b) odometry.resetOdometry()
-                    if (gamepad1.a) parallelRace({
-                        moveToBasket(drivebase)
-                    }, {
-                        while (gamepad1.left_stick_y == 0f
-                               && gamepad1.right_stick_y == 0f
-                               && gamepad1.right_stick_x == 0f
-                        ) yield()
-                    })
+                    if (gamepad1.dpad_down) odometry.resetOdometry()
+                    if (inDriveAction) {
+                        yield()
+                        continue
+                    }
 
                     val slowMode = gamepad1.right_trigger > 0.5
                     val slowdown = if (slowMode) 0.5 else 1.0
@@ -187,11 +245,14 @@ class MainTeleop : LinearOpMode() {
             }
 
             while (opModeIsActive()) {
-                drivebase.addTelemetry(telemetry)
+//                drivebase.addTelemetry(telemetry)
                 leftLift.addTelemetry(telemetry)
+                rightLift.addTelemetry(telemetry)
                 extender.addTelemetry(telemetry)
-                camera.addTelemetry(telemetry)
+//                camera.addTelemetry(telemetry)
                 odometry.addTelemetry(telemetry)
+                telemetry.addData("in drive action", inDriveAction)
+                telemetry.addData("in arm action", inArmAction)
                 telemetry.status("running")
 
                 odometry.update()
@@ -199,6 +260,7 @@ class MainTeleop : LinearOpMode() {
                 yield()
             }
 
+            actions.cancelAndJoin()
             driving.cancelAndJoin()
             endEffector.cancelAndJoin()
 

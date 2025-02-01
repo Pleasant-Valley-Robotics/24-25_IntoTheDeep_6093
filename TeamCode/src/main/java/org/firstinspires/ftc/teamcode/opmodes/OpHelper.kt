@@ -47,11 +47,42 @@ suspend fun parallelRace(vararg tasks: suspend () -> Unit) = coroutineScope {
     this.coroutineContext.cancelChildren()
 }
 
+suspend fun cancelWith(supplier: () -> Boolean, task: suspend () -> Unit) = coroutineScope {
+    parallelRace(task, { while (!supplier()) yield() })
+}
+
 suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) =
     drivebase.driveOffsetGlobal(
         xInches = -23.22,
         yInches = 7.938,
         angleRadians = 0.8,
+        maxPower = maxSpeed,
+        precise = false,
+    )
+
+suspend fun moveToRungs(drivebase: Drivebase, maxSpeed: Double = 0.5) =
+    drivebase.driveOffsetGlobal(
+        xInches = 33.4708,
+        yInches = 28.1057,
+        angleRadians = PI / 2,
+        maxPower = maxSpeed,
+        precise = false,
+    )
+
+suspend fun moveToSubLeft(drivebase: Drivebase, maxSpeed: Double = 0.5) =
+    drivebase.driveOffsetGlobal(
+        xInches = 8.3147,
+        yInches = 53.5766,
+        angleRadians = 0.0,
+        maxPower = maxSpeed,
+        precise = false,
+    )
+
+suspend fun moveToSubRight(drivebase: Drivebase, maxSpeed: Double = 0.5) =
+    drivebase.driveOffsetGlobal(
+        xInches = 54.7722,
+        yInches = 53.5766,
+        angleRadians = PI,
         maxPower = maxSpeed,
         precise = false,
     )
