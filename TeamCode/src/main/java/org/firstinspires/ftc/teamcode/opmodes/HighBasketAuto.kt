@@ -22,6 +22,9 @@ class HighBasketAuto : LinearOpMode() {
         telemetry.status("initializing")
 
         val odometry = Odometry(hardwareMap)
+
+        LAST_AUTO_START_POS = null
+
         val drivebase = Drivebase(hardwareMap, odometry)
         val lift = LeftLift(hardwareMap)
         val extender = Extender(hardwareMap)

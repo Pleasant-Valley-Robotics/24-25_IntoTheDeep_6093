@@ -41,12 +41,7 @@ class MainTeleop : LinearOpMode() {
 
     override fun runOpMode() {
         telemetry.status("initializing")
-        val odometry = Odometry(
-            hardwareMap, Pose2D(
-                DistanceUnit.INCH, 40.636, -1.629,
-                AngleUnit.RADIANS, -PI / 2,
-            )
-        )
+        val odometry = Odometry(hardwareMap, LAST_AUTO_START_POS)
         val drivebase = Drivebase(hardwareMap, odometry)
         val leftLift = LeftLift(hardwareMap)
         val rightLift = RightLift(hardwareMap)
