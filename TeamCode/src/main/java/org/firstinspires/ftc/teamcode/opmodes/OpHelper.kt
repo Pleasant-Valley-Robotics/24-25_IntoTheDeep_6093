@@ -66,7 +66,7 @@ suspend fun scoreSample(
     parallelWait(
         {
             drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-            drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
+            drivebase.driveOffsetGlobal(xParam, 25.28595, -PI / 2, 0.5, true)
         },
         { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 2.0) },
     )
@@ -83,7 +83,7 @@ suspend fun pickClip(
     //clip pos (69.3698, -1.9069, 1.5408)
     parallelWait({
         drivebase.driveOffsetGlobal(69.3698, 4.9069, PI / 2, 1.0, false)
-        drivebase.driveOffsetGlobal(69.3698, -1.9069, PI / 2, 1.0, false)
+        drivebase.driveOffsetGlobal(69.3698, -1.2069, PI / 2, 1.0, false)
     },
         { lift.moveLiftTo(0.0) }
     )

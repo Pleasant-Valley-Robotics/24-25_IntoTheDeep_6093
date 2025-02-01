@@ -8,6 +8,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
 import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
@@ -19,6 +22,7 @@ import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import kotlin.math.PI
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -30,7 +34,12 @@ class MainTeleop : LinearOpMode() {
 
     override fun runOpMode() {
         telemetry.status("initializing")
-        val odometry = Odometry(hardwareMap)
+        val odometry = Odometry(
+            hardwareMap, Pose2D(
+                DistanceUnit.INCH, 40.636, -1.629,
+                AngleUnit.RADIANS, -PI / 2,
+            )
+        )
         val drivebase = Drivebase(hardwareMap, odometry)
         val leftLift = LeftLift(hardwareMap)
         val rightLift = RightLift(hardwareMap)

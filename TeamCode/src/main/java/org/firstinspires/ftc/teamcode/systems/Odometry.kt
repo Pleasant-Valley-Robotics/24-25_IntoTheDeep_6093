@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utility.rotate
 
 class Odometry(
     hardwareMap: HardwareMap,
-    var poseOffset: Pose2D? = null
+    val poseOffset: Pose2D? = null
 ) {
     private val odometry = hardwareMap.get(GoBildaPinpointDriver::class.java, "odometry")!!.apply {
         // x is sideways offset, positive left
