@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
 
-@Autonomous(name = "ClipperAuto3")
+@Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
 class ClipperAuto3 : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")

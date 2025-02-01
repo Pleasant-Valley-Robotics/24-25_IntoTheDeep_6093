@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.systems.Spintake.SpintakeState
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 
-@Autonomous(name = "HighBasketExtendAuto")
+@Autonomous(group = "Basket", preselectTeleOp = "MainTeleop")
 class HighBasketExtendAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")

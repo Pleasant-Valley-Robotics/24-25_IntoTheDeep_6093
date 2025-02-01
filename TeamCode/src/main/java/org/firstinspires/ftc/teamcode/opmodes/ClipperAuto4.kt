@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
-import android.graphics.Path.Op
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -11,18 +11,17 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
-import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.Clipper
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.RightLift
-import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
 import kotlin.math.PI
 
-@Autonomous(name = "ClipperAuto4")
+@Disabled
+@Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
 class ClipperAuto4 : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")

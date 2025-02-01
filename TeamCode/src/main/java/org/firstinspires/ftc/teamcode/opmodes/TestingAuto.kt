@@ -9,7 +9,7 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Odometry
 
-@Autonomous(name = "TestingAuto")
+@Autonomous
 class TestingAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing Drivebase")

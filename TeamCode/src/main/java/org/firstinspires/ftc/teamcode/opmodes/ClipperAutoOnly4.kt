@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -21,7 +22,8 @@ import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
 import kotlin.math.PI
 
-@Autonomous(name = "ClipperAutoOnly4")
+@Disabled
+@Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
 class ClipperAutoOnly4 : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")

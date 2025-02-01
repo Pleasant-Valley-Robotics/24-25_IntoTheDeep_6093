@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
-@Autonomous(name = "LowBasketAuto")
+@Autonomous(group = "Basket", preselectTeleOp = "MainTeleop")
 class LowBasketAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
-@Autonomous(name = "PushbotAuto")
+@Autonomous(group = "Push", preselectTeleOp = "MainTeleop")
 class PushbotAuto : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("Initializing")

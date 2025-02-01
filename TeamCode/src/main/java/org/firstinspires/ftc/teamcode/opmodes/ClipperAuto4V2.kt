@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
 import kotlin.math.PI
 
-@Autonomous(name = "ClipperAuto4V2")
+@Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
 class ClipperAuto4V2 : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")
