@@ -92,10 +92,21 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
      * @see DcMotor.ZeroPowerBehavior
      */
     fun setBrakeEnable(enable: Boolean) {
-        motors.forEach {
-            it.zeroPowerBehavior =
+        for (motor in motors) {
+            motor.zeroPowerBehavior =
                 if (enable) DcMotor.ZeroPowerBehavior.BRAKE
                 else DcMotor.ZeroPowerBehavior.FLOAT
+        }
+    }
+
+    /**
+     * resets motor encoders. note that this also sets power to zero and
+     * freezes the motors for a split second
+     */
+    private fun resetMotorEncoders() {
+        for (motor in motors) with(motor) {
+            mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         }
     }
 
@@ -136,16 +147,6 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         controlMotors(xLocal, yLocal, turnInput)
     }
 
-    /**
-     * resets motor encoders. note that this also sets power to zero and
-     * freezes the motors for a split second
-     */
-    private fun resetMotorEncoders() {
-        for (motor in motors) with(motor) {
-            mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        }
-    }
 
     /** heading in degrees */
     private val heading get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
