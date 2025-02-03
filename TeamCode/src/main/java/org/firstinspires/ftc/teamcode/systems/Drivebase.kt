@@ -92,11 +92,9 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
      * @see DcMotor.ZeroPowerBehavior
      */
     fun setBrakeEnable(enable: Boolean) {
-        for (motor in motors) {
-            motor.zeroPowerBehavior =
-                if (enable) DcMotor.ZeroPowerBehavior.BRAKE
-                else DcMotor.ZeroPowerBehavior.FLOAT
-        }
+        for (motor in motors) motor.zeroPowerBehavior =
+            if (enable) DcMotor.ZeroPowerBehavior.BRAKE
+            else DcMotor.ZeroPowerBehavior.FLOAT
     }
 
     /**
