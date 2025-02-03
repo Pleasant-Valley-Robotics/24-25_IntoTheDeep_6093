@@ -6,6 +6,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
 import org.firstinspires.ftc.teamcode.systems.GoBildaPinpointDriver.DeviceStatus.CALIBRATING
+import org.firstinspires.ftc.teamcode.utility.control.PoseData
+import org.firstinspires.ftc.teamcode.utility.control.Vec2d
 import org.firstinspires.ftc.teamcode.utility.rotate
 
 
@@ -45,6 +47,8 @@ class Odometry(
 
     fun update() = odometry.update()
 
+    val globalPose get() = PoseData(Vec2d(globalPosX, globalPosY), posRad)
+
     private val posXOffset get() = poseOffset?.getX(DistanceUnit.INCH) ?: 0.0
     private val posYOffset get() = poseOffset?.getY(DistanceUnit.INCH) ?: 0.0
     private val posRadOffset get() = poseOffset?.getHeading(AngleUnit.RADIANS) ?: 0.0
@@ -56,7 +60,11 @@ class Odometry(
     val globalPosX get() = globalPos.first + posXOffset
     val globalPosY get() = globalPos.second + posYOffset
 
-    private val localVels get() = rotate(globalVelX to globalVelY, -odometry.position.getHeading(AngleUnit.RADIANS))
+    private val localVels
+        get() = rotate(
+            globalVelX to globalVelY,
+            -odometry.position.getHeading(AngleUnit.RADIANS)
+        )
     val localVelX get() = localVels.first
     val localVelY get() = localVels.second
 

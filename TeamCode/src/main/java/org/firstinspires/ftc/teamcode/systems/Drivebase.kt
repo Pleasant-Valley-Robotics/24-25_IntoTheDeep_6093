@@ -101,7 +101,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
      * resets motor encoders. note that this also sets power to zero and
      * freezes the motors for a split second
      */
-    private fun resetMotorEncoders() {
+    fun resetMotorEncoders() {
         for (motor in motors) with(motor) {
             mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER

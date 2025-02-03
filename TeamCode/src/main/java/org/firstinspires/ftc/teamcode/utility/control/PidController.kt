@@ -12,13 +12,13 @@ import com.qualcomm.robotcore.util.ElapsedTime
  * @param maxValue maximum value for entire system. output clamped into `[-x, x]`
  * @param derivativeGetter replaces the internal finite differences calculation for derivative if supplied.
  */
-class PidController(
-    private val kp: Double,
-    private val ki: Double = 0.0,
-    private val kd: Double = 0.0,
-    private val clamp: Double?,
-    private val maxValue: Double,
-    private val derivativeGetter: (() -> Double)? = null,
+data class PidController(
+    val kp: Double,
+    val ki: Double = 0.0,
+    val kd: Double = 0.0,
+    val clamp: Double?,
+    var maxValue: Double,
+    val derivativeGetter: (() -> Double)? = null,
 ) : ErrorController {
     private val timer = ElapsedTime()
     private var lastError = 0.0

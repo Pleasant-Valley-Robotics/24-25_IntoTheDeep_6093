@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.utility.control
 
 interface Trajectory {
-    fun getPoint(t: Double): PoseData
+//    val range: ClosedFloatingPointRange<Double>
+    val start: Double
+    val end: Double
+    fun nearestPoint(pose: PoseData): Double
+    fun pointsAround(pose: PoseData, dist: Double): List<Double>
+    operator fun get(t: Double): PoseData
 }
