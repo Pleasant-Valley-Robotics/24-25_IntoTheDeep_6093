@@ -24,6 +24,10 @@ data class PoseData(
     )
 
     operator fun minus(other: PoseData) = this + -other
+    operator fun times(scalar: Double) = PoseData(
+        pos * scalar,
+        wrapRadians(angRad * scalar)
+    )
 
     constructor(pose2D: Pose2D) : this(
         Vec2d(
