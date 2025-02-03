@@ -143,7 +143,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     private fun resetMotorEncoders() {
         for (motor in motors) with(motor) {
             mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            mode = DcMotor.RunMode.RUN_USING_ENCODER
+            mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         }
     }
 
