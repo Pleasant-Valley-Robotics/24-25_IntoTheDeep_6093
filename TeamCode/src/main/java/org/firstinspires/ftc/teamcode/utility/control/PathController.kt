@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode.systems
+package org.firstinspires.ftc.teamcode.utility.control
 
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.systems.Drivebase
+import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_D_GAIN
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.DRIVING_P_GAIN
@@ -12,11 +14,6 @@ import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_D_GAIN
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_I_GAIN
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_P_GAIN
 import org.firstinspires.ftc.teamcode.utility.DrivebaseConstants.TURNING_TOL_DEG_TIGHT
-import org.firstinspires.ftc.teamcode.utility.control.PidController
-import org.firstinspires.ftc.teamcode.utility.control.PoseData
-import org.firstinspires.ftc.teamcode.utility.control.Trajectory
-import org.firstinspires.ftc.teamcode.utility.control.Vec2d
-import org.firstinspires.ftc.teamcode.utility.rotate
 import kotlin.math.absoluteValue
 
 class PathController(
