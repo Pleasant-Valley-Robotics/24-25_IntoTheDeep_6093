@@ -83,6 +83,14 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         imu.resetYaw()
     }
 
+    fun setBrakeEnable(enable: Boolean) {
+        motors.forEach {
+            it.zeroPowerBehavior =
+                if (enable) DcMotor.ZeroPowerBehavior.BRAKE
+                else DcMotor.ZeroPowerBehavior.FLOAT
+        }
+    }
+
     /**
      * function to be used in teleop, controls the motors
      *

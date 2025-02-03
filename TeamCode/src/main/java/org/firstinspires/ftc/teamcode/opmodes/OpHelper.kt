@@ -100,13 +100,22 @@ suspend fun scoreSample(
     parallelWait(
         {
             drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-            drivebase.driveOffsetGlobal(xParam, 25.28595, -PI / 2, 0.5, true)
+            drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
         },
-        { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 2.0) },
+        { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.8) },
     )
 
     lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 7.0)
     clipper.moveClaw(Clipper.ClipperState.Open)
+}
+
+suspend fun moveToSampleParam(
+    drivebase: Drivebase,
+    param: Double,
+) {
+    val xParam = (1 - param) * 20.4613 + param * 44.8
+    drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
+    drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
 }
 
 suspend fun pickClip(
