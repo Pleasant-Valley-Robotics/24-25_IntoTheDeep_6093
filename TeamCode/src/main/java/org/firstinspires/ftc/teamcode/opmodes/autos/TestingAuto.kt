@@ -1,44 +1,52 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Odometry
 
-@Autonomous(group = "Push", preselectTeleOp = "MainTeleop")
-class DriveAuto : LinearOpMode() {
+@Autonomous
+class TestingAuto : LinearOpMode() {
     override fun runOpMode() {
-        telemetry.status("Initializing")
-
+        telemetry.status("Initializing Drivebase")
         val odometry = Odometry(hardwareMap)
-
-        LAST_AUTO_START_POS = null
-
         odometry.resetOdometry()
         val drivebase = Drivebase(hardwareMap, odometry)
 
+        odometry.addTelemetry(telemetry)
         telemetry.status("Initialized")
-
         waitForStart()
 
         runBlocking {
             val auto = launch {
-                delay(25000)
-                drivebase.driveForward(48.0, 0.5)
+                drivebase.driveOffsetGlobal(
+                    xInches = -23.22,
+                    yInches = 7.938,
+                    angleRadians = 0.8,
+                    maxPower = 0.5,
+                    precise = false,
+                )
             }
 
-            while (auto.isActive && opModeIsActive()) {
+            while (opModeIsActive() && auto.isActive) {
                 drivebase.addTelemetry(telemetry)
+                odometry.addTelemetry(telemetry)
+
                 telemetry.status("Running")
+
+                odometry.update()
+
                 yield()
             }
 
+            // stop motors
             drivebase.controlMotors(0.0, 0.0, 0.0)
+
             auto.cancelAndJoin()
         }
     }

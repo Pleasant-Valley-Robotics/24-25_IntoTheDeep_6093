@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.teleop
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState

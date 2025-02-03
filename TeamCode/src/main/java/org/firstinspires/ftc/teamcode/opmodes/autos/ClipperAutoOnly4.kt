@@ -1,12 +1,18 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
+import org.firstinspires.ftc.teamcode.opmodes.parallelWait
+import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.Clipper
 import org.firstinspires.ftc.teamcode.systems.Drivebase
@@ -16,13 +22,20 @@ import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_RIGHT
+import kotlin.math.PI
 
+@Disabled
 @Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
-class ClipperAuto3 : LinearOpMode() {
+class ClipperAutoOnly4 : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")
 
-        val odometry = Odometry(hardwareMap)
+        val odometry = Odometry(
+            hardwareMap, Pose2D(
+                DistanceUnit.INCH, -4.2935, -0.2275,
+                AngleUnit.RADIANS, -PI / 2
+            )
+        )
         val drivebase = Drivebase(hardwareMap, odometry)
         val lift = RightLift(hardwareMap)
         val extender = Extender(hardwareMap)
@@ -44,15 +57,14 @@ class ClipperAuto3 : LinearOpMode() {
             suspend fun scorePole(offset: Double) {
                 parallelWait(
                     {
-                        drivebase.driveOffsetGlobal(-15.21 + offset, 15.79, -1.571, 0.5, false)
-                        drivebase.driveOffsetGlobal(-15.21 + offset, 26.39, -1.571, 0.5, true)
+                        drivebase.driveOffsetGlobal(-8.21 + offset, 15.79, -1.571, 1.0, false)
+                        drivebase.driveOffsetGlobal(-8.21 + offset, 26.39, -1.571, 0.75, true)
                     },
                     { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 2.0) },
                 )
 
                 lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 7.0)
                 clipper.moveClaw(Clipper.ClipperState.Open)
-
             }
 
             val auto = launch {
@@ -61,44 +73,41 @@ class ClipperAuto3 : LinearOpMode() {
                 scorePole(0.0)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(19.76, 25.04, 0.0, 1.0, false)
-                    drivebase.strafeLeft(10.0, 1.0)
-                    drivebase.driveForward(7.0, 1.0)
-                    drivebase.strafeLeft(-10.0, 1.0)
-                    drivebase.driveOffsetGlobal(46.03, 1.0, 0.0, 1.0, false)
-                    drivebase.driveForward(-7.0, 1.0)
-                    drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false)
-                    drivebase.driveOffsetGlobal(31.95, 1.014, 1.571, 0.5, true)
+                    drivebase.driveOffsetGlobal(19.76, 25.04, -1.571, 1.0, false)
+
+                    drivebase.driveOffsetGlobal(19.76, 48.04, -1.571, 1.0, false)
+                    drivebase.driveOffsetGlobal(29.76, 48.04, -1.571, 1.0, false)
+                    drivebase.driveOffsetGlobal(29.76, 10.04, -1.571, 1.0, false)
+
+                    drivebase.driveOffsetGlobal(21.95, 5.879, 1.571, 1.0, false)
+                    drivebase.driveOffsetGlobal(21.95, 1.014, 1.571, 1.0, false)
                 },
                     { lift.moveLiftTo(0.0) }
                 )
+                clipper.moveClaw(Clipper.ClipperState.Closed)
+                delay(250L)
+                scorePole(1.5)
 
+                parallelWait({
+                    drivebase.driveOffsetGlobal(21.95, 5.879, 1.571, 1.0, false)
+                    drivebase.driveOffsetGlobal(21.95, 1.014, 1.571, 1.0, false)
+                },
+                    { lift.moveLiftTo(0.0) }
+                )
                 clipper.moveClaw(Clipper.ClipperState.Closed)
                 delay(250L)
                 scorePole(3.0)
 
                 parallelWait({
-//                    drivebase.driveOffsetGlobal(29.76, 25.04, 0.0, 1.0, false)
-//                    drivebase.strafeLeft(10.0, 1.0)
-//                    drivebase.driveForward(7.0, 1.0)
-//                    drivebase.strafeLeft(-10.0, 1.0)
-//                    drivebase.driveOffsetGlobal(46.03, 1.0, 0.0, 1.0, false)
-//                    drivebase.driveForward(-7.0, 1.0)
-                    drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false)
-                    drivebase.driveOffsetGlobal(31.95, 1.014, 1.571, 0.5, true)
+                    drivebase.driveOffsetGlobal(21.95, 5.879, 1.571, 1.0, false)
+                    drivebase.driveOffsetGlobal(21.95, 1.014, 1.571, 1.0, false)
                 },
                     { lift.moveLiftTo(0.0) }
                 )
 
-
                 clipper.moveClaw(Clipper.ClipperState.Closed)
                 delay(250L)
-                scorePole(6.0)
-
-                parallelWait(
-                    { drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false) },
-                    { lift.moveLiftTo(0.0) }
-                )
+                scorePole(4.5)
             }
 
             while (opModeIsActive() && auto.isActive) {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes
+package org.firstinspires.ftc.teamcode.opmodes.teleop
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -9,9 +9,16 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D
+import org.firstinspires.ftc.teamcode.opmodes.LAST_AUTO_START_POS
+import org.firstinspires.ftc.teamcode.opmodes.RisingEdgeDetector
+import org.firstinspires.ftc.teamcode.opmodes.cancelWith
+import org.firstinspires.ftc.teamcode.opmodes.moveToBasket
+import org.firstinspires.ftc.teamcode.opmodes.moveToRungs
+import org.firstinspires.ftc.teamcode.opmodes.moveToSubLeft
+import org.firstinspires.ftc.teamcode.opmodes.moveToSubRight
+import org.firstinspires.ftc.teamcode.opmodes.pickClip
+import org.firstinspires.ftc.teamcode.opmodes.scoreSample
+import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Camera
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
@@ -23,7 +30,6 @@ import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
-import kotlin.math.PI
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
