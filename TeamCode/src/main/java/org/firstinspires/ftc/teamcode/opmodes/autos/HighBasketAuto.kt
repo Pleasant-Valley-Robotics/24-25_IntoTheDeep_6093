@@ -65,7 +65,7 @@ class HighBasketAuto : LinearOpMode() {
                 drivebase.driveForward(4.0, driveSpeed)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(
+                    drivebase.driveToPositionGlobal(
                         xInches = -16.16,
                         yInches = 25.66,
                         angleRadians = 1.58,
@@ -105,7 +105,7 @@ class HighBasketAuto : LinearOpMode() {
 
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(
+                    drivebase.driveToPositionGlobal(
                         xInches = -25.71,
                         yInches = 25.66,
                         angleRadians = 1.58,
@@ -144,14 +144,14 @@ class HighBasketAuto : LinearOpMode() {
                 drivebase.driveForward(4.0, driveSpeed)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(
+                    drivebase.driveToPositionGlobal(
                         xInches = 65.07,
                         yInches = 27.28,
                         angleRadians = 0.0,
                         maxPower = 0.5,
                         precise = false,
                     )
-                    drivebase.driveOffsetGlobal(
+                    drivebase.driveToPositionGlobal(
                         xInches = 70.92,
                         yInches = 5.03,
                         angleRadians = 0.0,

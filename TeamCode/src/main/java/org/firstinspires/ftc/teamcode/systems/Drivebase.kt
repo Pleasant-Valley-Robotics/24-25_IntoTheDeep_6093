@@ -72,7 +72,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     private val motors = listOf(fldrive, frdrive, bldrive, brdrive)
 
     init {
-        motors.forEach { it.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE }
+        setBrakeEnable(true)
         resetMotorEncoders()
 
         fldrive.direction = DcMotorSimple.Direction.REVERSE
@@ -83,6 +83,14 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         imu.resetYaw()
     }
 
+    /**
+     * enables / disables the robot motor's brake mode. note that brake power
+     * isn't actually that strong and it's better to drive them in the opposite direction
+     * to a load using something like a PID loop.
+     *
+     * @param enable whether to enable or disable brakes
+     * @see DcMotor.ZeroPowerBehavior
+     */
     fun setBrakeEnable(enable: Boolean) {
         motors.forEach {
             it.zeroPowerBehavior =
@@ -115,6 +123,14 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         brdrive.power = brpower / maxPower
     }
 
+    /**
+     * method for field-centric driving. uses the standard coordinate frame.
+     *
+     * @param xInput how much to move globally on the x axis.
+     * @param yInput how much to move globally on the y axis.
+     * @param turnInput how much to turn globally around the z axis.
+     * @see controlMotors
+     */
     fun controlMotorsGlobal(xInput: Double, yInput: Double, turnInput: Double) {
         val (xLocal, yLocal) = rotate(Pair(xInput, yInput), -odometry.posRad)
         controlMotors(xLocal, yLocal, turnInput)
@@ -153,10 +169,29 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
      * wraps an angle in degrees to the range `[-180, 180]`
      * @param n angle to wrap
      */
-    private fun wrapAngle(n: Double) = (n + 180.0).mod(360.0) - 180.0
+    private fun wrapDegrees(n: Double) = (n + 180.0).mod(360.0) - 180.0
+
+    /**
+     * wraps an angle in radians to the range `[-π, π]`
+     * @param n angle to wrap
+     * @return the radian value
+     */
     private fun wrapRadians(n: Double) = (n + PI).mod(PI * 2) - PI
 
-    suspend fun driveOffsetGlobal(
+    /**
+     * drives to a position on the field. position is relative to the
+     * position that the odometry was initialized in.
+     *
+     * @param xInches position on the x axis.
+     * @param yInches position on the y axis.
+     * @param angleRadians heading in radians.
+     * @param maxPower the maximum power to be sent to the motors by each action.
+     * @param precise whether to enforce tight ending tolerances (if false, it will cut the control
+     * loop faster but will be less precise)
+     * @see Odometry
+     * @see PidController
+     */
+    suspend fun driveToPositionGlobal(
         xInches: Double,
         yInches: Double,
         angleRadians: Double,
@@ -210,11 +245,13 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
     }
 
 
+    @Deprecated("Use the faster and more precise global actions instead.")
     /**
      * drives the robot forward
      *
      * @param inches how many inches to drive, negative for backwards
      * @param maxPower how fast to drive. `(0, 1]`
+     * @see driveToPositionGlobal
      */
     suspend fun driveForward(inches: Double, maxPower: Double) {
         resetMotorEncoders()
@@ -230,11 +267,13 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         motors.forEach { it.power = 0.0 }
     }
 
+    @Deprecated("Use the faster and more precise global actions instead.")
     /**
      * strafes (left right movement)
      *
      * @param inches how many inches to strafe, positive is left
      * @param maxPower how fast to strafe. `(0, 1]`
+     * @see driveToPositionGlobal
      */
     suspend fun strafeLeft(inches: Double, maxPower: Double) {
         resetMotorEncoders()
@@ -250,12 +289,14 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
         motors.forEach { it.power = 0.0 }
     }
 
+    @Deprecated("Use the faster and more precise global actions instead.")
     /**
      * turns to an angle in degrees. note that zero degrees is the front of our robot,
      * and turning left is positive from there.
      *
      * @param degrees angle to turn in degrees.
      * @param maxPower maximum power to turn with. `(0, 1]`
+     * @see driveToPositionGlobal
      */
     suspend fun turnToAngle(degrees: Double, maxPower: Double) {
         resetMotorEncoders()
@@ -264,7 +305,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
 
         controller.controlThing(
             tolerance = TURNING_TOL_DEG_LOOSE,
-            error = { wrapAngle(degrees - odometry.posRad / Math.PI * 180.0) },
+            error = { wrapDegrees(degrees - odometry.posRad / Math.PI * 180.0) },
             output = { controlMotors(0.0, 0.0, it) }
         )
 

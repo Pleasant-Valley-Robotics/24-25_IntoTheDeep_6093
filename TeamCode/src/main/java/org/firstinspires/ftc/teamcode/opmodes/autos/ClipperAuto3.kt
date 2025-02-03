@@ -46,8 +46,8 @@ class ClipperAuto3 : LinearOpMode() {
             suspend fun scorePole(offset: Double) {
                 parallelWait(
                     {
-                        drivebase.driveOffsetGlobal(-15.21 + offset, 15.79, -1.571, 0.5, false)
-                        drivebase.driveOffsetGlobal(-15.21 + offset, 26.39, -1.571, 0.5, true)
+                        drivebase.driveToPositionGlobal(-15.21 + offset, 15.79, -1.571, 0.5, false)
+                        drivebase.driveToPositionGlobal(-15.21 + offset, 26.39, -1.571, 0.5, true)
                     },
                     { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 2.0) },
                 )
@@ -63,14 +63,14 @@ class ClipperAuto3 : LinearOpMode() {
                 scorePole(0.0)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(19.76, 25.04, 0.0, 1.0, false)
+                    drivebase.driveToPositionGlobal(19.76, 25.04, 0.0, 1.0, false)
                     drivebase.strafeLeft(10.0, 1.0)
                     drivebase.driveForward(7.0, 1.0)
                     drivebase.strafeLeft(-10.0, 1.0)
-                    drivebase.driveOffsetGlobal(46.03, 1.0, 0.0, 1.0, false)
+                    drivebase.driveToPositionGlobal(46.03, 1.0, 0.0, 1.0, false)
                     drivebase.driveForward(-7.0, 1.0)
-                    drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false)
-                    drivebase.driveOffsetGlobal(31.95, 1.014, 1.571, 0.5, true)
+                    drivebase.driveToPositionGlobal(31.95, 5.879, 1.571, 0.5, false)
+                    drivebase.driveToPositionGlobal(31.95, 1.014, 1.571, 0.5, true)
                 },
                     { lift.moveLiftTo(0.0) }
                 )
@@ -86,8 +86,8 @@ class ClipperAuto3 : LinearOpMode() {
 //                    drivebase.strafeLeft(-10.0, 1.0)
 //                    drivebase.driveOffsetGlobal(46.03, 1.0, 0.0, 1.0, false)
 //                    drivebase.driveForward(-7.0, 1.0)
-                    drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false)
-                    drivebase.driveOffsetGlobal(31.95, 1.014, 1.571, 0.5, true)
+                    drivebase.driveToPositionGlobal(31.95, 5.879, 1.571, 0.5, false)
+                    drivebase.driveToPositionGlobal(31.95, 1.014, 1.571, 0.5, true)
                 },
                     { lift.moveLiftTo(0.0) }
                 )
@@ -98,7 +98,7 @@ class ClipperAuto3 : LinearOpMode() {
                 scorePole(6.0)
 
                 parallelWait(
-                    { drivebase.driveOffsetGlobal(31.95, 5.879, 1.571, 0.5, false) },
+                    { drivebase.driveToPositionGlobal(31.95, 5.879, 1.571, 0.5, false) },
                     { lift.moveLiftTo(0.0) }
                 )
             }

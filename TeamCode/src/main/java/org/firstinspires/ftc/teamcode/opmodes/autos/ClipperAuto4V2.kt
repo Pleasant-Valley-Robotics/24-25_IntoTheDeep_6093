@@ -57,14 +57,14 @@ class ClipperAuto4V2 : LinearOpMode() {
                 scoreSample(drivebase, lift, clipper, 0.5)
 
                 parallelWait({
-                    drivebase.driveOffsetGlobal(67.2637, 23.5902, -PI / 2, 1.0, false)
-                    drivebase.driveOffsetGlobal(67.2637, 46.4816, -PI / 2, 1.0, false)
-                    drivebase.driveOffsetGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
-                    drivebase.driveOffsetGlobal(80.1976, 9.4049, -PI / 2, 1.0, false)
-                    drivebase.driveOffsetGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(67.2637, 23.5902, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(67.2637, 46.4816, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(80.1976, 9.4049, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
 
-                    drivebase.driveOffsetGlobal(90.4633, 46.4816, -PI / 2, 1.0, false)
-                    drivebase.driveOffsetGlobal(90.4633, 9.4049, -PI / 2 + 0.1, 1.0, false)
+                    drivebase.driveToPositionGlobal(90.4633, 46.4816, -PI / 2, 1.0, false)
+                    drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2 + 0.1, 1.0, false)
                 }, { lift.moveLiftTo(0.0) })
 
                 pickClip(drivebase, lift, clipper)
@@ -76,7 +76,7 @@ class ClipperAuto4V2 : LinearOpMode() {
                 pickClip(drivebase, lift, clipper)
                 scoreSample(drivebase, lift, clipper, 0.8)
 
-                drivebase.driveOffsetGlobal(90.4633, 9.4049, -PI / 2, 1.0, false)
+                drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2, 1.0, false)
             }
 
             while (opModeIsActive() && auto.isActive) {

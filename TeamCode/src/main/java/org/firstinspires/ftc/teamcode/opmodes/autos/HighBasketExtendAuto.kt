@@ -80,7 +80,7 @@ class HighBasketExtendAuto : LinearOpMode() {
             suspend fun goGrabBlock(blockX: Double, blockY: Double, angle: Double) {
                 parallelWait(
                     {
-                        drivebase.driveOffsetGlobal(
+                        drivebase.driveToPositionGlobal(
                             xInches = blockX,
                             yInches = blockY,
                             angleRadians = angle,

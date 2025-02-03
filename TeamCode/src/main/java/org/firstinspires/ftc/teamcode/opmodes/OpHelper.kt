@@ -55,7 +55,7 @@ suspend fun cancelWith(supplier: () -> Boolean, task: suspend () -> Unit) = coro
 }
 
 suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) =
-    drivebase.driveOffsetGlobal(
+    drivebase.driveToPositionGlobal(
         xInches = -23.22,
         yInches = 7.938,
         angleRadians = 0.8,
@@ -64,7 +64,7 @@ suspend fun moveToBasket(drivebase: Drivebase, maxSpeed: Double = 0.5) =
     )
 
 suspend fun moveToRungs(drivebase: Drivebase, maxSpeed: Double = 0.5) =
-    drivebase.driveOffsetGlobal(
+    drivebase.driveToPositionGlobal(
         xInches = 33.4708,
         yInches = 28.1057,
         angleRadians = PI / 2,
@@ -73,7 +73,7 @@ suspend fun moveToRungs(drivebase: Drivebase, maxSpeed: Double = 0.5) =
     )
 
 suspend fun moveToSubLeft(drivebase: Drivebase, maxSpeed: Double = 0.5) =
-    drivebase.driveOffsetGlobal(
+    drivebase.driveToPositionGlobal(
         xInches = 8.3147,
         yInches = 53.5766,
         angleRadians = 0.0,
@@ -82,7 +82,7 @@ suspend fun moveToSubLeft(drivebase: Drivebase, maxSpeed: Double = 0.5) =
     )
 
 suspend fun moveToSubRight(drivebase: Drivebase, maxSpeed: Double = 0.5) =
-    drivebase.driveOffsetGlobal(
+    drivebase.driveToPositionGlobal(
         xInches = 54.7722,
         yInches = 53.5766,
         angleRadians = PI,
@@ -99,8 +99,8 @@ suspend fun scoreSample(
     val xParam = (1 - param) * 20.4613 + param * 44.8
     parallelWait(
         {
-            drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-            drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
+            drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
+            drivebase.driveToPositionGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
         },
         { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.8) },
     )
@@ -114,8 +114,8 @@ suspend fun moveToSampleParam(
     param: Double,
 ) {
     val xParam = (1 - param) * 20.4613 + param * 44.8
-    drivebase.driveOffsetGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-    drivebase.driveOffsetGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
+    drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
+    drivebase.driveToPositionGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
 }
 
 suspend fun pickClip(
@@ -125,8 +125,8 @@ suspend fun pickClip(
 ) {
     //clip pos (69.3698, -1.9069, 1.5408)
     parallelWait({
-        drivebase.driveOffsetGlobal(69.3698, 4.9069, PI / 2, 1.0, false)
-        drivebase.driveOffsetGlobal(69.3698, -1.2069, PI / 2, 1.0, false)
+        drivebase.driveToPositionGlobal(69.3698, 4.9069, PI / 2, 1.0, false)
+        drivebase.driveToPositionGlobal(69.3698, -1.2069, PI / 2, 1.0, false)
     },
         { lift.moveLiftTo(0.0) }
     )
