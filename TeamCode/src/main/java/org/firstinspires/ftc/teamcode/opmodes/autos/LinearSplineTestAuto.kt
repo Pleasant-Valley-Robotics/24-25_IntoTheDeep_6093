@@ -21,6 +21,7 @@ class LinearSplineTestAuto : LinearOpMode() {
         val odometry = Odometry(hardwareMap)
         val drivebase = Drivebase(hardwareMap, odometry)
         val spline = LinearSpline(
+            speed = 0.5,
             PoseData(Vec2d(0.0, 0.0), 0.0),
             PoseData(Vec2d(10.0, 10.0), 0.0),
             PoseData(Vec2d(10.0, 0.0), 0.0),
