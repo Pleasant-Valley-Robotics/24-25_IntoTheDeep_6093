@@ -8,10 +8,12 @@ import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Odometry
+import org.firstinspires.ftc.teamcode.utility.TAU
 import org.firstinspires.ftc.teamcode.utility.control.LinearSpline
 import org.firstinspires.ftc.teamcode.utility.control.PathController
 import org.firstinspires.ftc.teamcode.utility.control.PoseData
 import org.firstinspires.ftc.teamcode.utility.control.Vec2d
+import kotlin.math.PI
 
 @Autonomous
 class LinearSplineTestAuto : LinearOpMode() {
@@ -22,10 +24,10 @@ class LinearSplineTestAuto : LinearOpMode() {
         val drivebase = Drivebase(hardwareMap, odometry)
         val spline = LinearSpline(
             speed = 0.5,
-            PoseData(Vec2d(0.0, 0.0), 0.0),
-            PoseData(Vec2d(10.0, 10.0), 0.0),
-            PoseData(Vec2d(10.0, 0.0), 0.0),
-            PoseData(Vec2d(0.0, 0.0), 0.0),
+            PoseData(Vec2d(0.0, 0.0), TAU * 0 / 3),
+            PoseData(Vec2d(10.0, 10.0), TAU * 1 / 3),
+            PoseData(Vec2d(10.0, 0.0), TAU * 2 / 3),
+            PoseData(Vec2d(0.0, 0.0), TAU * 3 / 3),
         )
         val controller = PathController(drivebase, odometry)
 

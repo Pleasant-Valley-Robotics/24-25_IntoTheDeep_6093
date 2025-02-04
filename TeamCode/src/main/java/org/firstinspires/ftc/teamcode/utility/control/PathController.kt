@@ -76,7 +76,7 @@ class PathController(
             val angInput = angPID.accept(angError)
 
             val (vel, angVel) = trajectory.getVel(endPoint)
-            val (xVel, yVel) = vel
+            val (xVel, yVel) = vel.rotate(-currentPose.angRad)
 
             drivebase.controlMotors(xInput + xVel, yInput + yVel, angInput + angVel)
 

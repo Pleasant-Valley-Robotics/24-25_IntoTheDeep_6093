@@ -335,7 +335,7 @@ class Drivebase(hardwareMap: HardwareMap, private val odometry: Odometry) {
 
         val yError = ClampController(
             pGain = Y_CORRECT_P,
-            maxControl = Y_CORRECT_MAX,
+            maxValue = Y_CORRECT_MAX,
         )
 
         val pitch = SPINTAKE_DOWN_ANGLE_RAD
