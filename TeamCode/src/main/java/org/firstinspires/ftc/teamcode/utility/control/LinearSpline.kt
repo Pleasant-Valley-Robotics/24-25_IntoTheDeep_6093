@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.utility.control
 
-import kotlin.math.pow
 import kotlin.math.sqrt
 
 private typealias Segment = Pair<PoseData, PoseData>
 
 class LinearSpline(
-    vararg targetPoints: PoseData
+    val speed: Double,
+    vararg targetPoints: PoseData,
 ) : Trajectory {
     val targetSegments = targetPoints.zip(targetPoints.drop(1))
 
@@ -49,25 +49,34 @@ class LinearSpline(
     }
 
     override val start = 0.0
-    override val end = targetPoints.size.toDouble()
+    override val end = targetSegments.size.toDouble()
 
     override fun nearestPoint(pose: PoseData) =
         targetSegments
             .mapIndexed { i, s -> closestPoint(s, pose) + i.toDouble() }
-            .minBy { (this[it] - pose).pos.length }
+            .minBy { (this.getPos(it) - pose).pos.length }
 
     override fun pointsAround(pose: PoseData, dist: Double) = buildList {
-        for (segment in targetSegments) {
+        for ((i, segment) in targetSegments.withIndex()) {
             val (fst, snd) = intersect(segment, pose, dist)
-            fst?.let { add(it) }
-            snd?.let { add(it) }
+            fst?.let { add(it + i.toDouble()) }
+            snd?.let { add(it + i.toDouble()) }
         }
     }
 
-    override operator fun get(t: Double): PoseData {
+    override fun getPos(t: Double): PoseData {
         val target = t.toInt()
         val inter = t % 1.0
+        if (target == targetSegments.size && inter == 0.0) return targetSegments.last().second
 
         return lerp(targetSegments[target], inter)
+    }
+
+    override fun getVel(t: Double): PoseData {
+        val target = t.toInt().let { if (it == targetSegments.size) it - 1 else it }
+        val segment = targetSegments[target]
+        val vec = (segment.second - segment.first).pos
+
+        return PoseData(vec / vec.length * speed, 0.0)
     }
 }

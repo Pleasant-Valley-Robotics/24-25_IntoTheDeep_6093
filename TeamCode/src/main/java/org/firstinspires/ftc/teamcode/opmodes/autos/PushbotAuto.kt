@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Spintake
 
+@Disabled
 @Autonomous(group = "Push", preselectTeleOp = "MainTeleop")
 class PushbotAuto : LinearOpMode() {
     override fun runOpMode() {

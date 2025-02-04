@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.opmodes.LAST_AUTO_START_POS
 import org.firstinspires.ftc.teamcode.opmodes.moveToBasket
 import org.firstinspires.ftc.teamcode.opmodes.parallelWait
 import org.firstinspires.ftc.teamcode.opmodes.status
+import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.Drivebase
 import org.firstinspires.ftc.teamcode.systems.Extender
-import org.firstinspires.ftc.teamcode.systems.Bucket
 import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot

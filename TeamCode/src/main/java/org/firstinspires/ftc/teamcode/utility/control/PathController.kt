@@ -41,6 +41,9 @@ class PathController(
         0.2,
         0.0,
     ) { -odometry.velRad }
+//    val xPID = ClampController(0.5, 0.0)
+//    val yPID = ClampController(0.5, 0.0)
+//    val angPID = ClampController(1.0, 0.0)
 
     suspend fun driveTrajectory(
         trajectory: Trajectory,
@@ -59,22 +62,28 @@ class PathController(
             val currentPose = odometry.globalPose
             val nearest = trajectory.nearestPoint(currentPose)
             val targets = trajectory.pointsAround(currentPose, lookahead)
-            setPoint = targets.sorted().find { it > setPoint } ?: nearest
+            setPoint = targets.sorted().find { it > setPoint }
+                       ?: endPoint.takeIf { (trajectory.getPos(it) - trajectory.getPos(nearest)).pos.length < lookahead }
+                       ?: nearest
 
-            val (posError, angError) = trajectory[setPoint] - currentPose
+            val (posError, angError) = trajectory.getPos(setPoint) - currentPose
             val (xError, yError) = posError.rotate(-currentPose.angRad)
 
-            val (endPosError, endAngError) = trajectory[endPoint] - currentPose
+            val (endPosError, endAngError) = trajectory.getPos(endPoint) - currentPose
 
             val xInput = xPID.accept(xError)
             val yInput = yPID.accept(yError)
             val angInput = angPID.accept(angError)
 
-            drivebase.controlMotors(xInput, yInput, angInput)
+            val (vel, angVel) = trajectory.getVel(endPoint)
+            val (xVel, yVel) = vel
+
+            drivebase.controlMotors(xInput + xVel, yInput + yVel, angInput + angVel)
 
             yield()
         } while (
-            endPosError.length > MOVEMENT_TOL_INCH_TIGHT
+            setPoint != endPoint
+            || endPosError.length > MOVEMENT_TOL_INCH_TIGHT
             || endAngError.absoluteValue > TURNING_TOL_DEG_TIGHT
         )
 

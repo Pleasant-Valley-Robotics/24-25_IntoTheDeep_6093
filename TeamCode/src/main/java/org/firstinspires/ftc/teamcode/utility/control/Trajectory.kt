@@ -6,5 +6,6 @@ interface Trajectory {
     val end: Double
     fun nearestPoint(pose: PoseData): Double
     fun pointsAround(pose: PoseData, dist: Double): List<Double>
-    operator fun get(t: Double): PoseData
+    fun getPos(t: Double): PoseData
+    fun getVel(t: Double): PoseData
 }

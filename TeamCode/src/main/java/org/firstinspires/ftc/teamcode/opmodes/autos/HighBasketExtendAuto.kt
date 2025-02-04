@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.systems.Spintake.SpintakeState
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 
+@Disabled
 @Autonomous(group = "Basket", preselectTeleOp = "MainTeleop")
 class HighBasketExtendAuto : LinearOpMode() {
     override fun runOpMode() {
