@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.utility.control
 
+import kotlin.math.cbrt
 import kotlin.math.sqrt
 
 private typealias Segment = Pair<PoseData, PoseData>
 
 class LinearSpline(
     val speed: Double,
-    vararg targetPoints: PoseData,
+    targetPoints: List<PoseData>,
 ) : Trajectory {
     val targetSegments = targetPoints.zip(targetPoints.drop(1))
 
@@ -28,10 +29,10 @@ class LinearSpline(
             distance: Double
         ): Pair<Double?, Double?> {
             // https://stackoverflow.com/a/1084899
-            val diff = segment.second.pos - segment.first.pos
+            val dir = segment.second.pos - segment.first.pos
             val f = segment.first.pos - target.pos
-            val a = diff * diff
-            val b = f * diff * 2.0
+            val a = dir * dir
+            val b = f * dir * 2.0
             val c = f * f - distance * distance
             val ds = b * b - 4.0 * a * c
             if (ds < 0.0) return Pair(null, null)
@@ -51,10 +52,8 @@ class LinearSpline(
     override val start = 0.0
     override val end = targetSegments.size.toDouble()
 
-    override fun nearestPoint(pose: PoseData) =
-        targetSegments
-            .mapIndexed { i, s -> closestPoint(s, pose) + i.toDouble() }
-            .minBy { (this.getPos(it) - pose).pos.length }
+    override fun nearestPoints(pose: PoseData) =
+        targetSegments.mapIndexed { i, s -> closestPoint(s, pose) + i.toDouble() }
 
     override fun pointsAround(pose: PoseData, dist: Double) = buildList {
         for ((i, segment) in targetSegments.withIndex()) {
@@ -77,6 +76,6 @@ class LinearSpline(
         val segment = targetSegments[target]
         val vec = (segment.second - segment.first).pos
 
-        return PoseData(vec / vec.length * speed, 0.0)
+        return PoseData(vec / vec.length * speed * cbrt(1.0 - t % 1.0), 0.0)
     }
 }
