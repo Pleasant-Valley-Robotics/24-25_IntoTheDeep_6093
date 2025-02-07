@@ -100,7 +100,7 @@ suspend fun scoreSample(
     parallelWait(
         {
             drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-            drivebase.driveToPositionGlobal(xParam, 25.58595, -PI / 2, 0.5, true)
+            drivebase.driveToPositionGlobal(xParam, 25.60595, -PI / 2, 0.5, true)
         },
         { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.8) },
     )

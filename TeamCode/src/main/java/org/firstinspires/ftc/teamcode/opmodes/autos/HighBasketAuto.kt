@@ -75,7 +75,7 @@ class HighBasketAuto : LinearOpMode() {
 
                     pivot.movePivot(Pivot.PivotState.Down)
                     spintake.controlIntakeState(Spintake.SpintakeState.Suck)
-                    delay(2000)
+                    delay(1000)
                 }, {
                     lift.moveLiftTo(0.0)
                 })
@@ -115,7 +115,7 @@ class HighBasketAuto : LinearOpMode() {
 
                     pivot.movePivot(Pivot.PivotState.Down)
                     spintake.controlIntakeState(Spintake.SpintakeState.Suck)
-                    delay(2000)
+                    delay(1000)
                 }, {
                     lift.moveLiftTo(0.0)
                 })
@@ -148,7 +148,7 @@ class HighBasketAuto : LinearOpMode() {
                         xInches = 65.07,
                         yInches = 27.28,
                         angleRadians = 0.0,
-                        maxPower = 0.5,
+                        maxPower = 1.0,
                         precise = false,
                     )
                     drivebase.driveToPositionGlobal(
