@@ -3,15 +3,15 @@ package org.firstinspires.ftc.teamcode.systems
 import com.qualcomm.robotcore.hardware.DcMotor
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.utility.LiftConstants.ENCODER_PER_INCH
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MIN_LIFT_HEIGHT
 import kotlin.math.absoluteValue
 import kotlin.math.withSign
 
 abstract class Lift(private val liftMotor: DcMotor) {
-    val liftHeight get() = liftMotor.currentPosition / ENCODER_PER_INCH
+    val liftHeight get() = liftMotor.currentPosition / encoderPerInch
     abstract val maxLiftHeight: Double
+    abstract val encoderPerInch: Double
 
     fun resetLift() {
         liftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
