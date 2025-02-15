@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -9,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.yield
 import org.firstinspires.ftc.teamcode.opmodes.moveToBasket
+import org.firstinspires.ftc.teamcode.opmodes.parallelRace
 import org.firstinspires.ftc.teamcode.opmodes.parallelWait
 import org.firstinspires.ftc.teamcode.opmodes.status
 import org.firstinspires.ftc.teamcode.systems.Bucket
@@ -23,7 +23,6 @@ import org.firstinspires.ftc.teamcode.systems.Spintake.SpintakeState
 import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
 import org.firstinspires.ftc.teamcode.utility.LiftConstants.MAX_LIFT_HEIGHT_LEFT
 
-@Disabled
 @Autonomous(group = "Basket", preselectTeleOp = "MainTeleop")
 class HighBasketExtendAuto : LinearOpMode() {
     override fun runOpMode() {
@@ -47,67 +46,102 @@ class HighBasketExtendAuto : LinearOpMode() {
         waitForStart()
 
         runBlocking {
-            suspend fun grabBlock() {
-                spintake.controlIntakeState(SpintakeState.Suck)
-                pivot.movePivot(PivotState.Down)
-                delay(1250)
-                spintake.controlIntakeState(SpintakeState.Off)
-                pivot.movePivot(PivotState.Dodge)
+            fun getGrabBlock(blockX: Double, blockY: Double, blockAng: Double) = suspend {
+                drivebase.driveToPositionGlobal(
+                    blockX,
+                    blockY,
+                    blockAng,
+                    1.0,
+                    false
+                )
             }
 
-            suspend fun dropBlock() {
-                spintake.controlIntakeState(SpintakeState.Spit)
-                pivot.movePivot(PivotState.Up)
-                delay(750)
-                pivot.movePivot(PivotState.Dodge)
-                spintake.controlIntakeState(SpintakeState.Off)
-            }
+            val blocks = listOf(
+                getGrabBlock(-20.98, 14.97, 1.3628),
+                getGrabBlock(-24.87, 13.97, 1.6714),
+                getGrabBlock(-24.46, 17.07, 2.1798),
+            )
 
-            suspend fun scoreBlock() {
+            suspend fun score() {
                 parallelWait(
                     { moveToBasket(drivebase) },
-                    { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT) },
-                    { extender.extendTo(MAX_EXTENSION - 1.0, 1.0) },
+                    { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT - 2.0) },
                 )
 
-//                lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT)
+                lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT - 2.0)
 
                 bucket.moveBucket(Bucket.BucketState.Out)
-                delay(750)
+                delay(500)
                 bucket.moveBucket(Bucket.BucketState.In)
-
-//                drivebase.driveForward(4.0, 1.0)
             }
 
-            suspend fun goGrabBlock(blockX: Double, blockY: Double, angle: Double) {
-                parallelWait(
-                    {
-                        drivebase.driveToPositionGlobal(
-                            xInches = blockX,
-                            yInches = blockY,
-                            angleRadians = angle,
-                            maxPower = 0.5,
-                            precise = true,
-                        )
-                        extender.extendTo(MAX_EXTENSION - 1.8, 1.0)
-                        grabBlock()
-                    },
-                    { lift.moveLiftTo(1.4) },
-                )
+            suspend fun scoreThenGrabUsing(
+                beforeGrab: suspend () -> Unit,
+                afterGrab: suspend () -> Unit,
+            ) {
+                score()
 
-                extender.extendTo(0.0, 1.0)
-//                lift.moveLiftTo(1.4)
-                dropBlock()
+                parallelWait({
+                    parallelWait({
+                        drivebase.driveForward(4.0, 1.0)
+                        beforeGrab()
+                    }, {
+                        extender.extendTo(MAX_EXTENSION - 1.0, 1.0)
+                    })
+
+                    spintake.controlIntakeState(SpintakeState.Suck)
+                    pivot.movePivot(PivotState.Down)
+                    sleep(1000)
+
+                    spintake.controlIntakeState(SpintakeState.Off)
+                    pivot.movePivot(PivotState.Up)
+                    extender.extendTo(0.0, 1.0)
+                }, {
+                    lift.moveLiftTo(0.0)
+                })
+
+                parallelRace({
+                    spintake.controlIntakeState(SpintakeState.Spit)
+                    sleep(500)
+
+                    spintake.controlIntakeState(SpintakeState.Off)
+                    pivot.movePivot(PivotState.Dodge)
+                }, {
+                    afterGrab()
+                    moveToBasket(drivebase, 1.0)
+                })
+
+                afterGrab()
             }
 
             val auto = launch {
-                scoreBlock()
-                goGrabBlock(-20.98, 14.97, 1.3628)
-                scoreBlock()
-                goGrabBlock(-24.87, 13.97, 1.6714)
-                scoreBlock()
-                goGrabBlock(-24.46, 17.07, 2.1198)
-                scoreBlock()
+                pivot.movePivot(PivotState.Dodge)
+
+                for (moveToBlock in blocks) {
+                    scoreThenGrabUsing({ moveToBlock() }, {})
+                }
+
+                scoreThenGrabUsing({
+                    drivebase.driveToPositionGlobal(
+                        58.98,
+                        2.148,
+                        0.0,
+                        1.0,
+                        true,
+                    )
+                }, {
+                    parallelRace({
+                        drivebase.driveToPositionGlobal(
+                            xInches = -18.22,
+                            yInches = 2.148,
+                            angleRadians = 0.0,
+                            maxPower = 1.0,
+                            precise = false,
+                        )
+                    }, { lift.moveLiftTo(MAX_LIFT_HEIGHT_LEFT - 2.0) })
+                })
+
+                score()
             }
 
             while (opModeIsActive() && auto.isActive) {
