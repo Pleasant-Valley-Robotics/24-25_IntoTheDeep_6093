@@ -29,7 +29,7 @@ class ClipperAuto4V2 : LinearOpMode() {
 
         val odometry = Odometry(
             hardwareMap, Pose2D(
-                DistanceUnit.INCH, 40.636, -1.629,
+                DistanceUnit.INCH, 40.636, -1.459,
                 AngleUnit.RADIANS, -PI / 2,
             )
         )
@@ -76,7 +76,11 @@ class ClipperAuto4V2 : LinearOpMode() {
                 pickClip(drivebase, lift, clipper)
                 scoreSample(drivebase, lift, clipper, 0.8)
 
-                drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2, 1.0, false)
+                parallelWait({
+                    drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2, 1.0, false)
+                }, {
+                    lift.moveLiftTo(0.0)
+                })
             }
 
             while (opModeIsActive() && auto.isActive) {
