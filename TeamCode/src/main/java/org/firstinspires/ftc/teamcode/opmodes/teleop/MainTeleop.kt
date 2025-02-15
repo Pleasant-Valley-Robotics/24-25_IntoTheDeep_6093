@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -16,6 +18,7 @@ import org.firstinspires.ftc.teamcode.opmodes.moveToBasket
 import org.firstinspires.ftc.teamcode.opmodes.moveToRungs
 import org.firstinspires.ftc.teamcode.opmodes.moveToSubLeft
 import org.firstinspires.ftc.teamcode.opmodes.moveToSubRight
+import org.firstinspires.ftc.teamcode.opmodes.parallelRace
 import org.firstinspires.ftc.teamcode.opmodes.pickClip
 import org.firstinspires.ftc.teamcode.opmodes.scoreSample
 import org.firstinspires.ftc.teamcode.opmodes.status
@@ -30,6 +33,7 @@ import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Pivot.PivotState
 import org.firstinspires.ftc.teamcode.systems.RightLift
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @TeleOp(name = "MainTeleop")
 class MainTeleop : LinearOpMode() {
@@ -64,7 +68,9 @@ class MainTeleop : LinearOpMode() {
 
         runBlocking {
             var inDriveAction = false
+            var inLiftAction = false
             var inArmAction = false
+            var state = EndEffectorState.Intake
             val rightBumper = RisingEdgeDetector(gamepad2::right_bumper)
 
             val actions = launch {
@@ -85,7 +91,7 @@ class MainTeleop : LinearOpMode() {
                         inDriveAction = true
                         cancelWith({ gamepad1.anyStick }) { moveToSubRight(drivebase) }
                         inDriveAction = false
-                    } else if (gamepad2.touchpad) {
+                    } else if (state == EndEffectorState.Outtake && gamepad2.touchpad) {
                         inDriveAction = true
                         inArmAction = true
                         cancelWith({ gamepad2.anyStick }) {
@@ -99,7 +105,7 @@ class MainTeleop : LinearOpMode() {
                         }
                         inDriveAction = false
                         inArmAction = false
-                    } else if (gamepad2.square) {
+                    } else if (state == EndEffectorState.Outtake && gamepad2.circle) {
                         inDriveAction = true
                         inArmAction = true
                         cancelWith({ gamepad2.anyStick }) {
@@ -107,6 +113,37 @@ class MainTeleop : LinearOpMode() {
                             rightBumper.set(true)
                         }
                         inDriveAction = false
+                        inArmAction = false
+                    } else if (state == EndEffectorState.Outtake && gamepad2.cross) {
+                        state = EndEffectorState.Intake
+                        inLiftAction = true
+                        parallelRace({
+                            delay(2500L)
+                        }, {
+                            cancelWith({ gamepad2.dpad_up || gamepad2.dpad_right }) {
+                                leftLift.moveLiftTo(0.0)
+                            }
+                        })
+                        leftLift.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                        inLiftAction = false
+                    } else if (state == EndEffectorState.Intake && gamepad2.square) {
+                        state = EndEffectorState.Outtake
+                        inLiftAction = true
+                        cancelWith({ gamepad2.anyStick }) {
+                            leftLift.moveLiftTo(LiftConstants.MAX_LIFT_HEIGHT_LEFT - 2.0)
+                        }
+                        leftLift.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                        inLiftAction = false
+                    } else if (gamepad2.left_stick_button) {
+                        inArmAction = true
+                        cancelWith({ gamepad2.right_stick_button }) {
+                            while (true) {
+                                leftLift.setLiftPowerSafe(-1.0, false)
+                                rightLift.setLiftPowerSafe(-1.0, false)
+                                extender.extendSafe(-1.0, false)
+                                yield()
+                            }
+                        }
                         inArmAction = false
                     }
 
@@ -119,8 +156,6 @@ class MainTeleop : LinearOpMode() {
              * [this diagram](https://github.com/Pleasant-Valley-Robotics/24-25_IntoTheDeep_6093/blob/c044f6bc06b16190bddb8a6cdaa9e33c1754b1b0/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/documentation/svgviewer-png-output(1).png?raw=true)
              */
             val endEffector = launch {
-                var state = EndEffectorState.Intake
-
                 while (isActive) {
                     val oldState = state
 
@@ -169,7 +204,7 @@ class MainTeleop : LinearOpMode() {
                             val liftFullyDown = leftLift.liftHeight < 0.8
 
                             // slightly nudge left lift because of bucket collisions when retracting
-                            leftLift.setLiftPowerSafe(if (liftFullyDown) 0.1 else 0.0)
+                            if (!inLiftAction) leftLift.setLiftPowerSafe(if (liftFullyDown) 0.1 else 0.0)
                             rightLift.setLiftPowerSafe(0.0)
                             extender.extendSafe(extendInput)
 
@@ -190,7 +225,7 @@ class MainTeleop : LinearOpMode() {
                             val liftDown = leftLift.liftHeight < 3.0
                             val cancelBucket = liftDown && !extendedOut
 
-                            leftLift.setLiftPowerSafe(leftSlideInput)
+                            if (!inLiftAction) leftLift.setLiftPowerSafe(leftSlideInput)
                             rightLift.setLiftPowerSafe(rightSlideInput)
                             extender.extendSafe(0.0)
 
@@ -202,20 +237,17 @@ class MainTeleop : LinearOpMode() {
 
                         EndEffectorState.Override -> {
                             val bucketInput = gamepad2.left_trigger.toDouble()
-                            val pivotInput = gamepad2.right_trigger.toDouble()
                             val leftSlideInput = -gamepad2.left_stick_y.toDouble()
                             val rightSlideInput = -gamepad2.right_stick_y.toDouble()
                             val extendInput = gamepad2.right_stick_x.toDouble()
-                            val clipperInput = gamepad2.right_bumper
 
                             leftLift.setLiftPowerSafe(leftSlideInput, true)
                             rightLift.setLiftPowerSafe(rightSlideInput, true)
                             extender.extendSafe(extendInput, true)
 
-                            pivot.pivotParam(pivotInput)
+                            pivot.movePivot(PivotState.Dodge)
                             spintake.controlIntakeDirect(leftPower = 0.0, rightPower = 0.0)
                             bucket.pivotParam(bucketInput)
-                            clipper.moveClaw(if (clipperInput) Clipper.ClipperState.Closed else Clipper.ClipperState.Open)
                         }
                     }
 
