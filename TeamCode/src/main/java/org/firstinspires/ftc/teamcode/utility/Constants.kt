@@ -68,7 +68,7 @@ object DrivebaseConstants {
 
 object LiftConstants {
     const val ENCODER_PER_INCH_LEFT = TICKS_PER_REV_19_2TO1 / (BELT_PITCH_DIAMETER * PI)
-    const val ENCODER_PER_INCH_RIGHT = TICKS_PER_REV_26_9TO1 / (BELT_PITCH_DIAMETER * PI)
+    const val ENCODER_PER_INCH_RIGHT = TICKS_PER_REV_19_2TO1 / (BELT_PITCH_DIAMETER * PI)
     const val MAX_LIFT_HEIGHT_LEFT = 36.0
     const val MAX_LIFT_HEIGHT_RIGHT = 18.0
     const val MIN_LIFT_HEIGHT = 0.5
@@ -110,7 +110,6 @@ object CameraConstants {
 
     const val SPINTAKE_DOWN_ANGLE_RAD = Math.PI / 4
     const val SPINTAKE_UP_ANGLE_RAD = 0.0
-
     const val TARGET_BLOCK_OFFSET_IN = 1.0
 
     const val Y_CORRECT_P = 0.2
