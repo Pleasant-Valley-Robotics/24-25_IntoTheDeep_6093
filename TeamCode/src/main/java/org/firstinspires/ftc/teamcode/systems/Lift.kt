@@ -13,6 +13,12 @@ abstract class Lift(private val liftMotor: DcMotor) {
     abstract val maxLiftHeight: Double
     abstract val encoderPerInch: Double
 
+    var mode: DcMotor.RunMode
+        get() = liftMotor.mode
+        set(value) {
+            liftMotor.mode = value
+        }
+
     fun resetLift() {
         liftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -50,15 +56,13 @@ abstract class Lift(private val liftMotor: DcMotor) {
      * @param inches the lift's new position, in inches. maximum of [MAX_LIFT_HEIGHT_LEFT]
      */
     suspend fun moveLiftTo(inches: Double) {
-        val threshold = 1.0
-        val power = 1.0
+        liftMotor.targetPosition = (encoderPerInch * inches).toInt()
+        liftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        liftMotor.power = 1.0.withSign(inches - liftHeight)
 
-        do {
-            val error = inches - liftHeight
-            liftMotor.power = power.withSign(error)
-            yield()
-        } while (error.absoluteValue > threshold)
+        while (liftMotor.isBusy) yield()
 
+        liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         liftMotor.power = 0.0
     }
 
