@@ -97,15 +97,18 @@ suspend fun scoreSample(
     param: Double,
 ) {
     val xParam = (1 - param) * 20.4613 + param * 44.8
-    parallelWait(
-        {
-            drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-            drivebase.driveToPositionGlobal(xParam, 25.60595, -PI / 2, 0.5, true)
-        },
-        { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.8) },
-    )
+    parallelWait({
+        drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
+        drivebase.driveToPositionGlobal(xParam, 25.70595, -PI / 2, 0.5, true)
+    }, {
+        parallelRace({
+            lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.0)
+        }, {
+            delay(1250L)
+        })
+    })
 
-    lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 7.0)
+    lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 6.5)
     clipper.moveClaw(Clipper.ClipperState.Open)
 }
 
