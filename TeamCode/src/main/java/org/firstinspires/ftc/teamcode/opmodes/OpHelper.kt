@@ -98,13 +98,13 @@ suspend fun scoreSample(
 ) {
     val xParam = (1 - param) * 20.4613 + param * 44.8
     parallelWait({
-        drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2, 1.0, false)
-        drivebase.driveToPositionGlobal(xParam, 25.70595, -PI / 2, 0.5, true)
+        drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2 + 0.1, 1.0, false)
+        drivebase.driveToPositionGlobal(xParam, 25.73595, -PI / 2, 0.5, true)
     }, {
         parallelRace({
             lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.0)
         }, {
-            delay(1250L)
+            delay(1500L)
         })
     })
 

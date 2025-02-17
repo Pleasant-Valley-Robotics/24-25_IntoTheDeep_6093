@@ -96,7 +96,7 @@ object ClipperConstants {
 
 object BucketConstants {
     const val BUCKET_IN_POS = 1.0
-    const val BUCKET_OUT_POS = 0.4
+    const val BUCKET_OUT_POS = 0.45
     const val BUCKET_TOUCH_POS = 0.0
 }
 

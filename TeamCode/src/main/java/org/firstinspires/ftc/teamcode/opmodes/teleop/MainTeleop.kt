@@ -138,8 +138,8 @@ class MainTeleop : LinearOpMode() {
                         inArmAction = true
                         cancelWith({ gamepad2.right_stick_button }) {
                             while (true) {
-                                leftLift.setLiftPowerSafe(-1.0, false)
-                                rightLift.setLiftPowerSafe(-1.0, false)
+                                leftLift.setLiftPowerSafe(-1.0, true)
+                                rightLift.setLiftPowerSafe(-1.0, true)
                                 extender.extendSafe(-1.0, false)
                                 yield()
                             }
