@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+import com.qualcomm.robotcore.hardware.DcMotor
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -95,20 +97,19 @@ suspend fun scoreSample(
     lift: RightLift,
     clipper: Clipper,
     param: Double,
-) {
+) = coroutineScope {
     val xParam = (1 - param) * 20.4613 + param * 44.8
-    parallelWait({
-        drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2 + 0.1, 1.0, false)
-        drivebase.driveToPositionGlobal(xParam, 25.73595, -PI / 2, 0.5, true)
-    }, {
-        parallelRace({
-            lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.0)
-        }, {
-            delay(1500L)
-        })
-    })
+    val liftAction = launch { lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 1.0) }
+    drivebase.driveToPositionGlobal(xParam, 15.58595, -PI / 2 + 0.1, 1.0, false)
+    drivebase.driveToPositionGlobal(xParam, 25.7359, -PI / 2, 0.5, true)
+    liftAction.cancelAndJoin()
+    lift.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
-    lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 6.5)
+    parallelRace({
+        lift.moveLiftTo(MAX_LIFT_HEIGHT_RIGHT - 7.0)
+    }, {
+        delay(700L)
+    })
     clipper.moveClaw(Clipper.ClipperState.Open)
 }
 
@@ -128,7 +129,7 @@ suspend fun pickClip(
 ) {
     //clip pos (69.3698, -1.9069, 1.5408)
     parallelWait({
-        drivebase.driveToPositionGlobal(69.3698, 4.9069, PI / 2, 1.0, false)
+        drivebase.driveToPositionGlobal(69.3698, 4.9069, PI / 2 - 0.1, 1.0, false)
         drivebase.driveToPositionGlobal(69.3698, -1.2069, PI / 2, 1.0, false)
     },
         { lift.moveLiftTo(0.0) }

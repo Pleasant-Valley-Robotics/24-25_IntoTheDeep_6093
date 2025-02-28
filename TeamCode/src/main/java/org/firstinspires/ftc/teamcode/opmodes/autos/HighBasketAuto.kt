@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.systems.LeftLift
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.Spintake
+import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MIN_EXTENSION
 import org.firstinspires.ftc.teamcode.utility.LiftConstants
 
 @Autonomous(group = "Basket", preselectTeleOp = "MainTeleop")
@@ -80,7 +81,7 @@ class HighBasketAuto : LinearOpMode() {
                 })
 
                 parallelWait({
-                    extender.extendTo(0.0, 0.5)
+                    extender.extendTo(MIN_EXTENSION, 0.5)
                 }, {
                     spintake.controlIntakeState(Spintake.SpintakeState.Off)
                     pivot.movePivot(Pivot.PivotState.Up)
@@ -113,7 +114,7 @@ class HighBasketAuto : LinearOpMode() {
                     spintake.controlIntakeState(Spintake.SpintakeState.Suck)
                     delay(750)
                 }, {
-                    lift.moveLiftTo(0.0)
+                    lift.moveLiftTo(MIN_EXTENSION)
                 })
 
                 parallelWait({

@@ -77,7 +77,7 @@ object LiftConstants {
 object ExtenderConstants {
     const val ENCODER_PER_INCH = TICKS_PER_REV_13_7TO1 / (BELT_PITCH_DIAMETER * PI)
     const val MAX_EXTENSION = 19.0
-    const val MIN_EXTENSION = 0.7
+    const val MIN_EXTENSION = 2.3
 }
 
 object PivotConstants {

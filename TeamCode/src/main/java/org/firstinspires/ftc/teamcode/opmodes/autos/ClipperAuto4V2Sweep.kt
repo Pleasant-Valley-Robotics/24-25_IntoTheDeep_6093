@@ -20,11 +20,10 @@ import org.firstinspires.ftc.teamcode.systems.Extender
 import org.firstinspires.ftc.teamcode.systems.Odometry
 import org.firstinspires.ftc.teamcode.systems.Pivot
 import org.firstinspires.ftc.teamcode.systems.RightLift
-import org.firstinspires.ftc.teamcode.utility.ExtenderConstants.MAX_EXTENSION
 import kotlin.math.PI
 
 @Autonomous(group = "Specimen", preselectTeleOp = "MainTeleop")
-class ClipperAuto4V2 : LinearOpMode() {
+class ClipperAuto4V2Sweep : LinearOpMode() {
     override fun runOpMode() {
         telemetry.status("initializing")
 
@@ -58,11 +57,14 @@ class ClipperAuto4V2 : LinearOpMode() {
                 scoreSample(drivebase, lift, clipper, 0.5)
 
                 parallelWait({
+
+
+
                     drivebase.driveToPositionGlobal(67.2637, 23.5902, -PI / 2, 1.0, false)
                     drivebase.driveToPositionGlobal(67.2637, 46.4816, -PI / 2, 1.0, false)
                     drivebase.driveToPositionGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
-                    drivebase.driveToPositionGlobal(80.1976, 9.4049, -PI / 2, 1.0, false)
-                    drivebase.driveToPositionGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
+//                    drivebase.driveToPositionGlobal(80.1976, 9.4049, -PI / 2, 1.0, false)
+//                    drivebase.driveToPositionGlobal(80.1976, 46.4816, -PI / 2, 1.0, false)
 
                     drivebase.driveToPositionGlobal(90.4633, 46.4816, -PI / 2, 1.0, false)
                     drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2 + 0.1, 1.0, false)
@@ -75,20 +77,12 @@ class ClipperAuto4V2 : LinearOpMode() {
                 scoreSample(drivebase, lift, clipper, 0.7)
 
                 pickClip(drivebase, lift, clipper)
+                scoreSample(drivebase, lift, clipper, 0.8)
 
                 parallelWait({
-                    scoreSample(drivebase, lift, clipper, 0.8)
-
-                    pivot.movePivot(Pivot.PivotState.Down)
-                    parallelWait({
-                        drivebase.driveToPositionGlobal(60.09, 13.50, -0.7689, 1.0, false)
-                    }, {
-                        lift.moveLiftTo(0.0)
-                    }, {
-                        extender.extendTo(MAX_EXTENSION, 1.0)
-                    })
+                    drivebase.driveToPositionGlobal(90.4633, 9.4049, -PI / 2, 1.0, false)
                 }, {
-                    extender.extendTo(MAX_EXTENSION, 1.0)
+                    lift.moveLiftTo(0.0)
                 })
             }
 
